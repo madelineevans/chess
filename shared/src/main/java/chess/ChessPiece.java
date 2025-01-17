@@ -53,6 +53,11 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        return new ArrayList<>();  //just an empty list rn, return correct moves here
+        Collection<ChessMove> allMoves = new ArrayList<>();
+        if (pieceType == PieceType.BISHOP) {
+            PieceMovesCalculator ourPiece = new BishopMovesCalculator();
+            allMoves = ourPiece.findAllMoves(board, myPosition);
+        }
+        return allMoves;
     }
 }
