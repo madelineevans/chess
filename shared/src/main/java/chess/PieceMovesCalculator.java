@@ -10,8 +10,27 @@ interface PieceMovesCalculator {
 class BishopMovesCalculator implements PieceMovesCalculator{
     @Override
     public Collection<ChessMove> findAllMoves(ChessBoard board, ChessPosition myPosition){
-        System.out.println("All possible bishop moves:");
-        return new ArrayList<>();
+        int[][] directions = {{1,1}, {1,-1}, {-1,1}, {-1,-1}};
+        ArrayList<ChessMove> allMoves = new ArrayList<>();
+
+        for (int[] direction : directions) {
+            int row = myPosition.getRow();
+            int col = myPosition.getColumn();
+            System.out.println("Bishop at:" + row + "," + col);
+
+            while(1<row && row <=7 && 1<col && col<=7){
+                row = row+direction[0];
+                col = col+direction[1];
+                System.out.println("row: " + row + " col: " + col);
+                ChessPosition pos = new ChessPosition(row, col);
+                System.out.println("piece there: " + board.getPiece(pos));
+//                if(board.getPiece(pos)==null){
+//                    ChessMove move = new ChessMove(myPosition, pos, null);
+//                    allMoves.add(move);
+//                }
+            }
+        }
+        return allMoves;
     }
 }
 
