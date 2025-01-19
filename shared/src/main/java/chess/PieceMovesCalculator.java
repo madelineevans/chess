@@ -16,21 +16,33 @@ class BishopMovesCalculator implements PieceMovesCalculator{
         for (int[] direction : directions) {
             int row = myPosition.getRow();
             int col = myPosition.getColumn();
-            System.out.println("Bishop at:" + row + "," + col);
+            boolean run = true;
 
-            while(1<row && row <=7 && 1<col && col<=7){
+            while(1<row && row <=7 && 1<col && col<=7 && run){
                 row = row+direction[0];
                 col = col+direction[1];
-                System.out.println("row: " + row + " col: " + col);
                 ChessPosition pos = new ChessPosition(row, col);
-                System.out.println("piece there: " + board.getPiece(pos));
-//                if(board.getPiece(pos)==null){
-//                    ChessMove move = new ChessMove(myPosition, pos, null);
-//                    allMoves.add(move);
-//                }
+                if(board.getPiece(pos)==null){
+                    ChessMove move = new ChessMove(myPosition, pos, null);
+                    allMoves.add(move);
+                }
+                else if(board.getPiece(pos).getTeamColor()!=board.getPiece(myPosition).getTeamColor()){
+                    run = false;
+                    ChessMove move = new ChessMove(myPosition, pos, null);
+                    allMoves.add(move);
+                    //remove the enemy piece right here???
+                }
             }
         }
         return allMoves;
+    }
+}
+
+class RookMovesCalculator implements PieceMovesCalculator{
+    @Override
+    public Collection<ChessMove> findAllMoves(ChessBoard board, ChessPosition myPosition){
+        System.out.println("All possible rook moves:");
+        return new ArrayList<>();
     }
 }
 
@@ -50,13 +62,7 @@ class PawnMovesCalculator implements PieceMovesCalculator{
     }
 }
 
-class RookMovesCalculator implements PieceMovesCalculator{
-    @Override
-    public Collection<ChessMove> findAllMoves(ChessBoard board, ChessPosition myPosition){
-        System.out.println("All possible rook moves:");
-        return new ArrayList<>();
-    }
-}
+
 
 class KnightMovesCalculator implements PieceMovesCalculator{
     @Override
