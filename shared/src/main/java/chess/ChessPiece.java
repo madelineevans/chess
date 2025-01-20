@@ -59,6 +59,26 @@ public class ChessPiece {
             PieceMovesCalculator ourPiece = new BishopMovesCalculator();
             allMoves = ourPiece.findAllMoves(board, myPosition);
         }
+        else if (pieceType == PieceType.KNIGHT) {
+            PieceMovesCalculator ourPiece = new KnightMovesCalculator();
+            allMoves = ourPiece.findAllMoves(board, myPosition);
+        }
+        else if (pieceType == PieceType.KING) {
+            PieceMovesCalculator ourPiece = new KingMovesCalculator();
+            allMoves = ourPiece.findAllMoves(board, myPosition);
+        }
+        else if (pieceType == PieceType.QUEEN) {
+            PieceMovesCalculator ourPiece = new QueenMovesCalculator();
+            allMoves = ourPiece.findAllMoves(board, myPosition);
+        }
+        else if (pieceType == PieceType.ROOK) {
+            PieceMovesCalculator ourPiece = new RookMovesCalculator();
+            allMoves = ourPiece.findAllMoves(board, myPosition);
+        }
+        else if (pieceType == PieceType.PAWN) {
+            PieceMovesCalculator ourPiece = new PawnMovesCalculator();
+            allMoves = ourPiece.findAllMoves(board, myPosition);
+        }
         return allMoves;
     }
 
