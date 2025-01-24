@@ -102,8 +102,8 @@ class PawnMovesCalculator implements PieceMovesCalculator{
     @Override
     public Collection<ChessMove> findAllMoves(ChessBoard board, ChessPosition myPosition){
         ArrayList<ChessMove> allMoves = new ArrayList<>(); //moves to return
-        ArrayList<Integer> allDir = new ArrayList<>();      //directions to move piece
-        ArrayList<int[]> dir = new ArrayList<>();       //directions to check if take another piece
+        //ArrayList<Integer> allDir = new ArrayList<>();      //directions to move piece
+        ArrayList<int[]> allDir = new ArrayList<>();       //directions to check if take another piece
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
         ChessPiece.PieceType pp = null;
@@ -112,55 +112,54 @@ class PawnMovesCalculator implements PieceMovesCalculator{
         System.out.println("pawn at "+row+","+col);
 
         if (board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.BLACK) {       //if black
-            allDir.add(-1);
+            allDir.add(new int[]{-1,-1});
+            allDir.add(new int[]{-1,1});
+            allDir.add(new int[]{-1,0});
             if(row == 7){
-                allDir.add(-2);
+                allDir.add(new int[]{-2,0});
             }
         }
         else{       //if white
-            allDir.add(1);
+            allDir.add(new int[]{1,-1});
+            allDir.add(new int[]{1,1});
+            allDir.add(new int[]{1,0});
             if(row== 2){
-                allDir.add(2);
+                allDir.add(new int[]{2,0});
             }
         }
 
-        for(Integer di : allDir){
-            System.out.println("can move in direction "+di);
-            if(di<0){//if black
-                dir.add(new int[]{-1,-1});
-                dir.add(new int[]{-1,1});
-            }
-            else{//if white
-                dir.add(new int[]{1,-1});
-                dir.add(new int[]{1,1});
-            }
-            ChessPosition pos = new ChessPosition(row+di, col);
-
+        int i = 0;
+        for(int[] di : allDir){
+            System.out.println("dir "+ di[0]+","+di[1]);
+            ChessPosition pos = new ChessPosition(row+di[0], col+di[1]);
+            System.out.println("new pos "+ pos.getRow()+","+pos.getColumn());
             if (pos.getRow() >= 1 && pos.getRow() <= 8 && pos.getColumn() >= 1 && pos.getColumn() <= 8) {
-                if (!blocked && board.getPiece(pos) == null) { //if no one's blocking it's move
-                    if(pos.getRow() == 8 | pos.getRow() == 1){
-                        pp = ChessPiece.PieceType.QUEEN; //but could also be a rook,Knight, or bishop
-                    }
-                    ChessMove move = new ChessMove(myPosition, pos, pp);
-                    System.out.println("["+pos.getRow()+","+pos.getColumn()+"]");
-                    allMoves.add(move);
-                }
-                else{
-                    blocked = true;
-                }
-                for(int[] d: dir){
-                    System.out.println("direction to take is: ["+d[0]+","+d[1]+"]");
-                    ChessPosition pos2 = new ChessPosition(row+d[0], col+d[1]);
-                    System.out.println("checking for a piece to take at "+pos2.getRow()+","+pos2.getColumn());
-                    if(board.getPiece(pos2) != null){
-                        if (board.getPiece(pos2).getTeamColor() != board.getPiece(myPosition).getTeamColor()) { //can I take a piece
-                            ChessMove move = new ChessMove(myPosition, pos2, null);
-                            System.out.println("["+pos2.getRow()+","+pos2.getColumn()+"]");
+                System.out.println("blocked is "+blocked);
+                System.out.println("Piece at position: " + board.getPiece(pos));
+                System.out.println("i="+i);
+                if (i<2){
+                    if (board.getPiece(pos) != null ) {
+                        if (board.getPiece(pos).getTeamColor() != board.getPiece(myPosition).getTeamColor()) { //can I take a piece
+                            ChessMove move = new ChessMove(myPosition, pos, null);
+                            System.out.println("[" + pos.getRow() + "," + pos.getColumn() + "]");
                             allMoves.add(move);
                         }
                     }
                 }
+                else if (!blocked && board.getPiece(pos) == null) { //if no one's blocking it's move
+                    System.out.println("in here");
+                    if (pos.getRow() == 8 | pos.getRow() == 1) {
+                        pp = ChessPiece.PieceType.QUEEN; //but could also be a rook,Knight, or bishop
+                    }
+                    ChessMove move = new ChessMove(myPosition, pos, pp);
+                    System.out.println("[" + pos.getRow() + "," + pos.getColumn() + "]");
+                    allMoves.add(move);
+                }
+                else {
+                    blocked = true;
+                }
             }
+            i++;
         }
         return allMoves;
     }
