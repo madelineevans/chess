@@ -6,22 +6,6 @@ import java.util.List;
 interface PieceMovesCalculator {
     Collection<ChessMove> findAllMoves(ChessBoard board, ChessPosition myPosition);
 
-//    default ChessMove move(ChessBoard board, ChessPosition myPosition, ChessPosition pos, int row, int col) {
-//        ChessMove move = null;
-//        if (pos.getRow() >= 1 && pos.getRow() <= 8 && pos.getColumn() >= 1 && pos.getColumn() <= 8) {
-//            if (board.getPiece(pos) == null) {
-//                System.out.println(row + ", " + col);
-//                return move = new ChessMove(myPosition, pos, null);
-//            }
-//            else if (board.getPiece(pos).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
-//                System.out.println(row + ", " + col);
-//                return move = new ChessMove(myPosition, pos, null);
-//                //remove the enemy piece right here???
-//            }
-//        }
-//        return move;
-//    }
-
     default Collection<ChessMove> canMove(ChessBoard board, ChessPosition myPosition, int[][] directions) {
         ArrayList<ChessMove> allMoves = new ArrayList<>();
         for (int[] direction : directions) {
@@ -31,10 +15,12 @@ interface PieceMovesCalculator {
             if (pos.getRow() >= 1 && pos.getRow() <= 8 && pos.getColumn() >= 1 && pos.getColumn() <= 8) {
                 if (board.getPiece(pos) == null) {
                     ChessMove move = new ChessMove(myPosition, pos, null);
+                    System.out.println("["+pos.getRow()+","+pos.getColumn()+"]");
                     allMoves.add(move);
                 }
                 else if (board.getPiece(pos).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
                     ChessMove move = new ChessMove(myPosition, pos, null);
+                    System.out.println("["+pos.getRow()+","+pos.getColumn()+"]");
                     allMoves.add(move);
                 }
             }
@@ -57,11 +43,13 @@ interface PieceMovesCalculator {
                 if (pos.getRow() >= 1 && pos.getRow() <= 8 && pos.getColumn() >= 1 && pos.getColumn() <= 8) {
                     if (board.getPiece(pos) == null) {
                         ChessMove move = new ChessMove(myPosition, pos, null);
+                        System.out.println("["+pos.getRow()+","+pos.getColumn()+"]");
                         allMoves.add(move);
                     }
                     else if (board.getPiece(pos).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
                         run = false;
                         ChessMove move = new ChessMove(myPosition, pos, null);
+                        System.out.println("["+pos.getRow()+","+pos.getColumn()+"]");
                         allMoves.add(move);
                     }
                     else{
@@ -102,14 +90,11 @@ class PawnMovesCalculator implements PieceMovesCalculator{
     @Override
     public Collection<ChessMove> findAllMoves(ChessBoard board, ChessPosition myPosition){
         ArrayList<ChessMove> allMoves = new ArrayList<>(); //moves to return
-        //ArrayList<Integer> allDir = new ArrayList<>();      //directions to move piece
+        ChessPiece.PieceType[] allPro = {ChessPiece.PieceType.QUEEN,ChessPiece.PieceType.ROOK,ChessPiece.PieceType.BISHOP,ChessPiece.PieceType.KNIGHT};      //all possible promotions
         ArrayList<int[]> allDir = new ArrayList<>();       //directions to check if take another piece
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
-        ChessPiece.PieceType pp = null;
         boolean blocked = false;
-
-        System.out.println("pawn at "+row+","+col);
 
         if (board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.BLACK) {       //if black
             allDir.add(new int[]{-1,-1});
@@ -130,30 +115,18 @@ class PawnMovesCalculator implements PieceMovesCalculator{
 
         int i = 0;
         for(int[] di : allDir){
-            System.out.println("dir "+ di[0]+","+di[1]);
             ChessPosition pos = new ChessPosition(row+di[0], col+di[1]);
-            System.out.println("new pos "+ pos.getRow()+","+pos.getColumn());
             if (pos.getRow() >= 1 && pos.getRow() <= 8 && pos.getColumn() >= 1 && pos.getColumn() <= 8) {
-                System.out.println("blocked is "+blocked);
-                System.out.println("Piece at position: " + board.getPiece(pos));
-                System.out.println("i="+i);
                 if (i<2){
                     if (board.getPiece(pos) != null ) {
                         if (board.getPiece(pos).getTeamColor() != board.getPiece(myPosition).getTeamColor()) { //can I take a piece
-                            ChessMove move = new ChessMove(myPosition, pos, null);
-                            System.out.println("[" + pos.getRow() + "," + pos.getColumn() + "]");
-                            allMoves.add(move);
+                            pawnPromoCheck(myPosition, allMoves, allPro, pos);
                         }
                     }
                 }
                 else if (!blocked && board.getPiece(pos) == null) { //if no one's blocking it's move
-                    System.out.println("in here");
-                    if (pos.getRow() == 8 | pos.getRow() == 1) {
-                        pp = ChessPiece.PieceType.QUEEN; //but could also be a rook,Knight, or bishop
-                    }
-                    ChessMove move = new ChessMove(myPosition, pos, pp);
-                    System.out.println("[" + pos.getRow() + "," + pos.getColumn() + "]");
-                    allMoves.add(move);
+                    pawnPromoCheck(myPosition, allMoves, allPro, pos);
+
                 }
                 else {
                     blocked = true;
@@ -162,6 +135,20 @@ class PawnMovesCalculator implements PieceMovesCalculator{
             i++;
         }
         return allMoves;
+    }
+
+    private void pawnPromoCheck(ChessPosition myPosition, ArrayList<ChessMove> allMoves, ChessPiece.PieceType[] allPro, ChessPosition pos) {
+        if (pos.getRow() == 8 | pos.getRow() == 1) {
+            for(ChessPiece.PieceType p : allPro) {
+                ChessMove move = new ChessMove(myPosition, pos, p);
+                allMoves.add(move);
+            }
+
+        }
+        else{
+            ChessMove move = new ChessMove(myPosition, pos, null);
+            allMoves.add(move);
+        }
     }
 }
 
