@@ -97,7 +97,7 @@ class PawnMovesCalculator implements PieceMovesCalculator{
         int col = myPosition.getColumn();
 
         if (board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.BLACK) {       //if black
-            if
+            //if
             allDir.add(new int[]{-1,0});
             if(row == 7){
                 allDir.add(new int[]{-2,0});

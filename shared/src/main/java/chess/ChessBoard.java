@@ -41,25 +41,43 @@ public class ChessBoard {
      */
     public void resetBoard() {
         for (int row = 1; row<=8; row++){
+            ChessGame.TeamColor c = ChessGame.TeamColor.WHITE;
+//            if(row==1|row==2){
+//                c = ChessGame.TeamColor.WHITE;
+//            }
+            if(row==7|row==8){
+                c = ChessGame.TeamColor.BLACK;
+            }
             if (row == 2){
                 for (int col = 1; col <= 8; col++) {
-                    ChessBoard.addPiece(new ChessPosition(row,col), new ChessPiece(ChessGame.TeamColor.WHITE,ChessPiece.PieceType.ROOK));
+                    ChessBoard.addPiece(new ChessPosition(row,col), new ChessPiece(c,ChessPiece.PieceType.ROOK));
                 }
             }
             else if(row == 7){
                 for (int col = 1; col <= 8; col++) {
-                    ChessBoard.addPiece(new ChessPosition(row,col), new ChessPiece(ChessGame.TeamColor.BLACK,ChessPiece.PieceType.ROOK));
+                    ChessBoard.addPiece(new ChessPosition(row,col), new ChessPiece(c,ChessPiece.PieceType.ROOK));
                 }
             }
-            else if(row == 1){
+            else if(row == 1|row==8){
                 for (int col = 1; col <=8; col++) {
-                    if(col == 0){
+                    if(col ==1| col==8){
+                        ChessBoard.addPiece(new ChessPosition(row,col), new ChessPiece(c,ChessPiece.PieceType.ROOK));
+                    }
+                    if(col==2|col==7){
+                        ChessBoard.addPiece(new ChessPosition(row,col), new ChessPiece(c,ChessPiece.PieceType.KNIGHT));
+                    }
+                    if(col==3|col==6){
+                        ChessBoard.addPiece(new ChessPosition(row,col), new ChessPiece(c,ChessPiece.PieceType.BISHOP));
+                    }
+                    if(col==4){
+                        ChessBoard.addPiece(new ChessPosition(row,col), new ChessPiece(c,ChessPiece.PieceType.KING));
+                    }
+                    if(col==5){
+                        ChessBoard.addPiece(new ChessPosition(row,col), new ChessPiece(c,ChessPiece.PieceType.QUEEN));
                     }
                 }
             }
         }
-        ChessBoard.addPiece(new ChessPosition(1,1), new ChessPiece(ChessGame.TeamColor.BLACK,ChessPiece.PieceType.ROOK));
-        throw new RuntimeException("Not implemented");
     }
 
     @Override
