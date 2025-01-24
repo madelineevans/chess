@@ -106,7 +106,8 @@ class PawnMovesCalculator implements PieceMovesCalculator{
         ArrayList<int[]> dir = new ArrayList<>();       //directions to check if take another piece
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
-        boolean found = false;
+        ChessPiece.PieceType pp = null;
+        boolean blocked = false;
 
         System.out.println("pawn at "+row+","+col);
 
@@ -123,9 +124,8 @@ class PawnMovesCalculator implements PieceMovesCalculator{
             }
         }
 
-        System.out.println("pawn can move: ");
         for(Integer di : allDir){
-            System.out.println("dir "+di);
+            System.out.println("can move in direction "+di);
             if(di<0){//if black
                 dir.add(new int[]{-1,-1});
                 dir.add(new int[]{-1,1});
@@ -134,21 +134,31 @@ class PawnMovesCalculator implements PieceMovesCalculator{
                 dir.add(new int[]{1,-1});
                 dir.add(new int[]{1,1});
             }
-
-
             ChessPosition pos = new ChessPosition(row+di, col);
 
             if (pos.getRow() >= 1 && pos.getRow() <= 8 && pos.getColumn() >= 1 && pos.getColumn() <= 8) {
-                for(int[] d: dir){
-                    if (board.getPiece(pos).getTeamColor() != board.getPiece(myPosition).getTeamColor()) { //can I take a piece
-                        ChessMove move = new ChessMove(myPosition, pos, null);
-                        allMoves.add(move);
-                        found = true;
+                if (!blocked && board.getPiece(pos) == null) { //if no one's blocking it's move
+                    if(pos.getRow() == 8 | pos.getRow() == 1){
+                        pp = ChessPiece.PieceType.QUEEN; //but could also be a rook,Knight, or bishop
                     }
-                }
-                if (!found && board.getPiece(pos) == null) { //else if no one's blocking it's move
-                    ChessMove move = new ChessMove(myPosition, pos, null);
+                    ChessMove move = new ChessMove(myPosition, pos, pp);
+                    System.out.println("["+pos.getRow()+","+pos.getColumn()+"]");
                     allMoves.add(move);
+                }
+                else{
+                    blocked = true;
+                }
+                for(int[] d: dir){
+                    System.out.println("direction to take is: ["+d[0]+","+d[1]+"]");
+                    ChessPosition pos2 = new ChessPosition(row+d[0], col+d[1]);
+                    System.out.println("checking for a piece to take at "+pos2.getRow()+","+pos2.getColumn());
+                    if(board.getPiece(pos2) != null){
+                        if (board.getPiece(pos2).getTeamColor() != board.getPiece(myPosition).getTeamColor()) { //can I take a piece
+                            ChessMove move = new ChessMove(myPosition, pos2, null);
+                            System.out.println("["+pos2.getRow()+","+pos2.getColumn()+"]");
+                            allMoves.add(move);
+                        }
+                    }
                 }
             }
         }
