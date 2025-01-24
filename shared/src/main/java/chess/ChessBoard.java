@@ -10,7 +10,7 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    private static ChessPiece[][] squares = new ChessPiece[8][8];
+    private ChessPiece[][] squares = new ChessPiece[8][8];
     public ChessBoard() {
     }
 
@@ -20,7 +20,7 @@ public class ChessBoard {
      * @param position where to add the piece to
      * @param piece    the piece to add
      */
-    public static void addPiece(ChessPosition position, ChessPiece piece) {
+    public void addPiece(ChessPosition position, ChessPiece piece) {
         squares[(position.getRow())-1][(position.getColumn())-1] = piece;
     }
 
@@ -50,30 +50,30 @@ public class ChessBoard {
             }
             if (row == 2){
                 for (int col = 1; col <= 8; col++) {
-                    ChessBoard.addPiece(new ChessPosition(row,col), new ChessPiece(c,ChessPiece.PieceType.ROOK));
+                    addPiece(new ChessPosition(row,col), new ChessPiece(c,ChessPiece.PieceType.PAWN));
                 }
             }
             else if(row == 7){
                 for (int col = 1; col <= 8; col++) {
-                    ChessBoard.addPiece(new ChessPosition(row,col), new ChessPiece(c,ChessPiece.PieceType.ROOK));
+                    addPiece(new ChessPosition(row,col), new ChessPiece(c,ChessPiece.PieceType.PAWN));
                 }
             }
             else if(row == 1|row==8){
                 for (int col = 1; col <=8; col++) {
                     if(col ==1| col==8){
-                        ChessBoard.addPiece(new ChessPosition(row,col), new ChessPiece(c,ChessPiece.PieceType.ROOK));
+                        addPiece(new ChessPosition(row,col), new ChessPiece(c,ChessPiece.PieceType.ROOK));
                     }
                     if(col==2|col==7){
-                        ChessBoard.addPiece(new ChessPosition(row,col), new ChessPiece(c,ChessPiece.PieceType.KNIGHT));
+                        addPiece(new ChessPosition(row,col), new ChessPiece(c,ChessPiece.PieceType.KNIGHT));
                     }
                     if(col==3|col==6){
-                        ChessBoard.addPiece(new ChessPosition(row,col), new ChessPiece(c,ChessPiece.PieceType.BISHOP));
+                        addPiece(new ChessPosition(row,col), new ChessPiece(c,ChessPiece.PieceType.BISHOP));
                     }
                     if(col==4){
-                        ChessBoard.addPiece(new ChessPosition(row,col), new ChessPiece(c,ChessPiece.PieceType.KING));
+                        addPiece(new ChessPosition(row,col), new ChessPiece(c,ChessPiece.PieceType.QUEEN));
                     }
                     if(col==5){
-                        ChessBoard.addPiece(new ChessPosition(row,col), new ChessPiece(c,ChessPiece.PieceType.QUEEN));
+                        addPiece(new ChessPosition(row,col), new ChessPiece(c,ChessPiece.PieceType.KING));
                     }
                 }
             }

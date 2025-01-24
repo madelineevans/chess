@@ -141,12 +141,14 @@ class PawnMovesCalculator implements PieceMovesCalculator{
         if (pos.getRow() == 8 | pos.getRow() == 1) {
             for(ChessPiece.PieceType p : allPro) {
                 ChessMove move = new ChessMove(myPosition, pos, p);
+                System.out.println("["+pos.getRow()+","+pos.getColumn()+"]");
                 allMoves.add(move);
             }
 
         }
         else{
             ChessMove move = new ChessMove(myPosition, pos, null);
+            System.out.println("["+pos.getRow()+","+pos.getColumn()+"]");
             allMoves.add(move);
         }
     }
