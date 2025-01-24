@@ -15,7 +15,8 @@ interface PieceMovesCalculator {
                     System.out.println(row + ", " + col);
                     ChessMove move = new ChessMove(myPosition, pos, null);
                     allMoves.add(move);
-                } else if (board.getPiece(pos).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+                }
+                else if (board.getPiece(pos).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
                     System.out.println(row + ", " + col);
                     ChessMove move = new ChessMove(myPosition, pos, null);
                     allMoves.add(move);
@@ -96,6 +97,7 @@ class PawnMovesCalculator implements PieceMovesCalculator{
         int col = myPosition.getColumn();
 
         if (board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.BLACK) {       //if black
+            if
             allDir.add(new int[]{-1,0});
             if(row == 7){
                 allDir.add(new int[]{-2,0});
@@ -107,6 +109,8 @@ class PawnMovesCalculator implements PieceMovesCalculator{
                 allDir.add(new int[]{2,0});
             }
         }
+
+
         return allMoves;
     }
 }

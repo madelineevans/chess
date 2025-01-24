@@ -10,7 +10,7 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    private ChessPiece[][] squares = new ChessPiece[8][8];
+    private static ChessPiece[][] squares = new ChessPiece[8][8];
     public ChessBoard() {
     }
 
@@ -20,7 +20,7 @@ public class ChessBoard {
      * @param position where to add the piece to
      * @param piece    the piece to add
      */
-    public void addPiece(ChessPosition position, ChessPiece piece) {
+    public static void addPiece(ChessPosition position, ChessPiece piece) {
         squares[(position.getRow())-1][(position.getColumn())-1] = piece;
     }
 
@@ -40,14 +40,25 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        //ChessBoard.addPiece(new ChessPosition(0,0), new ChessPiece(ChessGame.TeamColor.BLACK,ChessPiece.PieceType.ROOK));
-//
-//
-//        for (int row = 0; row < 8; row++) {
-//            for (int column = 0; column < 8; column++) {
-//                if (row = )
-//            }
-//        }
+        for (int row = 1; row<=8; row++){
+            if (row == 2){
+                for (int col = 1; col <= 8; col++) {
+                    ChessBoard.addPiece(new ChessPosition(row,col), new ChessPiece(ChessGame.TeamColor.WHITE,ChessPiece.PieceType.ROOK));
+                }
+            }
+            else if(row == 7){
+                for (int col = 1; col <= 8; col++) {
+                    ChessBoard.addPiece(new ChessPosition(row,col), new ChessPiece(ChessGame.TeamColor.BLACK,ChessPiece.PieceType.ROOK));
+                }
+            }
+            else if(row == 1){
+                for (int col = 1; col <=8; col++) {
+                    if(col == 0){
+                    }
+                }
+            }
+        }
+        ChessBoard.addPiece(new ChessPosition(1,1), new ChessPiece(ChessGame.TeamColor.BLACK,ChessPiece.PieceType.ROOK));
         throw new RuntimeException("Not implemented");
     }
 
