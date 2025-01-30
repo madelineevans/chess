@@ -12,6 +12,7 @@ import java.util.Objects;
 public class ChessBoard {
     private ChessPiece[][] squares = new ChessPiece[8][8];
     public ChessBoard() {
+        //add a map or something that stores all the pieces and their locations??
     }
 
     /**
@@ -39,9 +40,18 @@ public class ChessBoard {
         squares[position.getRow()-1][position.getColumn()-1] = null;
     }
 
-//    public ChessPosition findKing(ChessGame.TeamColor color){
-//        for
-//    }
+    public ChessPosition findKing(ChessGame.TeamColor color){
+        for(int i; i<8; i++){
+            for(int j; j<8; j++){
+                ChessPosition pos = new ChessPosition(i, j);
+                if(getPiece(pos) != null){
+                    if(getPiece(pos).getPieceType() == ChessPiece.PieceType.KING){
+                        return pos;
+                    }
+                }
+            }
+        }
+    }
 
     /**
      * Sets the board to the default starting board

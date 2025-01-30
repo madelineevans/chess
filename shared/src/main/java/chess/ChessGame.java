@@ -106,7 +106,7 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        //find the king's location
+        ChessPosition kingPos = gameBoard.findKing(teamColor);
         //check from all possible attack locations if there is a piece that could attack
 
         return false;
