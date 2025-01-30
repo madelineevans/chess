@@ -56,13 +56,6 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> allMoves = new ArrayList<>();
 
-        /*
-        PeaceMovesCalculator pmc=
-        new King PMC()
-        new Rook PMC()
-        polymorphism, how one object can be different ones
-         */
-
         if (pieceType == PieceType.BISHOP) {
             PieceMovesCalculator ourPiece = new BishopMovesCalculator();
             allMoves = ourPiece.findAllMoves(board, myPosition);
