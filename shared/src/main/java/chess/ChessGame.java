@@ -61,6 +61,7 @@ public class ChessGame {
         ChessPiece piece = gameBoard.getPiece(startPosition);
         Collection<ChessMove> moves = piece.pieceMoves(gameBoard, startPosition);
         for(ChessMove move : moves){    //see if it would leave king in danger of check
+            ChessBoard copy = new ChessBoard(gameBoard);
 
         }
         return validMvs;
