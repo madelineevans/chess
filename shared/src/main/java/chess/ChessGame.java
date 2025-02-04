@@ -3,6 +3,7 @@ package chess;
 import java.util.Collection;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -52,7 +53,6 @@ public class ChessGame {
      * @return Set of valid moves for requested piece, or null if no piece at
      * startPosition
      */
-    //context, message, audience, purpose, product
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         if(gameBoard.getPiece(startPosition)==null){
             return null;
@@ -60,9 +60,9 @@ public class ChessGame {
         ArrayList<ChessMove> validMvs = new ArrayList<>();
         ChessPiece piece = gameBoard.getPiece(startPosition);
         Collection<ChessMove> moves = piece.pieceMoves(gameBoard, startPosition);
-//        for(ChessMove move : moves){    //see if it would leave king in danger of check
-//
-//        }
+        for(ChessMove move : moves){    //see if it would leave king in danger of check
+
+        }
         return validMvs;
     }
 
@@ -107,9 +107,44 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         ChessPosition kingPos = gameBoard.findKing(teamColor);
-        //check from all possible attack locations if there is a piece that could attack
-
+        for(int r=0; r<8; r++){
+            for(int c=0; c<8; c++){
+                ChessPosition currPos = new ChessPosition(r,c);
+                if(gameBoard.getPiece(currPos)!=null){ //if there's a piece there
+                    ChessPiece curr = gameBoard.getPiece(new ChessPosition(r, c));
+                    if(curr.getTeamColor() != teamColor){// if that piece is the opposite color
+                        Collection<ChessMove> allMoves = curr.pieceMoves(gameBoard, currPos);
+                        for(ChessMove move : allMoves){
+                            if(move.getEndPosition().equals(kingPos)){ //check if one of it's valid moves has an endPosition of the king's Position
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
         return false;
+    }
+
+    public ChessPosition isInCheck(TeamColor teamColor, boolean retPos) {
+        ChessPosition kingPos = gameBoard.findKing(teamColor);
+        for(int r=0; r<8; r++){
+            for(int c=0; c<8; c++){
+                ChessPosition currPos = new ChessPosition(r,c);
+                if(gameBoard.getPiece(currPos)!=null){ //if there's a piece there
+                    ChessPiece curr = gameBoard.getPiece(new ChessPosition(r, c));
+                    if(curr.getTeamColor() != teamColor){// if that piece is the opposite color
+                        Collection<ChessMove> allMoves = curr.pieceMoves(gameBoard, currPos);
+                        for(ChessMove move : allMoves){
+                            if(move.getEndPosition().equals(kingPos)){ //check if one of it's valid moves has an endPosition of the king's Position
+                                return currPos;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -119,7 +154,10 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if(isInCheck(teamColor)){
+            ChessPosition attackPos = isInCheck(teamColor, true);
+        }
+        return false;
     }
 
     /**
@@ -130,7 +168,20 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        for(int r=0; r<8; r++) {
+            for (int c = 0; c < 8; c++) {
+                ChessPosition currPos = new ChessPosition(r, c);
+                if (gameBoard.getPiece(currPos) != null) { //if there's a piece there
+                    ChessPiece curr = gameBoard.getPiece(new ChessPosition(r, c));
+                    if (curr.getTeamColor() == teamColor) {//for every piece that's our Teamcolor
+                        if(validMoves(currPos).isEmpty() && !isInCheck(teamColor)){
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     /**

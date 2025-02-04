@@ -14,6 +14,14 @@ public class ChessBoard {
     public ChessBoard() {
         //add a map or something that stores all the pieces and their locations??
     }
+    public ChessBoard(ChessBoard copy) {
+        squares = new ChessPiece[8][8];
+        for(int r=0; r<8; r++){
+            for(int c=0; c<8; c++){
+                squares[r][c] = copy[r][c];
+            }
+        }
+    }
 
     /**
      * Adds a chess piece to the chessboard
@@ -41,8 +49,8 @@ public class ChessBoard {
     }
 
     public ChessPosition findKing(ChessGame.TeamColor color){
-        for(int i; i<8; i++){
-            for(int j; j<8; j++){
+        for(int i=0; i<8; i++){
+            for(int j=0; j<8; j++){
                 ChessPosition pos = new ChessPosition(i, j);
                 if(getPiece(pos) != null){
                     if(getPiece(pos).getPieceType() == ChessPiece.PieceType.KING){
@@ -51,6 +59,7 @@ public class ChessBoard {
                 }
             }
         }
+        return null;
     }
 
     /**
