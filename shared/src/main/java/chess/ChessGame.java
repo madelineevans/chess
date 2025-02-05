@@ -22,6 +22,15 @@ public class ChessGame {
         this.gameBoard = b;
     }
 
+    public ChessGame(ChessGame other){
+        this.turn = other.turn;
+        this.gameBoard = new ChessBoard(other.gameBoard);
+    }
+
+    public ChessGame makeCopy(){
+        return new ChessGame(this);
+    }
+
     /**
      * @return Which team's turn it is
      */
@@ -61,8 +70,11 @@ public class ChessGame {
         ChessPiece piece = gameBoard.getPiece(startPosition);
         Collection<ChessMove> moves = piece.pieceMoves(gameBoard, startPosition);
         for(ChessMove move : moves){    //see if it would leave king in danger of check
-            ChessBoard copy = new ChessBoard(gameBoard);
-
+            ChessGame copy = makeCopy();
+            copy.makeMove(move);
+            if(!copy.isInCheck(piece.getTeamColor())){
+                validMvs.add(move);
+            }
         }
         return validMvs;
     }
@@ -88,7 +100,14 @@ public class ChessGame {
             throw new InvalidMoveException("Invalid move: " + move);
         }
         else{
-            gameBoard.addPiece(move.getEndPosition(), piece);
+            if(move.getPromotionPiece()!= null){ //if we need to promote
+                ChessPiece.PieceType t = move.getPromotionPiece();
+                ChessPiece promoPiece = new ChessPiece(piece.getTeamColor(), t);
+                gameBoard.addPiece(move.getEndPosition(), promoPiece);
+            }
+            else{
+                gameBoard.addPiece(move.getEndPosition(), piece);
+            }
             gameBoard.removePiece(start);
             System.out.println("turn = "+getTeamTurn().toString());
             TeamColor newColor=TeamColor.WHITE;
