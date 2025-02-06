@@ -161,13 +161,13 @@ public class ChessGame {
                 ChessPosition currPos = new ChessPosition(r,c);
                 if(gameBoard.getPiece(currPos)!=null){ //if there's a piece there
                     ChessPiece curr = gameBoard.getPiece(new ChessPosition(r, c));
-                    if(curr.getTeamColor() != teamColor){// if that piece is the opposite color
+                    if(curr.getTeamColor() == teamColor){// if that piece is the same color
                         Collection<ChessMove> allMoves = curr.pieceMoves(gameBoard, currPos);
                         for(ChessMove move : allMoves){
                             ChessGame copy = makeCopy();
                             copy.gameBoard.addPiece(move.getEndPosition(), curr);
                             copy.gameBoard.removePiece(move.getStartPosition());
-                            if(!copy.isInCheck(curr.getTeamColor())){   //if not in check anymore
+                            if(!copy.isInCheck(teamColor)){   //if not in check anymore
                                 return false;
                             }
                         }
@@ -184,22 +184,27 @@ public class ChessGame {
      *
      * @param teamColor which team to check for stalemate
      * @return True if the specified team is in stalemate, otherwise false
-     */
+     */ //stalemate if team ISN'T in check and no moves
     public boolean isInStalemate(TeamColor teamColor) {
-        for(int r=1; r<=8; r++) {
-            for (int c=1; c <=8; c++) {
-                ChessPosition currPos = new ChessPosition(r, c);
-                if (gameBoard.getPiece(currPos) != null) { //if there's a piece there
-                    ChessPiece curr = gameBoard.getPiece(new ChessPosition(r, c));
-                    if (curr.getTeamColor() == teamColor) { //for every piece that's our Teamcolor
-                        if(validMoves(currPos).isEmpty() && !isInCheck(teamColor)){
-                            return false;
+        if(isInCheck(teamColor)) {
+            return false;
+        }
+        else{
+            for(int r=1; r<=8; r++) {
+                for (int c=1; c <=8; c++) {
+                    ChessPosition currPos = new ChessPosition(r, c);
+                    if (gameBoard.getPiece(currPos) != null) { //if there's a piece there
+                        ChessPiece curr = gameBoard.getPiece(new ChessPosition(r, c));
+                        if (curr.getTeamColor() == teamColor) { //for every piece that's our Teamcolor
+                            if(!validMoves(currPos).isEmpty()){
+                                return false;
+                            }
                         }
                     }
                 }
             }
+            return true;
         }
-        return true;
     }
 
     /**
