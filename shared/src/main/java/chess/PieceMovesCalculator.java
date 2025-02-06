@@ -15,12 +15,10 @@ interface PieceMovesCalculator {
             if (pos.getRow() >= 1 && pos.getRow() <= 8 && pos.getColumn() >= 1 && pos.getColumn() <= 8) {
                 if (board.getPiece(pos) == null) {
                     ChessMove move = new ChessMove(myPosition, pos, null);
-                    System.out.println("["+pos.getRow()+","+pos.getColumn()+"]");
                     allMoves.add(move);
                 }
                 else if (board.getPiece(pos).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
                     ChessMove move = new ChessMove(myPosition, pos, null);
-                    System.out.println("["+pos.getRow()+","+pos.getColumn()+"]");
                     allMoves.add(move);
                 }
             }
@@ -36,20 +34,18 @@ interface PieceMovesCalculator {
             int col = myPosition.getColumn();
             boolean run = true;
 
-            while(1<=row && row <=7 && 1<=col && col<=7 && run){
+            while(1<=row && row <=8 && 1<=col && col<=8 && run){
                 row = row+direction[0];
                 col = col+direction[1];
                 ChessPosition pos = new ChessPosition(row, col);
                 if (pos.getRow() >= 1 && pos.getRow() <= 8 && pos.getColumn() >= 1 && pos.getColumn() <= 8) {
                     if (board.getPiece(pos) == null) {
                         ChessMove move = new ChessMove(myPosition, pos, null);
-                        System.out.println("["+pos.getRow()+","+pos.getColumn()+"]");
                         allMoves.add(move);
                     }
                     else if (board.getPiece(pos).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
                         run = false;
                         ChessMove move = new ChessMove(myPosition, pos, null);
-                        System.out.println("["+pos.getRow()+","+pos.getColumn()+"]");
                         allMoves.add(move);
                     }
                     else{
@@ -141,14 +137,12 @@ class PawnMovesCalculator implements PieceMovesCalculator{
         if (pos.getRow() == 8 | pos.getRow() == 1) {
             for(ChessPiece.PieceType p : allPro) {
                 ChessMove move = new ChessMove(myPosition, pos, p);
-                System.out.println("["+pos.getRow()+","+pos.getColumn()+"]");
                 allMoves.add(move);
             }
 
         }
         else{
             ChessMove move = new ChessMove(myPosition, pos, null);
-            System.out.println("["+pos.getRow()+","+pos.getColumn()+"]");
             allMoves.add(move);
         }
     }

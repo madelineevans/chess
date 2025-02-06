@@ -71,7 +71,13 @@ public class ChessGame {
         Collection<ChessMove> moves = piece.pieceMoves(gameBoard, startPosition);
         for(ChessMove move : moves){    //see if it would leave king in danger of check
             ChessGame copy = makeCopy();
-            copy.makeMove(move);
+            copy.gameBoard.addPiece(move.getEndPosition(), piece);
+            copy.gameBoard.removePiece(move.getStartPosition());
+//            TeamColor newColor=TeamColor.WHITE;
+//            if(turn==TeamColor.WHITE){
+//                newColor = TeamColor.BLACK;
+//            }
+//            setTeamTurn(newColor);
             if(!copy.isInCheck(piece.getTeamColor())){
                 validMvs.add(move);
             }
@@ -127,8 +133,8 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         ChessPosition kingPos = gameBoard.findKing(teamColor);
-        for(int r=0; r<8; r++){
-            for(int c=0; c<8; c++){
+        for(int r=1; r<=8; r++){
+            for(int c=1; c<=8; c++){
                 ChessPosition currPos = new ChessPosition(r,c);
                 if(gameBoard.getPiece(currPos)!=null){ //if there's a piece there
                     ChessPiece curr = gameBoard.getPiece(new ChessPosition(r, c));
@@ -148,8 +154,8 @@ public class ChessGame {
 
     public ChessPosition isInCheck(TeamColor teamColor, boolean retPos) {
         ChessPosition kingPos = gameBoard.findKing(teamColor);
-        for(int r=0; r<8; r++){
-            for(int c=0; c<8; c++){
+        for(int r=1; r<=8; r++){
+            for(int c=1; c<=8; c++){
                 ChessPosition currPos = new ChessPosition(r,c);
                 if(gameBoard.getPiece(currPos)!=null){ //if there's a piece there
                     ChessPiece curr = gameBoard.getPiece(new ChessPosition(r, c));
@@ -188,8 +194,8 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        for(int r=0; r<8; r++) {
-            for (int c = 0; c < 8; c++) {
+        for(int r=1; r<=8; r++) {
+            for (int c=1; c <=8; c++) {
                 ChessPosition currPos = new ChessPosition(r, c);
                 if (gameBoard.getPiece(currPos) != null) { //if there's a piece there
                     ChessPiece curr = gameBoard.getPiece(new ChessPosition(r, c));

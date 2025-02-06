@@ -15,10 +15,12 @@ public class ChessBoard {
         //add a map or something that stores all the pieces and their locations??
     }
     public ChessBoard(ChessBoard copy) {
-        squares = new ChessPiece[8][8];
+        this.squares = new ChessPiece[8][8];
         for(int r=0; r<8; r++){
             for(int c=0; c<8; c++){
-                squares[r][c] = copy.getPiece(new ChessPosition(r, c));
+                if(copy.squares[r][c] != null){
+                    this.squares[r][c] = new ChessPiece(copy.squares[r][c]);
+                }
             }
         }
     }
@@ -49,8 +51,8 @@ public class ChessBoard {
     }
 
     public ChessPosition findKing(ChessGame.TeamColor color){
-        for(int i=0; i<8; i++){
-            for(int j=0; j<8; j++){
+        for(int i=1; i<=8; i++){
+            for(int j=1; j<=8; j++){
                 ChessPosition pos = new ChessPosition(i, j);
                 if(getPiece(pos) != null){
                     if(getPiece(pos).getPieceType() == ChessPiece.PieceType.KING){
