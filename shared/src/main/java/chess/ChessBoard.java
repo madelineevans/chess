@@ -55,7 +55,7 @@ public class ChessBoard {
             for(int j=1; j<=8; j++){
                 ChessPosition pos = new ChessPosition(i, j);
                 if(getPiece(pos) != null){
-                    if(getPiece(pos).getPieceType() == ChessPiece.PieceType.KING){
+                    if(getPiece(pos).getTeamColor() == color && getPiece(pos).getPieceType() == ChessPiece.PieceType.KING){
                         return pos;
                     }
                 }
