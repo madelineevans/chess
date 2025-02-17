@@ -131,15 +131,14 @@ public class ChessGame {
         for(int r=1; r<=8; r++){
             for(int c=1; c<=8; c++){
                 ChessPosition currPos = new ChessPosition(r,c);
-                if(gameBoard.getPiece(currPos)!=null){ //if there's a piece there
-                    ChessPiece curr = gameBoard.getPiece(new ChessPosition(r, c));
-                    if(curr.getTeamColor() != teamColor){// if that piece is the opposite color
-                        Collection<ChessMove> allMoves = curr.pieceMoves(gameBoard, currPos);
-                        for(ChessMove move : allMoves){
-                            if(move.getEndPosition().equals(kingPos)){ //check if one of it's valid moves has an endPosition of the king's Position
-                                return true;
-                            }
-                        }
+                ChessPiece curr = gameBoard.getPiece(currPos);
+                if(gameBoard.getPiece(currPos)==null || curr.getTeamColor() == teamColor) { //if there's a piece there
+                    continue;
+                }
+                Collection<ChessMove> allMoves = curr.pieceMoves(gameBoard, currPos);
+                for(ChessMove move : allMoves){
+                    if(move.getEndPosition().equals(kingPos)){ //check if one of it's valid moves has an endPosition of the king's Position
+                        return true;
                     }
                 }
             }
@@ -159,18 +158,17 @@ public class ChessGame {
         for(int r=1; r<=8; r++){
             for(int c=1; c<=8; c++){
                 ChessPosition currPos = new ChessPosition(r,c);
-                if(gameBoard.getPiece(currPos)!=null){ //if there's a piece there
-                    ChessPiece curr = gameBoard.getPiece(new ChessPosition(r, c));
-                    if(curr.getTeamColor() == teamColor){// if that piece is the same color
-                        Collection<ChessMove> allMoves = curr.pieceMoves(gameBoard, currPos);
-                        for(ChessMove move : allMoves){
-                            ChessGame copy = makeCopy();
-                            copy.gameBoard.addPiece(move.getEndPosition(), curr);
-                            copy.gameBoard.removePiece(move.getStartPosition());
-                            if(!copy.isInCheck(teamColor)){   //if not in check anymore
-                                return false;
-                            }
-                        }
+                ChessPiece curr = gameBoard.getPiece(currPos);
+                if(curr == null || (curr.getTeamColor() != teamColor)){ //if there's a piece there
+                    continue;
+                }
+
+                for(ChessMove move : curr.pieceMoves(gameBoard, currPos)){
+                    ChessGame copy = makeCopy();
+                    copy.gameBoard.addPiece(move.getEndPosition(), curr);
+                    copy.gameBoard.removePiece(move.getStartPosition());
+                    if(!copy.isInCheck(teamColor)){   //if not in check anymore
+                        return false;
                     }
                 }
             }

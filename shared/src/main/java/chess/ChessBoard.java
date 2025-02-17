@@ -71,9 +71,7 @@ public class ChessBoard {
     public void resetBoard() {
         for (int row = 1; row<=8; row++){
             ChessGame.TeamColor c = ChessGame.TeamColor.WHITE;
-//            if(row==1|row==2){
-//                c = ChessGame.TeamColor.WHITE;
-//            }
+
             if(row==7|row==8){
                 c = ChessGame.TeamColor.BLACK;
             }

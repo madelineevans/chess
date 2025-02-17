@@ -118,11 +118,9 @@ class PawnMovesCalculator implements PieceMovesCalculator{
         for(int[] di : allDir){
             ChessPosition pos = new ChessPosition(row+di[0], col+di[1]);
             if (pos.getRow() >= 1 && pos.getRow() <= 8 && pos.getColumn() >= 1 && pos.getColumn() <= 8) {
-                if (i<2){
-                    if (board.getPiece(pos) != null ) {
-                        if (board.getPiece(pos).getTeamColor() != board.getPiece(myPosition).getTeamColor()) { //can I take a piece
-                            pawnPromoCheck(myPosition, allMoves, allPro, pos);
-                        }
+                if (i<2 && board.getPiece(pos) != null){
+                    if (board.getPiece(pos).getTeamColor() != board.getPiece(myPosition).getTeamColor()) { //can I take a piece
+                        pawnPromoCheck(myPosition, allMoves, allPro, pos);
                     }
                 }
                 else if (!blocked && board.getPiece(pos) == null) { //if no one's blocking it's move
