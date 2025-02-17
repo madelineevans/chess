@@ -75,12 +75,7 @@ public class ChessBoard {
             if(row==7|row==8){
                 c = ChessGame.TeamColor.BLACK;
             }
-            if (row == 2){
-                for (int col = 1; col <= 8; col++) {
-                    addPiece(new ChessPosition(row,col), new ChessPiece(c,ChessPiece.PieceType.PAWN));
-                }
-            }
-            else if(row == 7){
+            if (row == 2 || row == 7){
                 for (int col = 1; col <= 8; col++) {
                     addPiece(new ChessPosition(row,col), new ChessPiece(c,ChessPiece.PieceType.PAWN));
                 }
