@@ -86,7 +86,12 @@ class PawnMovesCalculator implements PieceMovesCalculator{
     @Override
     public Collection<ChessMove> findAllMoves(ChessBoard board, ChessPosition myPosition){
         ArrayList<ChessMove> allMoves = new ArrayList<>(); //moves to return
-        ChessPiece.PieceType[] allPro = {ChessPiece.PieceType.QUEEN,ChessPiece.PieceType.ROOK,ChessPiece.PieceType.BISHOP,ChessPiece.PieceType.KNIGHT};      //all possible promotions
+        ChessPiece.PieceType[] allPro = { //all possible promotions
+                ChessPiece.PieceType.QUEEN,
+                ChessPiece.PieceType.ROOK,
+                ChessPiece.PieceType.BISHOP,
+                ChessPiece.PieceType.KNIGHT
+        };
         ArrayList<int[]> allDir = new ArrayList<>();       //directions to check if take another piece
         int row = myPosition.getRow();
         int col = myPosition.getColumn();

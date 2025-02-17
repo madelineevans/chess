@@ -193,13 +193,9 @@ public class ChessGame {
             for(int r=1; r<=8; r++) {
                 for (int c=1; c <=8; c++) {
                     ChessPosition currPos = new ChessPosition(r, c);
-                    if (gameBoard.getPiece(currPos) != null) { //if there's a piece there
-                        ChessPiece curr = gameBoard.getPiece(new ChessPosition(r, c));
-                        if (curr.getTeamColor() == teamColor) { //for every piece that's our Teamcolor
-                            if(!validMoves(currPos).isEmpty()){
-                                return false;
-                            }
-                        }
+                    ChessPiece curr = gameBoard.getPiece(currPos);
+                    if (curr != null && curr.getTeamColor() == teamColor && !validMoves(currPos).isEmpty()) { //if there's a piece there
+                        return false;
                     }
                 }
             }
