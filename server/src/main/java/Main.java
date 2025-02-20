@@ -14,5 +14,5 @@ public class Main {
         } catch(Throwable ex){
             System.out.printf("Unable to start server: %s%n", ex.getMessage());
         }
-    }
+        }
 }
