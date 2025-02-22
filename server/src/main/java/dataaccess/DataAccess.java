@@ -1,17 +1,13 @@
 package dataaccess;
 import chess.ChessGame;
+import model.AuthData;
 import model.Data;
+import model.GameData;
 import model.UserData;
 
 public interface DataAccess {
-    Data createData();
-    UserData createData(String u, String p, String e);  //user
-    Data createData(int ID, String w, String b, String name, ChessGame g); //game
-
+    void createData();
     Data readData();
-    UserData readData(String u);    //user
-
-    Data updateData();
-
     void deleteData();
+
 }

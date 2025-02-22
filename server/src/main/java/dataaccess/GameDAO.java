@@ -10,10 +10,9 @@ public class GameDAO implements DataAccess {
     final private HashMap<Integer, GameData> games = new HashMap<>();
 
     @Override
-    public Data createData(int ID, String w, String b, String name, ChessGame g) {
-        GameData game = new GameData(ID, w, b, name, g);
-        games.put(ID, game);
-        return game;
+    public void createData(GameData g) {
+        int ID = g.returnID();
+        games.put(ID, g);
     }
 
     @Override
@@ -21,13 +20,13 @@ public class GameDAO implements DataAccess {
         return null;
     }
 
-    @Override
-    public Data updateData() {
-        return null;
-    }
+//    @Override                           Add this when I figure out what form the input is
+//    public Data updateData() {
+//        return null;
+//    }
 
     @Override
     public void deleteData() {
-
+        games.clear();
     }
 }

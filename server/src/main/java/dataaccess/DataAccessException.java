@@ -8,3 +8,7 @@ public class DataAccessException extends Exception{
         super(message);
     }
 }
+
+//public class DataNotFound extends DataAccessException{
+//    public DataNotFound(String message);
+//}
