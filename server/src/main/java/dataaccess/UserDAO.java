@@ -7,7 +7,7 @@ public class UserDAO implements DataAccess {
     final private Map<String, UserData> users = new HashMap<>();
 
     @Override
-    public UserData createData(String u, String p, String e) throws DataAccessException{
+    public UserData createData(String u, String p, String e){
         UserData user = new UserData(u, p, e);
         users.put(u, user);
         return user;
