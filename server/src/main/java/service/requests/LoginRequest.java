@@ -1,6 +1,6 @@
-package model.requests;
+package service.requests;
 
-record LoginRequest(
+public record LoginRequest(
         String username,
         String password){
 }
