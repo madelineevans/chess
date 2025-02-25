@@ -3,6 +3,11 @@ package service;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
+import model.AuthData;
+import model.GameData;
+import model.UserData;
+
+import java.util.Collection;
 
 public class ParentService {
     protected final UserDAO userDAO;
@@ -19,4 +24,15 @@ public class ParentService {
         authDAO.deleteAllData();
         gameDAO.deleteAllData();
     }
+
+    public Collection<UserData> listUsers(){
+        return userDAO.listData();
+    }
+    public Collection<AuthData> listAuths(){
+        return authDAO.listData();
+    }
+    public Collection<GameData> listGames(){
+        return gameDAO.listData();
+    }
+
 }

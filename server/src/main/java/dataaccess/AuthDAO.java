@@ -1,6 +1,9 @@
 package dataaccess;
 
 import model.AuthData;
+import model.UserData;
+
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,5 +29,10 @@ public class AuthDAO implements DataAccess<AuthData>{
     @Override
     public void deleteAllData() {
         auths.clear();
+    }
+
+    @Override
+    public Collection<AuthData> listData(){
+        return auths.values();
     }
 }

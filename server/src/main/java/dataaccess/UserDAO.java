@@ -1,5 +1,7 @@
 package dataaccess;
 import model.UserData;
+
+import java.util.Collection;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -25,5 +27,10 @@ public class UserDAO implements DataAccess<UserData> {
     @Override
     public void deleteAllData(){
         users.clear();
+    }
+
+    @Override
+    public Collection<UserData> listData(){
+        return users.values();
     }
 }

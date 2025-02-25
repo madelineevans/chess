@@ -12,28 +12,33 @@ import service.results.RegisterResult;
 import service.requests.LogoutRequest;
 import java.util.UUID;
 
-public class UserService extends ParentService{
+public class UserService extends ParentService {
     public UserService(UserDAO userDAO, AuthDAO authDAO, GameDAO gameDAO) {
         super(userDAO, authDAO, gameDAO);
     }
 
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
         String username = registerRequest.username();
-        UserData userData = new UserData(username, registerRequest.password(), registerRequest.email());
-        AuthData authData = new AuthData(generateToken(), username);
+        try{
+            userDAO.readData(username);
+            throw new DataAccessException("User already exists");
+        } catch(DataAccessException e){
+            UserData userData = new UserData(username, registerRequest.password(), registerRequest.email());
+            AuthData authData = new AuthData(generateToken(), username);
 
-        userDAO.readData(username);    //getUser(username)
-        userDAO.createData(userData);  //createUser(userData)
-        authDAO.createData(authData);  //createAuth(authData)
+            userDAO.createData(userData);  //createUser(userData)
+            authDAO.createData(authData);  //createAuth(authData)
 
-        return new RegisterResult(username, authData.authToken());
+            return new RegisterResult(username, authData.authToken());
+        }
     }
 
-    public LoginResult login(LoginRequest loginRequest) throws DataAccessException{}
-    public void logout(LogoutRequest logoutRequest) throws DataAccessException{}
+    //public LoginResult login(LoginRequest loginRequest) throws DataAccessException{}
+    //public void logout(LogoutRequest logoutRequest) throws DataAccessException{}
 
     public static String generateToken() {
         return UUID.randomUUID().toString();
     }
+
 }
 

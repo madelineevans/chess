@@ -15,7 +15,7 @@ public class GameService extends ParentService{
     public GameService(UserDAO userDAO, AuthDAO authDAO, GameDAO gameDAO) {
         super(userDAO, authDAO, gameDAO);
     }
-    public ListResult listGames(ListRequest) throws DataAccessException{}
-    public CreateResult createGame(CreateRequest) throws DataAccessException{}
-    public JoinResult joinGame(JoinRequest) throws DataAccessException{}
+    //public ListResult listGames(ListRequest) throws DataAccessException{}
+    //public CreateResult createGame(CreateRequest) throws DataAccessException{}
+    //public JoinResult joinGame(JoinRequest) throws DataAccessException{}
     }

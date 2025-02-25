@@ -3,7 +3,9 @@ package dataaccess;
 import chess.ChessGame;
 import model.Data;
 import model.GameData;
+import model.UserData;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 public class GameDAO implements DataAccess<GameData> {
@@ -29,6 +31,11 @@ public class GameDAO implements DataAccess<GameData> {
     @Override
     public void deleteAllData() {
         games.clear();
+    }
+
+    @Override
+    public Collection<GameData> listData(){
+        return games.values();
     }
 
 //    @Override                           Add this when I figure out what form the input is
