@@ -33,6 +33,15 @@ class UserServiceTest {
         assertEquals(1, users.size());
         assertTrue(users.contains(new UserData("user1", "pass1", "email1")));
     }
+    @Test
+    void registerBad() throws DataAccessException{ //already user in there
+        userDAO.createData(new UserData("user1", "pass1", "email1"));
+        RegisterRequest rr = new RegisterRequest("user1", "pass1", "email1");
+
+        assertThrows(DataAccessException.class, ()-> {
+            RegisterResult rR = uService.register(rr);
+        });
+    }
 
     @Test
     void login() {

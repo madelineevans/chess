@@ -19,10 +19,11 @@ public class UserService extends ParentService {
 
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
         String username = registerRequest.username();
-        try{
-            userDAO.readData(username);
+
+        if(userDAO.readData(username) != null){
             throw new DataAccessException("User already exists");
-        } catch(DataAccessException e){
+        }
+        else{
             UserData userData = new UserData(username, registerRequest.password(), registerRequest.email());
             AuthData authData = new AuthData(generateToken(), username);
 
