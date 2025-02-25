@@ -4,37 +4,27 @@ import model.AuthData;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AuthDAO implements DataAccess{
+public class AuthDAO implements DataAccess<AuthData>{
     final private Map<String, AuthData> auths = new HashMap<>();
 
     @Override
-    public void createData(String authToken, String u){
-        try{
-            AuthData auth = new AuthData(authToken, u);
-            auths.put(authToken, auth);
-        }catch (DataAccessException e){
-            System.out.println("Error: " + e.getMessage());
-        }
+    public void createData(AuthData auth){ //add authData
+        auths.put(auth.authToken(), auth);
     }
 
     @Override
-    public AuthData readData(String authToken) throws DataAccessException{
-        AuthData a = auths.get(authToken);
-        if(a == null){
+    public AuthData readData(String authToken) throws DataAccessException{  //find authData by authToken
+        AuthData auth = auths.get(authToken);
+        if(auth == null){
             throw new DataAccessException("Auth with authToken " + authToken + " is not found");
         }
         else{
-            return a;
+            return auth;
         }
     }
 
-//    @Override
-//    public Data updateData() {
-//        return null;
-//    }
-
     @Override
-    public void deleteData() {
+    public void deleteAllData() {
         auths.clear();
     }
 }

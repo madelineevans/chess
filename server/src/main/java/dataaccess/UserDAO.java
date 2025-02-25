@@ -3,28 +3,27 @@ import model.UserData;
 import java.util.Map;
 import java.util.HashMap;
 
-public class UserDAO implements DataAccess {
+public class UserDAO implements DataAccess<UserData> {
     final private Map<String, UserData> users = new HashMap<>();
 
     @Override
-    public UserData createData(String u, String p, String e){
-        UserData user = new UserData(u, p, e);
-        users.put(u, user);
-        return user;
+    public void createData(UserData user){   //add userdata
+        users.put(user.username(), user);
     }
 
     @Override
-    public UserData readData(String u){
-        return users.get(u);
+    public UserData readData(String username) throws DataAccessException{ //find data by username
+        UserData user = users.get(username);
+        if(user == null){
+            throw new DataAccessException("User with username " + username + " is not found")
+        }
+        else{
+            return user;
+        }
     }
 
-//    @Override
-//    public UserData updateData(){
-//
-//    }
-
     @Override
-    public void deleteData(){
+    public void deleteAllData(){
         users.clear();
     }
 }
