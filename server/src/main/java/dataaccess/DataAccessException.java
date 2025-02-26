@@ -9,6 +9,3 @@ public class DataAccessException extends Exception{
     }
 }
 
-//public class DataNotFound extends DataAccessException{
-//    public DataNotFound(String message);
-//}

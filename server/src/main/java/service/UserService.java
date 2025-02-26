@@ -1,9 +1,6 @@
 package service;
-import dataaccess.AuthDAO;
-import dataaccess.UserDAO;
-import dataaccess.GameDAO;
+import dataaccess.*;
 import model.AuthData;
-import dataaccess.DataAccessException;
 import model.UserData;
 import service.requests.LoginRequest;
 import service.results.LoginResult;
@@ -21,7 +18,7 @@ public class UserService extends ParentService {
         String username = registerRequest.username();
 
         if(userDAO.readData(username) != null){
-            throw new DataAccessException("User already exists");
+            throw new AlreadyTaken("Error: already taken");
         }
         else{
             UserData userData = new UserData(username, registerRequest.password(), registerRequest.email());

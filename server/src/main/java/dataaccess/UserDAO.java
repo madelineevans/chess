@@ -15,13 +15,7 @@ public class UserDAO implements DataAccess<UserData> {
 
     @Override
     public UserData readData(String username) throws DataAccessException{ //find data by username
-        UserData user = users.get(username);
-        if(user == null){
-            throw new DataAccessException("User with username " + username + " is not found");
-        }
-        else{
-            return user;
-        }
+        return users.get(username);
     }
 
     @Override
