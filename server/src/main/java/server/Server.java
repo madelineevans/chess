@@ -3,7 +3,9 @@ import com.google.gson.Gson;
 import dataaccess.*;
 import service.GameService;
 import service.UserService;
+import service.requests.LoginRequest;
 import service.requests.RegisterRequest;
+import service.results.LoginResult;
 import service.results.RegisterResult;
 import spark.*;
 import java.util.Map;
@@ -30,7 +32,7 @@ public class Server {
 
         // Register your endpoints and handle exceptions here.
         Spark.post("/user",this::register); //registration
-//        Spark.post("/session",this::); //login
+        Spark.post("/session",this::login); //login
 //        Spark.delete("/session",this::); //logout
 //        Spark.get("/game",this::); //list games
 //        Spark.post("/game",this::); //create game
@@ -68,12 +70,29 @@ public class Server {
             return new Gson().toJson(Map.of("message", e.getMessage()));
         }
     }
+    private Object login(Request req, Response res) throws DataAccessException {
+        try{
+            LoginRequest lReq = new Gson().fromJson(req.body(), LoginRequest.class);
+            LoginResult lRes = us.login(lReq);
+            res.status(200);
+            return new Gson().toJson(lRes);
+
+        } catch(DataAccessException e){
+            if(e instanceof Unauthorized){
+                res.status(401); //unauthorized
+            }
+            else{
+                res.status(500); //other error
+            }
+            return new Gson().toJson(Map.of("message", e.getMessage()));
+        }
+    }
 
     private Object clear(Request req, Response res) throws DataAccessException{
         try{
             us.clear();
             gs.clear();
-            res.status(204);
+            res.status(200);
             return "";
         } catch (Exception e){
             res.status(500);

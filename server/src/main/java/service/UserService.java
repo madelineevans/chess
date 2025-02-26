@@ -21,6 +21,9 @@ public class UserService extends ParentService {
             throw new AlreadyTaken("Error: already taken");
         }
         else{
+            if(registerRequest.password() == null || registerRequest.email() == null){
+                throw new BadRequest("Error: bad request");
+            }
             UserData userData = new UserData(username, registerRequest.password(), registerRequest.email());
             AuthData authData = new AuthData(generateToken(), username);
 
@@ -31,7 +34,17 @@ public class UserService extends ParentService {
         }
     }
 
-    //public LoginResult login(LoginRequest loginRequest) throws DataAccessException{}
+    public LoginResult login(LoginRequest loginRequest) throws DataAccessException{
+        String username = loginRequest.username();
+        if(userDAO.readData(username) == null){
+            throw new Unauthorized("Error: unauthorized");
+        }
+
+        AuthData authData = new AuthData(generateToken(), username);
+        authDAO.createData(authData);
+
+        return new LoginResult(username, authData.authToken());
+    }
     //public void logout(LogoutRequest logoutRequest) throws DataAccessException{}
 
     public static String generateToken() {
