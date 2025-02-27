@@ -8,8 +8,10 @@ import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.requests.LoginRequest;
+import service.requests.LogoutRequest;
 import service.requests.RegisterRequest;
 import service.results.LoginResult;
+import service.results.LogoutResult;
 import service.results.RegisterResult;
 
 import java.util.Collection;
@@ -69,5 +71,17 @@ class UserServiceTest {
 
     @Test
     void logout() {
+        userDAO.createData(new UserData("user1", "pass1", "email1"));
+        LogoutRequest lr = new LogoutRequest("user1", "pass1");
+        LogoutResult lR = uService.logout(lr);
+
+
+        Collection<AuthData> auths = uService.listAuths();
+        assertEquals(1, auths.size());
+        assertTrue(auths.contains(new AuthData(lR.authToken(), "user1")));
+    }
+
+    @Test
+    void logoutBad() {
     }
 }

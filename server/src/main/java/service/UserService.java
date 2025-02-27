@@ -7,6 +7,8 @@ import service.results.LoginResult;
 import service.requests.RegisterRequest;
 import service.results.RegisterResult;
 import service.requests.LogoutRequest;
+
+import java.util.Objects;
 import java.util.UUID;
 
 public class UserService extends ParentService {
@@ -36,7 +38,8 @@ public class UserService extends ParentService {
 
     public LoginResult login(LoginRequest loginRequest) throws DataAccessException{
         String username = loginRequest.username();
-        if(userDAO.readData(username) == null){
+        UserData user = userDAO.readData(username);
+        if(user == null || !Objects.equals(user.password(), loginRequest.password())){
             throw new Unauthorized("Error: unauthorized");
         }
 
@@ -45,7 +48,8 @@ public class UserService extends ParentService {
 
         return new LoginResult(username, authData.authToken());
     }
-    //public void logout(LogoutRequest logoutRequest) throws DataAccessException{}
+
+    public void logout(LogoutRequest logoutRequest) throws DataAccessException{}
 
     public static String generateToken() {
         return UUID.randomUUID().toString();
