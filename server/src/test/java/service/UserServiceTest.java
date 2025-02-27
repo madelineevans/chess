@@ -59,7 +59,12 @@ class UserServiceTest {
     }
 
     @Test
-    void loginBad() {   //user isn't in system
+    void loginBad() throws DataAccessException{   //user isn't in system
+        LoginRequest lr = new LoginRequest("user1", "pass1");
+
+        assertThrows(DataAccessException.class, ()-> {
+            LoginResult lR = uService.login(lr);
+        });
     }
 
     @Test
