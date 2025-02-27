@@ -3,10 +3,13 @@ import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
+import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import service.requests.LoginRequest;
 import service.requests.RegisterRequest;
+import service.results.LoginResult;
 import service.results.RegisterResult;
 
 import java.util.Collection;
@@ -34,7 +37,7 @@ class UserServiceTest {
         assertTrue(users.contains(new UserData("user1", "pass1", "email1")));
     }
     @Test
-    void registerBad() throws DataAccessException{ //already user in there
+    void registerBad(){ //already user in there
         userDAO.createData(new UserData("user1", "pass1", "email1"));
         RegisterRequest rr = new RegisterRequest("user1", "pass1", "email1");
 
@@ -44,7 +47,19 @@ class UserServiceTest {
     }
 
     @Test
-    void login() {
+    void login() throws DataAccessException {  //make sure it's in auth
+        userDAO.createData(new UserData("user1", "pass1", "email1"));
+        LoginRequest lr = new LoginRequest("user1", "pass1");
+        LoginResult lR = uService.login(lr);
+
+
+        Collection<AuthData> auths = uService.listAuths();
+        assertEquals(1, auths.size());
+        assertTrue(auths.contains(new AuthData(lR.authToken(), "user1")));
+    }
+
+    @Test
+    void loginBad() {   //user isn't in system
     }
 
     @Test
