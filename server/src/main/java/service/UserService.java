@@ -5,6 +5,7 @@ import model.UserData;
 import service.requests.LoginRequest;
 import service.results.LoginResult;
 import service.requests.RegisterRequest;
+import service.results.LogoutResult;
 import service.results.RegisterResult;
 import service.requests.LogoutRequest;
 
@@ -49,7 +50,14 @@ public class UserService extends ParentService {
         return new LoginResult(username, authData.authToken());
     }
 
-    public void logout(LogoutRequest logoutRequest) throws DataAccessException{}
+    public LogoutResult logout(LogoutRequest logoutRequest) throws DataAccessException{
+        if(authDAO.readData(logoutRequest.authToken())==null){
+            throw new Unauthorized("Error: unauthorized");
+        }
+
+        authDAO.deleteData(logoutRequest.authToken());
+        return new LogoutResult();
+    }
 
     public static String generateToken() {
         return UUID.randomUUID().toString();

@@ -70,7 +70,7 @@ class UserServiceTest {
     }
 
     @Test
-    void logout() {
+    void logout() throws DataAccessException {
         userDAO.createData(new UserData("user1", "pass1", "email1"));
         LogoutRequest lr = new LogoutRequest("user1", "pass1");
         LogoutResult lR = uService.logout(lr);

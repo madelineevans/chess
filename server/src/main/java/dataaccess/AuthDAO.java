@@ -35,4 +35,9 @@ public class AuthDAO implements DataAccess<AuthData>{
     public Collection<AuthData> listData(){
         return auths.values();
     }
+
+    public void deleteData(String authToken){
+        auths.remove(authToken);
+    }
+
 }
