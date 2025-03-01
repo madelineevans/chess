@@ -19,7 +19,7 @@ public class AuthDAO implements DataAccess<AuthData>{
     public AuthData readData(String authToken) throws DataAccessException{  //find authData by authToken
         AuthData auth = auths.get(authToken);
         if(auth == null){
-            throw new DataAccessException("Auth with authToken " + authToken + " is not found");
+            throw new Unauthorized("Error: unauthorized");
         }
         else{
             return auth;

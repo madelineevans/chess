@@ -4,8 +4,10 @@ import dataaccess.*;
 import service.GameService;
 import service.UserService;
 import service.requests.LoginRequest;
+import service.requests.LogoutRequest;
 import service.requests.RegisterRequest;
 import service.results.LoginResult;
+import service.results.LogoutResult;
 import service.results.RegisterResult;
 import spark.*;
 import java.util.Map;
@@ -33,7 +35,7 @@ public class Server {
         // Register your endpoints and handle exceptions here.
         Spark.post("/user",this::register); //registration
         Spark.post("/session",this::login); //login
-//        Spark.delete("/session",this::logout); //logout
+        Spark.delete("/session",this::logout); //logout
 //        Spark.get("/game",this::listGames); //list games
 //        Spark.post("/game",this::createGames); //create game
 //        Spark.put("/game",this::joinGames); //join game
@@ -53,6 +55,7 @@ public class Server {
 
     private Object register(Request req, Response res) throws DataAccessException {
         try{
+            //RegisterRequest rReq = Integer.parseInt(req.params("auth"));
             RegisterRequest rReq = new Gson().fromJson(req.body(), RegisterRequest.class);
             RegisterResult rRes = us.register(rReq);
             res.status(200);
@@ -74,6 +77,24 @@ public class Server {
         try{
             LoginRequest lReq = new Gson().fromJson(req.body(), LoginRequest.class);
             LoginResult lRes = us.login(lReq);
+            res.status(200);
+            return new Gson().toJson(lRes);
+
+        } catch(DataAccessException e){
+            if(e instanceof Unauthorized){
+                res.status(401); //unauthorized
+            }
+            else{
+                res.status(500); //other error
+            }
+            return new Gson().toJson(Map.of("message", e.getMessage()));
+        }
+    }
+
+    private Object logout(Request req, Response res) throws DataAccessException{
+        try{
+            LogoutRequest lReq = new LogoutRequest(req.headers("Authorization"));
+            LogoutResult lRes = us.logout(lReq);
             res.status(200);
             return new Gson().toJson(lRes);
 

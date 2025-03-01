@@ -15,6 +15,7 @@ import service.results.LogoutResult;
 import service.results.RegisterResult;
 
 import java.util.Collection;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -71,17 +72,24 @@ class UserServiceTest {
 
     @Test
     void logout() throws DataAccessException {
-        userDAO.createData(new UserData("user1", "pass1", "email1"));
-        LogoutRequest lr = new LogoutRequest("user1", "pass1");
+        String authToken = UUID.randomUUID().toString();
+        authDAO.createData(new AuthData(authToken, "user1"));
+        LogoutRequest lr = new LogoutRequest(authToken);
         LogoutResult lR = uService.logout(lr);
 
 
         Collection<AuthData> auths = uService.listAuths();
-        assertEquals(1, auths.size());
-        assertTrue(auths.contains(new AuthData(lR.authToken(), "user1")));
+        assertEquals(0, auths.size());
+        assertFalse(auths.contains(new AuthData(authToken, "user1")));
     }
 
     @Test
-    void logoutBad() {
+    void logoutBad() throws DataAccessException{ //never was logged in
+        String authToken = UUID.randomUUID().toString();
+        LogoutRequest lr = new LogoutRequest(authToken);
+
+        assertThrows(DataAccessException.class, ()-> {
+            LogoutResult lR = uService.logout(lr);
+        });
     }
 }
