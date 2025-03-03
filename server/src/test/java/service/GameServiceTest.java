@@ -12,8 +12,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.requests.CreateRequest;
+import service.requests.ListRequest;
 import service.requests.RegisterRequest;
 import service.results.CreateResult;
+import service.results.ListResult;
 import service.results.RegisterResult;
 
 import java.util.Collection;
@@ -45,7 +47,33 @@ class GameServiceTest {
 //    }
 
     @Test
-    void listGames() {
+    void listGames() throws DataAccessException {
+        GameData game1 = new GameData(1234, "white", "black", "game1", new ChessGame());
+        gameDAO.createData(game1);
+
+        authToken = generateToken();
+        AuthData ad = new AuthData(authToken, "user1");
+        authDAO.createData(ad);
+
+        ListRequest lr = new ListRequest(authToken);
+        ListResult lR = gService.listGames(lr);
+
+        Collection<GameData> games = gService.testListGames();
+        assertEquals(games, lR.games());
+    }
+
+    @Test
+    void listGamesBad() throws DataAccessException {
+        GameData game1 = new GameData(1234, "white", "black", "game1", new ChessGame());
+        gameDAO.createData(game1);
+
+        authToken = generateToken();
+        ListRequest lr = new ListRequest(authToken);
+
+
+        assertThrows(DataAccessException.class, ()-> {
+            ListResult lR = gService.listGames(lr);
+        });
     }
 
     @Test
@@ -56,7 +84,7 @@ class GameServiceTest {
         CreateRequest cr = new CreateRequest(authToken, "game1");
         CreateResult cR = gService.createGame(cr);
 
-        Collection<GameData> games = gService.listGames();
+        Collection<GameData> games = gService.testListGames();
         assertEquals(1, games.size());
         assertTrue(games.stream().anyMatch(game -> game.gameID() == cR.gameID()));
     }

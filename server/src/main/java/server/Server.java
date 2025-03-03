@@ -3,14 +3,8 @@ import com.google.gson.Gson;
 import dataaccess.*;
 import service.GameService;
 import service.UserService;
-import service.requests.CreateRequest;
-import service.requests.LoginRequest;
-import service.requests.LogoutRequest;
-import service.requests.RegisterRequest;
-import service.results.CreateResult;
-import service.results.LoginResult;
-import service.results.LogoutResult;
-import service.results.RegisterResult;
+import service.requests.*;
+import service.results.*;
 import spark.*;
 import java.util.Map;
 
@@ -38,8 +32,8 @@ public class Server {
         Spark.post("/user",this::register); //registration
         Spark.post("/session",this::login); //login
         Spark.delete("/session",this::logout); //logout
-        Spark.post("/game",this::createGame); //create game
         Spark.get("/game",this::listGames); //list games
+        Spark.post("/game",this::createGame); //create game
 //        Spark.put("/game",this::joinGames); //join game
         Spark.delete("/db",this::clear); //clear
 
@@ -103,6 +97,27 @@ public class Server {
         } catch(DataAccessException e){
             if(e instanceof Unauthorized){
                 res.status(401); //unauthorized
+            }
+            else{
+                res.status(500); //other error
+            }
+            return new Gson().toJson(Map.of("message", e.getMessage()));
+        }
+    }
+
+    private Object listGames(Request req, Response res) throws DataAccessException{
+        try{
+//            ListRequest cRe= new Gson().fromJson(req.body(), CreateRequest.class);
+//            String name = cRe.gameName();
+            ListRequest lReq = new ListRequest(req.headers("Authorization"));
+            ListResult lRes = gs.listGames(lReq);
+
+            res.status(200);
+            return new Gson().toJson(lRes);
+
+        } catch(DataAccessException e){
+            if(e instanceof Unauthorized){
+                res.status(401); //already taken
             }
             else{
                 res.status(500); //other error

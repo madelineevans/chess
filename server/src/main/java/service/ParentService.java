@@ -4,6 +4,8 @@ import dataaccess.*;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.Random;
@@ -30,8 +32,9 @@ public class ParentService {
     public Collection<AuthData> listAuths(){
         return authDAO.listData();
     }
-    public Collection<GameData> listGames(){
-        return gameDAO.listData();
+
+    public Collection<GameData> testListGames(){
+        return new ArrayList<>(gameDAO.listData());
     }
 
     public AuthData getAuth(String authToken) throws DataAccessException {

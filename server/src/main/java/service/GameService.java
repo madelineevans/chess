@@ -13,12 +13,21 @@ import service.results.CreateResult;
 import service.results.JoinResult;
 import service.results.ListResult;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class GameService extends ParentService{
     public GameService(UserDAO userDAO, AuthDAO authDAO, GameDAO gameDAO) {
         super(userDAO, authDAO, gameDAO);
     }
-    //public ListResult listGames(ListRequest) throws DataAccessException{}
+
+    public ListResult listGames(ListRequest listRequest) throws DataAccessException{
+        AuthData authData = getAuth(listRequest.authToken());
+        List<GameData> games = new ArrayList<>(gameDAO.listData());
+        return new ListResult(games);
+    }
+
     public CreateResult createGame(CreateRequest createRequest) throws DataAccessException{
         AuthData authData = getAuth(createRequest.authToken());
         int gameID = generateInt();
