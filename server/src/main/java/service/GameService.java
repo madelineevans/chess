@@ -1,8 +1,11 @@
 package service;
+import chess.ChessGame;
 import dataaccess.AuthDAO;
 import dataaccess.UserDAO;
 import dataaccess.GameDAO;
 import dataaccess.DataAccessException;
+import model.AuthData;
+import model.GameData;
 import service.requests.CreateRequest;
 import service.requests.JoinRequest;
 import service.requests.ListRequest;
@@ -16,6 +19,12 @@ public class GameService extends ParentService{
         super(userDAO, authDAO, gameDAO);
     }
     //public ListResult listGames(ListRequest) throws DataAccessException{}
-    //public CreateResult createGame(CreateRequest) throws DataAccessException{}
+    public CreateResult createGame(CreateRequest createRequest) throws DataAccessException{
+        AuthData authData = getAuth(createRequest.authToken());
+        int gameID = generateInt();
+        GameData game = new GameData(gameID, "white", "black", createRequest.gameName(), new ChessGame());
+        gameDAO.createData(game);
+        return new CreateResult(gameID);
+    }
     //public JoinResult joinGame(JoinRequest) throws DataAccessException{}
     }

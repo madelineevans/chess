@@ -51,17 +51,14 @@ public class UserService extends ParentService {
     }
 
     public LogoutResult logout(LogoutRequest logoutRequest) throws DataAccessException{
-        AuthData authToken = authDAO.readData(logoutRequest.authToken());
-        if(logoutRequest == null || logoutRequest.authToken() == null || authToken==null){ // || authDAO.readData(logoutRequest.authToken())==null){
+        getAuth(logoutRequest.authToken());
+        //AuthData authToken = authDAO.readData(logoutRequest.authToken());
+        if(logoutRequest == null || logoutRequest.authToken() == null){// || authToken==null){ // || authDAO.readData(logoutRequest.authToken())==null){
             throw new Unauthorized("Error: unauthorized");
         }
 
         authDAO.deleteData(logoutRequest.authToken());
         return new LogoutResult();
-    }
-
-    public static String generateToken() {
-        return UUID.randomUUID().toString();
     }
 
 }

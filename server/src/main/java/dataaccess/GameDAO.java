@@ -21,7 +21,7 @@ public class GameDAO implements DataAccess<GameData> {
         int gameID = Integer.parseInt(stringID);
         GameData game = games.get(gameID);
         if(game == null){
-            throw new DataAccessException("Game with gameID " + gameID + " is not found");
+            throw new Unauthorized("Error: unauthorized");
         }
         else{
             return game;

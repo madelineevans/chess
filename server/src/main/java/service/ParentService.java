@@ -1,13 +1,12 @@
 package service;
 
-import dataaccess.AuthDAO;
-import dataaccess.GameDAO;
-import dataaccess.UserDAO;
+import dataaccess.*;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
-
 import java.util.Collection;
+import java.util.UUID;
+import java.util.Random;
 
 public class ParentService {
     protected final UserDAO userDAO;
@@ -35,4 +34,18 @@ public class ParentService {
         return gameDAO.listData();
     }
 
+    public AuthData getAuth(String authToken) throws DataAccessException {
+        AuthData authData = authDAO.readData(authToken);
+        if(authData == null){
+            throw new Unauthorized("Error: unauthorized");
+        }
+        return authData;
+    }
+    public static String generateToken() {
+        return UUID.randomUUID().toString();
+    }
+    public static Integer generateInt() {
+        Random random = new Random();
+        return random.nextInt(1000);
+    }
 }
