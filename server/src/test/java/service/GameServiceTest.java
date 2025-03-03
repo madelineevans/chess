@@ -21,6 +21,7 @@ import service.results.ListResult;
 import service.results.RegisterResult;
 
 import java.util.Collection;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static service.ParentService.generateToken;
@@ -102,7 +103,7 @@ class GameServiceTest {
     }
 
     @Test
-    void joinGame() {
+    void joinGame() throws DataAccessException {
         authToken = generateToken();
         AuthData ad = new AuthData(authToken, "user1");
         authDAO.createData(ad);
@@ -110,11 +111,25 @@ class GameServiceTest {
         gameDAO.createData(game);
 
 
-        JoinRequest jr = new JoinRequest("black", 1234);
+        JoinRequest jr = new JoinRequest(authToken, "black", 1234);
         JoinResult jR = gService.joinGame(jr);
 
         Collection<GameData> games = gService.testListGames();
-        assertEquals(1, games.size());
-        assertTrue(games.stream().anyMatch(game -> game.gameID() == cR.gameID()));
+        assertTrue(games.stream().anyMatch(game1 -> (game1.gameID() == jr.gameID() && Objects.equals(game1.blackU(), "user1"))));
+    }
+
+    @Test
+    void joinGameBad() throws DataAccessException {
+        authToken = generateToken();
+        AuthData ad = new AuthData(authToken, "user1");
+        authDAO.createData(ad);
+        GameData game = new GameData(1234, null, "user2", "game1", new ChessGame());
+        gameDAO.createData(game);
+
+
+        JoinRequest jr = new JoinRequest(authToken, "black", 1234);
+        assertThrows(DataAccessException.class, ()-> {
+            JoinResult jR = gService.joinGame(jr);
+        });
     }
 }

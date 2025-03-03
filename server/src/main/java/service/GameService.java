@@ -40,14 +40,18 @@ public class GameService extends ParentService{
             if (game.whiteU() != null) {
                 throw new AlreadyTaken("Error: already taken");
             }
+            else{
+                gameDAO.updateGame(new GameData(game.gameID(), authData.username(), game.blackU(), game.gameName(), game.game()));
+            }
         }
         else{
             if(game.blackU() != null) {
                 throw new AlreadyTaken("Error: already taken");
             }
+            else{
+                gameDAO.updateGame(new GameData(game.gameID(), game.whiteU(), authData.username(), game.gameName(), game.game()));
+            }
         }
-
-        gameDAO.updateGame(game);
         return new JoinResult();
     }
 }
