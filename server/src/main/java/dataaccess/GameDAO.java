@@ -38,8 +38,7 @@ public class GameDAO implements DataAccess<GameData> {
         return games.values();
     }
 
-//    @Override                           Add this when I figure out what form the input is
-//    public Data updateGame(gameData game) {
-//        return null;
-//    }
+    public void updateGame(GameData game,) {
+        return null;
+    }
 }

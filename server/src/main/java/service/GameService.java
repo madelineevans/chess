@@ -35,5 +35,10 @@ public class GameService extends ParentService{
         gameDAO.createData(game);
         return new CreateResult(gameID);
     }
-    //public JoinResult joinGame(JoinRequest) throws DataAccessException{}
+    public JoinResult joinGame(JoinRequest joinRequest) throws DataAccessException{
+        //AuthData authData = getAuth(joinRequest.authToken());
+        GameData game = gameDAO.readData(String.valueOf(joinRequest.gameID()));
+        gameDAO.updateGame();
+
     }
+}

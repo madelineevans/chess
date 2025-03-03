@@ -150,6 +150,33 @@ public class Server {
         }
     }
 
+//    private Object joinGame(Request req, Response res) throws DataAccessException{
+//        try{
+//            JoinRequest jReq= new Gson().fromJson(req.body(), JoinRequest.class);
+//            //String name = jRe.gameName();
+//            //JoinRequest jReq = new JoinRequest(req.headers("Authorization"), name);
+//            JoinResult jRes = gs.joinGame(jReq);
+//
+//            res.status(200);
+//
+//            return new Gson().toJson(jRes);
+//        } catch(DataAccessException e){
+//            if(e instanceof BadRequest){
+//                res.status(400); //bad request
+//            }
+//            else if(e instanceof Unauthorized){
+//                res.status(401); //
+//            }
+//            else if(e instanceof AlreadyTaken){
+//                res.status(403); //already taken
+//            }
+//            else{
+//                res.status(500); //other error
+//            }
+//            return new Gson().toJson(Map.of("message", e.getMessage()));
+//        }
+//    }
+
     private Object clear(Request req, Response res) throws DataAccessException{
         try{
             us.clear();

@@ -12,9 +12,11 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.requests.CreateRequest;
+import service.requests.JoinRequest;
 import service.requests.ListRequest;
 import service.requests.RegisterRequest;
 import service.results.CreateResult;
+import service.results.JoinResult;
 import service.results.ListResult;
 import service.results.RegisterResult;
 
@@ -101,5 +103,18 @@ class GameServiceTest {
 
     @Test
     void joinGame() {
+        authToken = generateToken();
+        AuthData ad = new AuthData(authToken, "user1");
+        authDAO.createData(ad);
+        GameData game = new GameData(1234, "game1");
+        gameDAO.createData(game);
+
+
+        JoinRequest jr = new JoinRequest("black", 1234);
+        JoinResult jR = gService.joinGame(jr);
+
+        Collection<GameData> games = gService.testListGames();
+        assertEquals(1, games.size());
+        assertTrue(games.stream().anyMatch(game -> game.gameID() == cR.gameID()));
     }
 }
