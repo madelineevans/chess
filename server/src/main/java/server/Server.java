@@ -38,8 +38,8 @@ public class Server {
         Spark.post("/user",this::register); //registration
         Spark.post("/session",this::login); //login
         Spark.delete("/session",this::logout); //logout
-        //Spark.post("/game",this::createGame); //create game
-//        Spark.get("/game",this::listGames); //list games
+        Spark.post("/game",this::createGame); //create game
+        Spark.get("/game",this::listGames); //list games
 //        Spark.put("/game",this::joinGames); //join game
         Spark.delete("/db",this::clear); //clear
 
@@ -111,25 +111,29 @@ public class Server {
         }
     }
 
-//    private Object createGame(Request req, Response res) throws DataAccessException{
-//        try{
-//            CreateRequest cReq = new Gson().fromJson(req.body(), CreateRequest.class);
-//            CreateResult cRes = gs.createGame(cReq);
-//            res.status(200);
-//            return new Gson().toJson(cRes);
-//        } catch(DataAccessException e){
-//            if(e instanceof BadRequest){
-//                res.status(400); //bad request
-//            }
-//            else if(e instanceof Unauthorized){
-//                res.status(401); //already taken
-//            }
-//            else{
-//                res.status(500); //other error
-//            }
-//            return new Gson().toJson(Map.of("message", e.getMessage()));
-//        }
-//    }
+    private Object createGame(Request req, Response res) throws DataAccessException{
+        try{
+            CreateRequest cRe= new Gson().fromJson(req.body(), CreateRequest.class);
+            String name = cRe.gameName();
+            CreateRequest cReq = new CreateRequest(req.headers("Authorization"), name);
+            CreateResult cRes = gs.createGame(cReq);
+
+            res.status(200);
+
+            return new Gson().toJson(cRes);
+        } catch(DataAccessException e){
+            if(e instanceof BadRequest){
+                res.status(400); //bad request
+            }
+            else if(e instanceof Unauthorized){
+                res.status(401); //already taken
+            }
+            else{
+                res.status(500); //other error
+            }
+            return new Gson().toJson(Map.of("message", e.getMessage()));
+        }
+    }
 
     private Object clear(Request req, Response res) throws DataAccessException{
         try{
