@@ -1,9 +1,6 @@
 package service;
 import chess.ChessGame;
-import dataaccess.AuthDAO;
-import dataaccess.UserDAO;
-import dataaccess.GameDAO;
-import dataaccess.DataAccessException;
+import dataaccess.*;
 import model.AuthData;
 import model.GameData;
 import service.requests.CreateRequest;
@@ -15,6 +12,7 @@ import service.results.ListResult;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 public class GameService extends ParentService{
@@ -36,9 +34,20 @@ public class GameService extends ParentService{
         return new CreateResult(gameID);
     }
     public JoinResult joinGame(JoinRequest joinRequest) throws DataAccessException{
-        //AuthData authData = getAuth(joinRequest.authToken());
+        AuthData authData = getAuth(joinRequest.authToken());
         GameData game = gameDAO.readData(String.valueOf(joinRequest.gameID()));
-        gameDAO.updateGame();
+        if(Objects.equals(joinRequest.playerColor(), "white")) {
+            if (game.whiteU() != null) {
+                throw new AlreadyTaken("Error: already taken");
+            }
+        }
+        else{
+            if(game.blackU() != null) {
+                throw new AlreadyTaken("Error: already taken");
+            }
+        }
 
+        gameDAO.updateGame(game);
+        return new JoinResult();
     }
 }

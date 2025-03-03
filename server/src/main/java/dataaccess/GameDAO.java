@@ -38,7 +38,8 @@ public class GameDAO implements DataAccess<GameData> {
         return games.values();
     }
 
-    public void updateGame(GameData game,) {
-        return null;
+    public void updateGame(GameData game) {
+        games.remove(game.gameID());
+        games.put(game.gameID(), game);
     }
 }

@@ -1,4 +1,4 @@
 package service.requests;
 
-public record JoinRequest(String playerColor, int gameID) {
+public record JoinRequest(String authToken, String playerColor, int gameID) {
 }
