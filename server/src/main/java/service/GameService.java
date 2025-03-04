@@ -33,31 +33,35 @@ public class GameService extends ParentService{
         gameDAO.createData(game);
         return new CreateResult(gameID);
     }
+
     public JoinResult joinGame(JoinRequest joinRequest) throws DataAccessException{
         AuthData authData = getAuth(joinRequest.authToken());
         GameData game = gameDAO.readData(String.valueOf(joinRequest.gameID()));
+
         if(game == null){
             throw  new BadRequest("Error: bad request");
         }
-        if(Objects.equals(joinRequest.playerColor(), "WHITE")) {
+
+        GameData updatedGame;
+        if(joinRequest.playerColor() == ChessGame.TeamColor.WHITE) {
             if (!Objects.equals(game.whiteU(), "none")) {
                 throw new AlreadyTaken("Error: already taken");
             }
-            else{
-                gameDAO.updateGame(new GameData(game.gameID(), authData.username(), game.blackU(), game.gameName(), game.game()));
-            }
+            updatedGame = new GameData(game.gameID(), authData.username(), game.blackU(), game.gameName(), game.game());
+            //gameDAO.updateGame(new GameData(game.gameID(), authData.username(), game.blackU(), game.gameName(), game.game()));
         }
-        else if(Objects.equals(joinRequest.playerColor(), "BLACK")){
+        else if(joinRequest.playerColor() == ChessGame.TeamColor.BLACK){
             if(!Objects.equals(game.blackU(), "none")) {
                 throw new AlreadyTaken("Error: already taken");
             }
-            else{
-                gameDAO.updateGame(new GameData(game.gameID(), game.whiteU(), authData.username(), game.gameName(), game.game()));
-            }
+            updatedGame = new GameData(game.gameID(), game.whiteU(), authData.username(), game.gameName(), game.game());
+            //gameDAO.updateGame(new GameData(game.gameID(), game.whiteU(), authData.username(), game.gameName(), game.game()));
         }
         else{
             throw new BadRequest("Error: bad request");
         }
+
+        gameDAO.updateGame(updatedGame);
         return new JoinResult();
     }
 }

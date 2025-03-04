@@ -52,11 +52,6 @@ public class UserService extends ParentService {
 
     public LogoutResult logout(LogoutRequest logoutRequest) throws DataAccessException{
         getAuth(logoutRequest.authToken());
-        //AuthData authToken = authDAO.readData(logoutRequest.authToken());
-        if(logoutRequest == null || logoutRequest.authToken() == null){
-            throw new Unauthorized("Error: unauthorized");
-        }
-
         authDAO.deleteData(logoutRequest.authToken());
         return new LogoutResult();
     }

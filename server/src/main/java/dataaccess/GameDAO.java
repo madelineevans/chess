@@ -1,10 +1,6 @@
 package dataaccess;
 
-import chess.ChessGame;
-import model.Data;
 import model.GameData;
-import model.UserData;
-
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -39,7 +35,6 @@ public class GameDAO implements DataAccess<GameData> {
     }
 
     public void updateGame(GameData game) {
-        //games.remove(game.gameID());
         games.put(game.gameID(), game);
     }
 }

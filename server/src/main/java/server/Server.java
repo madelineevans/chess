@@ -21,9 +21,6 @@ public class Server {
         this.gs = new GameService(userDAO, authDAO, gameDAO);
     }
 
-//    public Server(UserService userService, GameService gameService) {
-//    }
-
     public int run(int desiredPort) {
         Spark.port(desiredPort);
         Spark.staticFiles.location("web");
@@ -106,8 +103,6 @@ public class Server {
 
     private Object listGames(Request req, Response res) throws DataAccessException{
         try{
-//            ListRequest cRe= new Gson().fromJson(req.body(), CreateRequest.class);
-//            String name = cRe.gameName();
             ListRequest lReq = new ListRequest(req.headers("Authorization"));
             ListResult lRes = gs.listGames(lReq);
 
