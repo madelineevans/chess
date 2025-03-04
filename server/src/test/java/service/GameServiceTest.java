@@ -30,7 +30,6 @@ class GameServiceTest {
     static UserDAO userDAO = new UserDAO();
     static AuthDAO authDAO = new AuthDAO();
     static GameDAO gameDAO = new GameDAO();
-    //UserService uService = new UserService(userDAO, authDAO, gameDAO);
     static GameService gService = new GameService(userDAO, authDAO, gameDAO);
 
     static String authToken;
@@ -39,15 +38,6 @@ class GameServiceTest {
     void clear(){
         gService.clear();
     }
-
-//    @BeforeAll
-//    static void setUp() throws DataAccessException {
-//        authToken = generateToken();
-//        AuthData ad = new AuthData(authToken, "user1");
-//        authDAO.createData(ad);
-////        RegisterRequest rr = new RegisterRequest("user1", "pass1", "email1");
-////        RegisterResult rR = uService.register(rr);
-//    }
 
     @Test
     void listGames() throws DataAccessException {
