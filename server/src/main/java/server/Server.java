@@ -49,6 +49,16 @@ public class Server {
         Spark.awaitStop();
     }
 
+    private Object handleException(Response res, DataAccessException e){
+        if(e instanceof Unauthorized){
+            res.status(401);
+        }
+        else{
+            res.status(500);
+        }
+        return new Gson().toJson(Map.of("message", e.getMessage()));
+    }
+
     private Object register(Request req, Response res) throws DataAccessException {
         try{
             //RegisterRequest rReq = Integer.parseInt(req.params("auth"));
@@ -69,6 +79,7 @@ public class Server {
             return new Gson().toJson(Map.of("message", e.getMessage()));
         }
     }
+
     private Object login(Request req, Response res) throws DataAccessException {
         try{
             LoginRequest lReq = new Gson().fromJson(req.body(), LoginRequest.class);
@@ -77,13 +88,7 @@ public class Server {
             return new Gson().toJson(lRes);
 
         } catch(DataAccessException e){
-            if(e instanceof Unauthorized){
-                res.status(401); //unauthorized
-            }
-            else{
-                res.status(500); //other error
-            }
-            return new Gson().toJson(Map.of("message", e.getMessage()));
+            return handleException(res, e);
         }
     }
 
@@ -95,13 +100,7 @@ public class Server {
             return new Gson().toJson(lRes);
 
         } catch(DataAccessException e){
-            if(e instanceof Unauthorized){
-                res.status(401); //unauthorized
-            }
-            else{
-                res.status(500); //other error
-            }
-            return new Gson().toJson(Map.of("message", e.getMessage()));
+            return handleException(res, e);
         }
     }
 
@@ -116,13 +115,7 @@ public class Server {
             return new Gson().toJson(lRes);
 
         } catch(DataAccessException e){
-            if(e instanceof Unauthorized){
-                res.status(401); //already taken
-            }
-            else{
-                res.status(500); //other error
-            }
-            return new Gson().toJson(Map.of("message", e.getMessage()));
+            return handleException(res, e);
         }
     }
 
