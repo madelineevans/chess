@@ -21,7 +21,7 @@ public class GameDAO implements DataAccess<GameData> {
         int gameID = Integer.parseInt(stringID);
         GameData game = games.get(gameID);
         if(game == null){
-            throw new Unauthorized("Error: unauthorized");
+            throw new BadRequest("Error: bad request");
         }
         else{
             return game;
@@ -39,7 +39,7 @@ public class GameDAO implements DataAccess<GameData> {
     }
 
     public void updateGame(GameData game) {
-        games.remove(game.gameID());
+        //games.remove(game.gameID());
         games.put(game.gameID(), game);
     }
 }

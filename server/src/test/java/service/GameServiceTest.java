@@ -111,7 +111,7 @@ class GameServiceTest {
         gameDAO.createData(game);
 
 
-        JoinRequest jr = new JoinRequest(authToken, "black", 1234);
+        JoinRequest jr = new JoinRequest(authToken, "BLACK", 1234);
         JoinResult jR = gService.joinGame(jr);
 
         Collection<GameData> games = gService.testListGames();
@@ -127,7 +127,7 @@ class GameServiceTest {
         gameDAO.createData(game);
 
 
-        JoinRequest jr = new JoinRequest(authToken, "black", 1234);
+        JoinRequest jr = new JoinRequest(authToken, "BLACK", 1234);
         assertThrows(DataAccessException.class, ()-> {
             JoinResult jR = gService.joinGame(jr);
         });
