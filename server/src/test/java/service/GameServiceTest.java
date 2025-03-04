@@ -7,18 +7,14 @@ import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import model.AuthData;
 import model.GameData;
-import model.UserData;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.requests.CreateRequest;
 import service.requests.JoinRequest;
 import service.requests.ListRequest;
-import service.requests.RegisterRequest;
 import service.results.CreateResult;
 import service.results.JoinResult;
 import service.results.ListResult;
-import service.results.RegisterResult;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -105,7 +101,7 @@ class GameServiceTest {
         JoinResult jR = gService.joinGame(jr);
 
         Collection<GameData> games = gService.testListGames();
-        assertTrue(games.stream().anyMatch(game1 -> (game1.gameID() == jr.gameID() && Objects.equals(game1.blackU(), "user1"))));
+        assertTrue(games.stream().anyMatch(game1 -> (game1.gameID() == jr.gameID() && Objects.equals(game1.blackUsername(), "user1"))));
     }
 
     @Test
@@ -113,7 +109,7 @@ class GameServiceTest {
         authToken = generateToken();
         AuthData ad = new AuthData(authToken, "user1");
         authDAO.createData(ad);
-        GameData game = new GameData(1234, "none", "user2", "game1", new ChessGame());
+        GameData game = new GameData(1234, null, "user2", "game1", new ChessGame());
         gameDAO.createData(game);
 
 

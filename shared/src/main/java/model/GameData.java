@@ -2,10 +2,10 @@ package model;
 
 import chess.ChessGame;
 
-public record GameData(int gameID, String whiteU, String blackU, String gameName, ChessGame game) implements Data{
+public record GameData(int gameID, String whiteUsername, String blackUsername, String gameName, ChessGame game) implements Data{
 
     public GameData(int gameID, String gameName){
-        this(gameID, "none", "none", gameName, new ChessGame());
+        this(gameID, null, null, gameName, new ChessGame());
     }
 
     public int returnID(){
@@ -18,8 +18,8 @@ public record GameData(int gameID, String whiteU, String blackU, String gameName
         if (obj == null || getClass() != obj.getClass()) {return false;}
         GameData gameData = (GameData) obj;
         return (gameID == gameData.gameID) &&
-                whiteU.equals(gameData.whiteU) &&
-                blackU.equals(gameData.blackU) &&
+                whiteUsername.equals(gameData.whiteUsername) &&
+                blackUsername.equals(gameData.blackUsername) &&
                 gameName.equals(gameData.gameName) &&
                 game.equals(gameData.game);
     }

@@ -29,7 +29,7 @@ public class GameService extends ParentService{
     public CreateResult createGame(CreateRequest createRequest) throws DataAccessException{
         AuthData authData = getAuth(createRequest.authToken());
         int gameID = generateInt();
-        GameData game = new GameData(gameID, "none", "none", createRequest.gameName(), new ChessGame());
+        GameData game = new GameData(gameID, createRequest.gameName());
         gameDAO.createData(game);
         return new CreateResult(gameID);
     }
@@ -44,18 +44,16 @@ public class GameService extends ParentService{
 
         GameData updatedGame;
         if(joinRequest.playerColor() == ChessGame.TeamColor.WHITE) {
-            if (!Objects.equals(game.whiteU(), "none")) {
+            if (game.whiteUsername() != null) {
                 throw new AlreadyTaken("Error: already taken");
             }
-            updatedGame = new GameData(game.gameID(), authData.username(), game.blackU(), game.gameName(), game.game());
-            //gameDAO.updateGame(new GameData(game.gameID(), authData.username(), game.blackU(), game.gameName(), game.game()));
+            updatedGame = new GameData(game.gameID(), authData.username(), game.blackUsername(), game.gameName(), game.game());
         }
         else if(joinRequest.playerColor() == ChessGame.TeamColor.BLACK){
-            if(!Objects.equals(game.blackU(), "none")) {
+            if(game.blackUsername() != null) {
                 throw new AlreadyTaken("Error: already taken");
             }
-            updatedGame = new GameData(game.gameID(), game.whiteU(), authData.username(), game.gameName(), game.game());
-            //gameDAO.updateGame(new GameData(game.gameID(), game.whiteU(), authData.username(), game.gameName(), game.game()));
+            updatedGame = new GameData(game.gameID(), game.whiteUsername(), authData.username(), game.gameName(), game.game());
         }
         else{
             throw new BadRequest("Error: bad request");
