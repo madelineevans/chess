@@ -51,7 +51,7 @@ class GameServiceTest {
 
     @Test
     void listGames() throws DataAccessException {
-        GameData game1 = new GameData(1234, "white", "black", "game1", new ChessGame());
+        GameData game1 = new GameData(1234, "game1");
         gameDAO.createData(game1);
 
         authToken = generateToken();
@@ -67,7 +67,7 @@ class GameServiceTest {
 
     @Test
     void listGamesBad() throws DataAccessException {
-        GameData game1 = new GameData(1234, "white", "black", "game1", new ChessGame());
+        GameData game1 = new GameData(1234, "game1");
         gameDAO.createData(game1);
 
         authToken = generateToken();
@@ -123,7 +123,7 @@ class GameServiceTest {
         authToken = generateToken();
         AuthData ad = new AuthData(authToken, "user1");
         authDAO.createData(ad);
-        GameData game = new GameData(1234, null, "user2", "game1", new ChessGame());
+        GameData game = new GameData(1234, "none", "user2", "game1", new ChessGame());
         gameDAO.createData(game);
 
 

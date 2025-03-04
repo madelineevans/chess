@@ -20,7 +20,7 @@ public class UserService extends ParentService {
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
         String username = registerRequest.username();
 
-        if(userDAO.readData(username) != null){
+        if(userDAO.exists(username)){
             throw new AlreadyTaken("Error: already taken");
         }
         else{

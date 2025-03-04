@@ -37,6 +37,5 @@ class ParentServiceTest {
         assertThrows(DataAccessException.class, () -> userDAO.readData("exUsername"));
         assertThrows(DataAccessException.class, () -> authDAO.readData("1234"));
         assertThrows(DataAccessException.class, () -> gameDAO.readData("1"));
-
     }
 }

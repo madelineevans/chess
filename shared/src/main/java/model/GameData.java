@@ -5,7 +5,7 @@ import chess.ChessGame;
 public record GameData(int gameID, String whiteU, String blackU, String gameName, ChessGame game) implements Data{
 
     public GameData(int gameID, String gameName){
-        this(gameID, "none", "null", gameName, new ChessGame());
+        this(gameID, "none", "none", gameName, new ChessGame());
     }
 
     public int returnID(){
