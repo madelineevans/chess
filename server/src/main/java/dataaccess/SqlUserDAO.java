@@ -19,6 +19,7 @@ public class SqlUserDAO implements DataAccessSQL<UserData> {
         var id = executeUpdate(statement, user.username(), user.password(), user.email(), json);
     }
 
+    @Override
     public UserData readData(String username) throws DataAccessException { //find data by username
         try(var conn = DatabaseManager.getConnection()){
             var statement = "SELECT username, json FROM user WHERE username=?";
@@ -58,6 +59,20 @@ public class SqlUserDAO implements DataAccessSQL<UserData> {
             throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
         }
         return result;
+    }
+
+    public boolean exists(String username) throws DataAccessException{
+        var statement = "SELECT 1 FROM user WHERE username = ?";
+        try (var conn = DatabaseManager.getConnection()){
+            try(var ps = conn.prepareStatement(statement)){
+                ps.setString(1, username);
+                try (var rs = ps.executeQuery()){
+                    return rs.next();
+                }
+            }
+        } catch (SQLException e){
+            throw new DataAccessException(String.format("Unable to check exists: %s", e.getMessage()));
+        }
     }
 
     private UserData readUser(ResultSet rs) throws SQLException{
