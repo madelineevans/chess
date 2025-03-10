@@ -1,13 +1,15 @@
-package dataaccess;
+package dataaccess.memory;
 
+import dataaccess.DataAccess;
+import dataaccess.exceptions.DataAccessException;
+import dataaccess.exceptions.Unauthorized;
 import model.AuthData;
-import model.UserData;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AuthDAO implements DataAccess<AuthData>{
+public class AuthDAO implements DataAccess<AuthData> {
     final private Map<String, AuthData> auths = new HashMap<>();
 
     @Override
@@ -16,7 +18,7 @@ public class AuthDAO implements DataAccess<AuthData>{
     }
 
     @Override
-    public AuthData readData(String authToken) throws DataAccessException{  //find authData by authToken
+    public AuthData readData(String authToken) throws DataAccessException {  //find authData by authToken
         AuthData auth = auths.get(authToken);
         if(auth == null){
             throw new Unauthorized("Error: unauthorized");

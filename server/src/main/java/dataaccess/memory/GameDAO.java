@@ -1,5 +1,8 @@
-package dataaccess;
+package dataaccess.memory;
 
+import dataaccess.DataAccess;
+import dataaccess.exceptions.BadRequest;
+import dataaccess.exceptions.DataAccessException;
 import model.GameData;
 import java.util.Collection;
 import java.util.HashMap;
@@ -13,7 +16,7 @@ public class GameDAO implements DataAccess<GameData> {
     }
 
     @Override
-    public GameData readData(String stringID) throws DataAccessException{  //find a game by a STRING gameID
+    public GameData readData(String stringID) throws DataAccessException {  //find a game by a STRING gameID
         int gameID = Integer.parseInt(stringID);
         GameData game = games.get(gameID);
         if(game == null){

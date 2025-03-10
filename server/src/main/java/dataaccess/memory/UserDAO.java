@@ -1,4 +1,7 @@
-package dataaccess;
+package dataaccess.memory;
+import dataaccess.DataAccess;
+import dataaccess.exceptions.DataAccessException;
+import dataaccess.exceptions.Unauthorized;
 import model.UserData;
 
 import java.util.Collection;
@@ -14,7 +17,7 @@ public class UserDAO implements DataAccess<UserData> {
     }
 
     @Override
-    public UserData readData(String username) throws DataAccessException{ //find data by username
+    public UserData readData(String username) throws DataAccessException { //find data by username
         UserData user = users.get(username);
         if(user == null){
             throw new Unauthorized("Error: unauthorized");

@@ -1,6 +1,11 @@
 package service;
 import chess.ChessGame;
-import dataaccess.*;
+import dataaccess.exceptions.AlreadyTaken;
+import dataaccess.exceptions.BadRequest;
+import dataaccess.exceptions.DataAccessException;
+import dataaccess.memory.AuthDAO;
+import dataaccess.memory.GameDAO;
+import dataaccess.memory.UserDAO;
 import model.AuthData;
 import model.GameData;
 import service.requests.CreateRequest;
@@ -12,7 +17,6 @@ import service.results.ListResult;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 
 public class GameService extends ParentService{
@@ -20,7 +24,7 @@ public class GameService extends ParentService{
         super(userDAO, authDAO, gameDAO);
     }
 
-    public ListResult listGames(ListRequest listRequest) throws DataAccessException{
+    public ListResult listGames(ListRequest listRequest) throws DataAccessException {
         AuthData authData = getAuth(listRequest.authToken());
         List<GameData> games = new ArrayList<>(gameDAO.listData());
         return new ListResult(games);

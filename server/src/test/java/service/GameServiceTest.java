@@ -1,10 +1,10 @@
 package service;
 
 import chess.ChessGame;
-import dataaccess.AuthDAO;
-import dataaccess.DataAccessException;
-import dataaccess.GameDAO;
-import dataaccess.UserDAO;
+import dataaccess.memory.AuthDAO;
+import dataaccess.exceptions.DataAccessException;
+import dataaccess.memory.GameDAO;
+import dataaccess.memory.UserDAO;
 import model.AuthData;
 import model.GameData;
 import org.junit.jupiter.api.BeforeEach;

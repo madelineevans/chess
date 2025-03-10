@@ -1,6 +1,10 @@
 package service;
 
-import dataaccess.*;
+import dataaccess.exceptions.DataAccessException;
+import dataaccess.exceptions.Unauthorized;
+import dataaccess.memory.AuthDAO;
+import dataaccess.memory.GameDAO;
+import dataaccess.memory.UserDAO;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
