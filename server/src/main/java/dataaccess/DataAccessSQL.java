@@ -1,13 +1,12 @@
 package dataaccess;
-
 import dataaccess.exceptions.DataAccessException;
+import model.Data;
 
 import java.sql.SQLException;
-
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
 
-public interface DataAccessSQL extends DataAccess{
+public interface DataAccessSQL<T extends Data> extends DataAccess<T> {
 
     default int executeUpdate(String statement, Object... params) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()){
@@ -45,5 +44,4 @@ public interface DataAccessSQL extends DataAccess{
             throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
         }
     }
-
 }

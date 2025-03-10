@@ -1,7 +1,6 @@
 package dataaccess;
 import dataaccess.exceptions.DataAccessException;
 import model.Data;
-
 import java.util.Collection;
 
 public interface DataAccess< T extends Data> {

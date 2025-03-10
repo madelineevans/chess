@@ -1,18 +1,13 @@
 package dataaccess;
 
 import com.google.gson.Gson;
-import dataaccess.exceptions.BadRequest;
 import dataaccess.exceptions.DataAccessException;
 import model.GameData;
-import model.UserData;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
-import static java.sql.Types.NULL;
 
 public class SqlGameDAO implements DataAccessSQL<GameData> {
 
@@ -27,7 +22,8 @@ public class SqlGameDAO implements DataAccessSQL<GameData> {
         var id = executeUpdate(statement, game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), game.game(), json);
     }
 
-    public UserData readData(String stringID) throws DataAccessException {
+    @Override
+    public GameData readData(String stringID) throws DataAccessException {
         int gameID = Integer.parseInt(stringID);
         try(var conn = DatabaseManager.getConnection()){
             var statement = "SELECT gameID, json FROM game WHERE gameID=?";
@@ -52,14 +48,14 @@ public class SqlGameDAO implements DataAccessSQL<GameData> {
     }
 
     @Override
-    public Collection<UserData> listData() throws DataAccessException {
-        var result = new ArrayList<UserData>();
+    public Collection<GameData> listData() throws DataAccessException {
+        var result = new ArrayList<GameData>();
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT username, json FROM user";
+            var statement = "SELECT gameID, json FROM game";
             try (var ps = conn.prepareStatement(statement)) {
                 try (var rs = ps.executeQuery()) {
                     while (rs.next()) {
-                        result.add(readUser(rs));
+                        result.add(readGame(rs));
                     }
                 }
             }
@@ -69,8 +65,22 @@ public class SqlGameDAO implements DataAccessSQL<GameData> {
         return result;
     }
 
-//    public boolean exists(String username) {
-//        return users.containsKey(username);
+//    public void updateGame(GameData game) {
+//        try ( var conn = DatabaseManager.getConnection()) {
+//            var statement = "UPDATE game SET ____ WHERE gameID = ?"
+//            try (var ps = conn.prepareStatement(statement)){
+//                ps.setInt(1, game.gameID());
+//                try (var rs = ps.executeQuery()){
+//                    if (rs.next()){
+//                        return readGame(rs);
+//                    }
+//                }
+//            }
+//        } catch (Exception e){
+//            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+//        }
+//            games.put(game.gameID(), game);
+//        }
 //    }
 
     private GameData readGame(ResultSet rs) throws SQLException {
