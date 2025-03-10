@@ -1,35 +1,89 @@
 package dataaccess;
+import com.google.gson.Gson;
 import dataaccess.exceptions.DataAccessException;
+import dataaccess.exceptions.Unauthorized;
 import model.Data;
-
+import model.UserData;
 import java.util.Collection;
 import java.sql.*;
 import java.util.List;
 
-public class SqlUserDAO implements DataAccess {
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
+import static java.sql.Types.NULL;
+
+public class SqlUserDAO implements DataAccess<UserData> {
 
     public SqlUserDAO() throws DataAccessException{
         configureDatabase();
     }
 
     @Override
-    public void createData(Data data) {
-
+    public void createData(UserData user) throws DataAccessException {
+        var statement = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
+        var json = new Gson().toJson(user);
+        var id = executeUpdate(statement, user.username(), user.password(), user.email(), json);
     }
 
-    @Override
-    public Data readData(String id) throws DataAccessException {
+    public UserData readData(String username) throws DataAccessException { //find data by username
+        try(var conn = DatabaseManager.getConnection()){
+            var statement = "SELECT username, json FROM user WHERE username=?";
+            try (var ps = conn.prepareStatement(statement)){
+                ps.setString(1, username);
+                try (var rs = ps.executeQuery()){
+                    if (rs.next()){
+                        return readUser(rs);
+                    }
+                }
+            }
+        } catch (Exception e){
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        }
         return null;
     }
 
     @Override
-    public void deleteAllData() {
-
+    public void deleteAllData(){
+        users.clear();
     }
 
     @Override
-    public Collection listData() {
-        return List.of();
+    public Collection<UserData> listData(){
+        return users.values();
+    }
+
+    public boolean exists(String username) {
+        return users.containsKey(username);
+    }
+
+    private UserData readUser(ResultSet rs) throws SQLException{
+        var username = rs.getString("username");
+        var json = rs.getString("json");
+        var user = new Gson().fromJson(json, UserData.class);
+        return user.setUsername(username);
+    }
+
+    private int executeUpdate(String statement, Object... params) throws DataAccessException{
+        try (var conn = DatabaseManager.getConnection()){
+            try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)){
+                for (var i = 0; i < params.length; i++) {
+                    var param = params[i];
+                    if (param instanceof String p) ps.setString(i+1, p);
+                    else if (param instanceof Integer p) ps.setInt(i + 1, p);
+                    //else if (param instanceof PetType p) ps.setString(i + 1, p.toString());
+                    else if (param == null) ps.setNull(i + 1, NULL);
+                }
+                ps.executeUpdate();
+
+                var rs = ps.getGeneratedKeys();
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+
+                return 0;
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));
+        }
     }
 
     private final String[] createStatements = {

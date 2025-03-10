@@ -10,6 +10,9 @@ public record UserData(String username, String password, String email) implement
                 password.equals(userData.password) &&
                 email.equals(userData.email);
     }
+    public UserData setUsername(String username){
+        return new UserData(username, this.password, this.email);
+    }
 }
 
 
