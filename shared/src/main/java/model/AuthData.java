@@ -9,4 +9,8 @@ public record AuthData(String authToken, String username) implements Data{
         return authToken.equals(authData.authToken) &&
                 username.equals(authData.username);
     }
+
+    public AuthData setAuthToken(String authToken){
+        return new AuthData(authToken, this.username);
+    }
 }

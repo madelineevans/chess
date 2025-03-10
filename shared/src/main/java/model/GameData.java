@@ -23,4 +23,9 @@ public record GameData(int gameID, String whiteUsername, String blackUsername, S
                 gameName.equals(gameData.gameName) &&
                 game.equals(gameData.game);
     }
+
+    public GameData setGameID(int gameID){
+        return new GameData(gameID, this.whiteUsername, this.blackUsername, this.gameName, this.game);
+    }
+
 }
