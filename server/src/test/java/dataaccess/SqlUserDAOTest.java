@@ -83,7 +83,8 @@ class SqlUserDAOTest {
     }
 
     @Test
-    void listDataBad() {
+    void listDataBad() { //if nothing to list??
+        assertThrows(DataAccessException.class, ()-> db.listData());
     }
 
     @Test

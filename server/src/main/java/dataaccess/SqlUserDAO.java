@@ -1,6 +1,7 @@
 package dataaccess;
 import com.google.gson.Gson;
 import dataaccess.exceptions.AlreadyTaken;
+import dataaccess.exceptions.BadRequest;
 import dataaccess.exceptions.DataAccessException;
 import dataaccess.exceptions.Unauthorized;
 import model.UserData;
@@ -66,7 +67,10 @@ public class SqlUserDAO implements DataAccessSQL<UserData> {
             var statement = "SELECT username, password, email FROM user";
             try (var ps = conn.prepareStatement(statement)) {
                 try (var rs = ps.executeQuery()) {
-                    while (rs.next()) {
+                    if(rs.getInt(1)==0) {
+                        throw new BadRequest("Error: nothing to list");
+                    }
+                while (rs.next()) {
                         result.add(readUser(rs));
                     }
                 }
