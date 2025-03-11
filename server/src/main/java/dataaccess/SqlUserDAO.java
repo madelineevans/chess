@@ -63,14 +63,14 @@ public class SqlUserDAO implements DataAccessSQL<UserData> {
     @Override
     public Collection<UserData> listData() throws DataAccessException {
         var result = new ArrayList<UserData>();
-        try (var conn = DatabaseManager.getConnection()) {
+        try(var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT username, password, email FROM user";
-            try (var ps = conn.prepareStatement(statement)) {
-                try (var rs = ps.executeQuery()) {
-                    if(rs.getInt(1)==0) {
-                        throw new BadRequest("Error: nothing to list");
+            try(var ps = conn.prepareStatement(statement)) {
+                try(var rs = ps.executeQuery()) {
+                    if(!rs.isBeforeFirst()) {
+                        throw new BadRequest("Error: list is empty");
                     }
-                while (rs.next()) {
+                    while(rs.next()) {
                         result.add(readUser(rs));
                     }
                 }
@@ -83,10 +83,13 @@ public class SqlUserDAO implements DataAccessSQL<UserData> {
 
     public boolean exists(String username) throws DataAccessException{
         var statement = "SELECT 1 FROM user WHERE username = ?";
-        try (var conn = DatabaseManager.getConnection()){
+        try(var conn = DatabaseManager.getConnection()){
             try(var ps = conn.prepareStatement(statement)){
                 ps.setString(1, username);
-                try (var rs = ps.executeQuery()){
+                try(var rs = ps.executeQuery()){
+                    if(!rs.isBeforeFirst()) {
+                        throw new BadRequest("Error: Not found");
+                    }
                     return rs.next();
                 }
             }

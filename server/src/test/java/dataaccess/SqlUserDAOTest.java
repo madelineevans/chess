@@ -15,7 +15,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SqlUserDAOTest {
-    private DataAccess<UserData> db;
+    private SqlUserDAO db;
 
     @BeforeEach
     void setup() throws DataAccessException {
@@ -56,8 +56,7 @@ class SqlUserDAOTest {
         assertDoesNotThrow(()-> db.createData(new UserData("bobby", "b0brulz2", "bobbyBOB")));
         assertDoesNotThrow(()-> db.deleteAllData());
 
-        var actual = assertDoesNotThrow(()-> db.listData());
-        assertEquals(0, actual.size());
+        assertThrows(DataAccessException.class, ()-> db.listData());
     }
 
     @Test
@@ -89,10 +88,15 @@ class SqlUserDAOTest {
 
     @Test
     void exists() {
+        UserData bob = new UserData("bob", "b0brulz", "bob@gmail.com");
+        assertDoesNotThrow(()->db.createData(bob));
+        boolean b = assertDoesNotThrow(()-> db.exists("bob"));
+        assertTrue(b);
     }
 
     @Test
     void existsBad() {
+        assertThrows(DataAccessException.class, () -> db.exists("bob"));
     }
 
     public static void assertUserEqual(UserData expected, UserData actual) {
