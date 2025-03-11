@@ -3,10 +3,15 @@ package dataaccess;
 import dataaccess.exceptions.DataAccessException;
 import model.GameData;
 import model.UserData;
+import org.eclipse.jetty.server.Authentication;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class SqlUserDAOTest {
@@ -56,7 +61,25 @@ class SqlUserDAOTest {
     }
 
     @Test
-    void listData() {
+    void listData() throws DataAccessException {
+        List<UserData> expected = new ArrayList<>();
+        UserData bob = new UserData("bob", "b0brulz", "bob@gmail.com");
+        UserData bobby = new UserData("bobby", "b0brulz2", "bobbyBOB");
+        UserData jeff = new UserData("jeff", "je0ffr3", "jeff@gmail.com");
+        expected.add(bob);
+        expected.add(bobby);
+        expected.add(jeff);
+
+        try{
+            db.createData(bob);
+            db.createData(bobby);
+            db.createData(jeff);
+        } catch(DataAccessException e){
+            throw new DataAccessException("Error: " + e.toString());
+        }
+
+        var actual = db.listData();
+        assertUserCollectionEqual(expected, actual);
     }
 
     @Test
