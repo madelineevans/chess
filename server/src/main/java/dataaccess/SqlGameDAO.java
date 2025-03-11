@@ -3,7 +3,6 @@ package dataaccess;
 import com.google.gson.Gson;
 import dataaccess.exceptions.DataAccessException;
 import model.GameData;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -11,7 +10,7 @@ import java.util.Collection;
 
 public class SqlGameDAO implements DataAccessSQL<GameData> {
 
-    public SqlGameDAO() throws DataAccessException {
+    public SqlGameDAO() throws DataAccessException{
         configureDatabase(createStatements);
     }
 

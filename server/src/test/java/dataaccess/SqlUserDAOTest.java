@@ -1,13 +1,9 @@
 package dataaccess;
 
 import dataaccess.exceptions.DataAccessException;
-import model.GameData;
 import model.UserData;
-import org.eclipse.jetty.server.Authentication;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
