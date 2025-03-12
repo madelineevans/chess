@@ -52,12 +52,12 @@ public class SqlGameDAO implements GameDAO {
                         return readGame(rs);
                     }
                     else{
-                        throw new Unauthorized("Error: unauthorized");
+                        throw new BadRequest("Error: bad request");
                     }
                 }
             }
         } catch (Exception e){
-            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+            throw new BadRequest("Error: bad request");
         }
     }
 

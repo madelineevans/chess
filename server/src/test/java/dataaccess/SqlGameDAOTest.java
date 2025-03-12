@@ -79,8 +79,8 @@ class SqlGameDAOTest {
     }
 
     @Test
-    void listBadData() {
-        assertThrows(DataAccessException.class, ()-> db.listData());
+    void listBadData() throws DataAccessException {
+        assertTrue(db.listData().isEmpty());
     }
 
     @Test

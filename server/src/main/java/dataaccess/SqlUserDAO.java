@@ -3,7 +3,6 @@ import dataaccess.exceptions.AlreadyTaken;
 import dataaccess.exceptions.BadRequest;
 import dataaccess.exceptions.DataAccessException;
 import dataaccess.exceptions.Unauthorized;
-import dataaccess.memory.MemoryUserDAO;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 import java.util.ArrayList;
