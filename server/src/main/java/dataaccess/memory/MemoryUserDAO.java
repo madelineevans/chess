@@ -1,14 +1,13 @@
 package dataaccess.memory;
-import dataaccess.DataAccess;
+import dataaccess.UserDAO;
 import dataaccess.exceptions.DataAccessException;
 import dataaccess.exceptions.Unauthorized;
 import model.UserData;
-
 import java.util.Collection;
 import java.util.Map;
 import java.util.HashMap;
 
-public class UserDAO implements DataAccess<UserData> {
+public class MemoryUserDAO implements UserDAO {
     final private Map<String, UserData> users = new HashMap<>();
 
     @Override
@@ -37,10 +36,12 @@ public class UserDAO implements DataAccess<UserData> {
         return users.values();
     }
 
+    @Override
     public boolean exists(String username) {
         return users.containsKey(username);
     }
 
+    @Override
     public void verifyUser(UserData user) throws Unauthorized {
         if(user == null){
             throw new Unauthorized("Error: unauthorized");

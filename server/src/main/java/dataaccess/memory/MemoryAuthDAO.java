@@ -1,5 +1,6 @@
 package dataaccess.memory;
 
+import dataaccess.AuthDAO;
 import dataaccess.DataAccess;
 import dataaccess.exceptions.DataAccessException;
 import dataaccess.exceptions.Unauthorized;
@@ -9,7 +10,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AuthDAO implements DataAccess<AuthData> {
+public class MemoryAuthDAO implements AuthDAO {
     final private Map<String, AuthData> auths = new HashMap<>();
 
     @Override
@@ -38,6 +39,7 @@ public class AuthDAO implements DataAccess<AuthData> {
         return auths.values();
     }
 
+    @Override
     public void deleteData(String authToken) throws DataAccessException {
         if(auths.get(authToken)==null){
             throw new Unauthorized("Error: authToken doesn't exist");

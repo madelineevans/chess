@@ -1,11 +1,14 @@
 package service;
 import chess.ChessGame;
+import dataaccess.AuthDAO;
+import dataaccess.GameDAO;
+import dataaccess.UserDAO;
 import dataaccess.exceptions.AlreadyTaken;
 import dataaccess.exceptions.BadRequest;
 import dataaccess.exceptions.DataAccessException;
-import dataaccess.memory.AuthDAO;
-import dataaccess.memory.GameDAO;
-import dataaccess.memory.UserDAO;
+import dataaccess.memory.MemoryAuthDAO;
+import dataaccess.memory.MemoryGameDAO;
+import dataaccess.memory.MemoryUserDAO;
 import model.AuthData;
 import model.GameData;
 import service.requests.CreateRequest;
@@ -14,7 +17,6 @@ import service.requests.ListRequest;
 import service.results.CreateResult;
 import service.results.JoinResult;
 import service.results.ListResult;
-
 import java.util.ArrayList;
 import java.util.List;
 

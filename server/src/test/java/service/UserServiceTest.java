@@ -1,8 +1,8 @@
 package service;
-import dataaccess.memory.AuthDAO;
+import dataaccess.memory.MemoryAuthDAO;
 import dataaccess.exceptions.DataAccessException;
-import dataaccess.memory.GameDAO;
-import dataaccess.memory.UserDAO;
+import dataaccess.memory.MemoryGameDAO;
+import dataaccess.memory.MemoryUserDAO;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,10 +20,10 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserServiceTest {
-    UserDAO userDAO = new UserDAO();
-    AuthDAO authDAO = new AuthDAO();
-    GameDAO gameDAO = new GameDAO();
-    UserService uService = new UserService(userDAO, authDAO, gameDAO);
+    MemoryUserDAO memoryUserDAO = new MemoryUserDAO();
+    MemoryAuthDAO authDAO = new MemoryAuthDAO();
+    MemoryGameDAO memoryGameDAO = new MemoryGameDAO();
+    UserService uService = new UserService(memoryUserDAO, authDAO, memoryGameDAO);
 
     @BeforeEach
     void clear(){
@@ -41,7 +41,7 @@ class UserServiceTest {
     }
     @Test
     void registerBad(){ //already user in there
-        userDAO.createData(new UserData("user1", "pass1", "email1"));
+        memoryUserDAO.createData(new UserData("user1", "pass1", "email1"));
         RegisterRequest rr = new RegisterRequest("user1", "pass1", "email1");
 
         assertThrows(DataAccessException.class, ()-> {
@@ -51,7 +51,7 @@ class UserServiceTest {
 
     @Test
     void login() throws DataAccessException {  //make sure it's in auth
-        userDAO.createData(new UserData("user1", "pass1", "email1"));
+        memoryUserDAO.createData(new UserData("user1", "pass1", "email1"));
         LoginRequest lr = new LoginRequest("user1", "pass1");
         LoginResult lR = uService.login(lr);
 

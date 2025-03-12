@@ -10,7 +10,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class SqlGameDAO implements DataAccessSQL<GameData> {
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
+import static java.sql.Types.NULL;
+
+public class SqlGameDAO implements GameDAO {
 
     public SqlGameDAO() throws DataAccessException{
         configureDatabase(createStatements);
@@ -85,10 +88,12 @@ public class SqlGameDAO implements DataAccessSQL<GameData> {
         return result;
     }
 
-    public void updateGame(GameData game) throws DataAccessException {
+    @Override
+    public void updateGame(GameData game) {
         var statement = "UPDATE game SET gameID = ?, whiteUsername = ?, blackUsername = ?, gameName = ?, json = ? WHERE gameID = ?";
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement)){
+                //var json = updateGameJson(game);
                 var json = new Gson().toJson(game);
                 ps.setInt(1, game.gameID());
                 ps.setString(2, game.whiteUsername());
@@ -103,7 +108,8 @@ public class SqlGameDAO implements DataAccessSQL<GameData> {
                 }
             }
         } catch (Exception e){
-            throw new DataAccessException("Unable to update game: " + e.getMessage());
+            System.err.println("Unable to update game: " + e.getMessage());
+            //throw new DataAccessException("Unable to update game: " + e.getMessage());
         }
     }
 
@@ -112,6 +118,51 @@ public class SqlGameDAO implements DataAccessSQL<GameData> {
         var json = rs.getString("json");
         var game = new Gson().fromJson(json, GameData.class);
         return game.setGameID(gameID);
+    }
+
+//    private String updateGameJson(GameData game){
+//        var json = new Gson().toJson(game);
+//        return json;
+//    }
+
+    private int executeUpdate(String statement, Object... params) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()){
+            try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)){
+                for (var i = 0; i < params.length; i++) {
+                    var param = params[i];
+                    switch (param) {
+                        case String p -> ps.setString(i + 1, p);
+                        case Integer p -> ps.setInt(i + 1, p);
+                        case null -> ps.setNull(i + 1, NULL);
+                        default -> {
+                        }
+                    }
+                }
+                ps.executeUpdate();
+
+                var rs = ps.getGeneratedKeys();
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+
+                return 0;
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));
+        }
+    }
+
+    private void configureDatabase(String[] createStatements) throws DataAccessException{
+        DatabaseManager.createDatabase();
+        try(var conn = DatabaseManager.getConnection()){
+            for(var statement : createStatements){
+                try(var preparedStatement = conn.prepareStatement(statement)){
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (SQLException ex){
+            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
+        }
     }
 
     private final String[] createStatements = {

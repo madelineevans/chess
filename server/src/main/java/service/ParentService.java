@@ -1,10 +1,13 @@
 package service;
 
+import dataaccess.AuthDAO;
+import dataaccess.GameDAO;
+import dataaccess.UserDAO;
 import dataaccess.exceptions.DataAccessException;
 import dataaccess.exceptions.Unauthorized;
-import dataaccess.memory.AuthDAO;
-import dataaccess.memory.GameDAO;
-import dataaccess.memory.UserDAO;
+import dataaccess.memory.MemoryAuthDAO;
+import dataaccess.memory.MemoryGameDAO;
+import dataaccess.memory.MemoryUserDAO;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -25,20 +28,20 @@ public class ParentService {
         this.gameDAO = gameDAO;
     }
 
-    public void clear() {
+    public void clear() throws DataAccessException {
         userDAO.deleteAllData();
         authDAO.deleteAllData();
         gameDAO.deleteAllData();
     }
 
-    public Collection<UserData> listUsers(){
+    public Collection<UserData> listUsers() throws DataAccessException {
         return userDAO.listData();
     }
-    public Collection<AuthData> listAuths(){
+    public Collection<AuthData> listAuths() throws DataAccessException {
         return authDAO.listData();
     }
 
-    public Collection<GameData> testListGames(){
+    public Collection<GameData> testListGames() throws DataAccessException {
         return new ArrayList<>(gameDAO.listData());
     }
 

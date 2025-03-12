@@ -1,10 +1,10 @@
 package service;
 
 import chess.ChessGame;
-import dataaccess.memory.AuthDAO;
+import dataaccess.memory.MemoryAuthDAO;
 import dataaccess.exceptions.DataAccessException;
-import dataaccess.memory.GameDAO;
-import dataaccess.memory.UserDAO;
+import dataaccess.memory.MemoryGameDAO;
+import dataaccess.memory.MemoryUserDAO;
 import model.AuthData;
 import model.GameData;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,10 +23,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static service.ParentService.generateToken;
 
 class GameServiceTest {
-    static UserDAO userDAO = new UserDAO();
-    static AuthDAO authDAO = new AuthDAO();
-    static GameDAO gameDAO = new GameDAO();
-    static GameService gService = new GameService(userDAO, authDAO, gameDAO);
+    static MemoryUserDAO memoryUserDAO = new MemoryUserDAO();
+    static MemoryAuthDAO authDAO = new MemoryAuthDAO();
+    static MemoryGameDAO memoryGameDAO = new MemoryGameDAO();
+    static GameService gService = new GameService(memoryUserDAO, authDAO, memoryGameDAO);
 
     static String authToken;
 
@@ -38,7 +38,7 @@ class GameServiceTest {
     @Test
     void listGames() throws DataAccessException {
         GameData game1 = new GameData(1234, "game1");
-        gameDAO.createData(game1);
+        memoryGameDAO.createData(game1);
 
         authToken = generateToken();
         AuthData ad = new AuthData(authToken, "user1");
@@ -54,7 +54,7 @@ class GameServiceTest {
     @Test
     void listGamesBad() throws DataAccessException {
         GameData game1 = new GameData(1234, "game1");
-        gameDAO.createData(game1);
+        memoryGameDAO.createData(game1);
 
         authToken = generateToken();
         ListRequest lr = new ListRequest(authToken);
@@ -94,7 +94,7 @@ class GameServiceTest {
         AuthData ad = new AuthData(authToken, "user1");
         authDAO.createData(ad);
         GameData game = new GameData(1234, "game1");
-        gameDAO.createData(game);
+        memoryGameDAO.createData(game);
 
 
         JoinRequest jr = new JoinRequest(authToken, ChessGame.TeamColor.BLACK, 1234);
@@ -110,7 +110,7 @@ class GameServiceTest {
         AuthData ad = new AuthData(authToken, "user1");
         authDAO.createData(ad);
         GameData game = new GameData(1234, null, "user2", "game1", new ChessGame());
-        gameDAO.createData(game);
+        memoryGameDAO.createData(game);
 
 
         JoinRequest jr = new JoinRequest(authToken, ChessGame.TeamColor.BLACK, 1234);

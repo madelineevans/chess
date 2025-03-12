@@ -1,11 +1,14 @@
 package service;
+import dataaccess.AuthDAO;
+import dataaccess.GameDAO;
+import dataaccess.UserDAO;
 import dataaccess.exceptions.AlreadyTaken;
 import dataaccess.exceptions.BadRequest;
 import dataaccess.exceptions.DataAccessException;
 import dataaccess.exceptions.Unauthorized;
-import dataaccess.memory.AuthDAO;
-import dataaccess.memory.GameDAO;
-import dataaccess.memory.UserDAO;
+import dataaccess.memory.MemoryAuthDAO;
+import dataaccess.memory.MemoryGameDAO;
+import dataaccess.memory.MemoryUserDAO;
 import model.AuthData;
 import model.UserData;
 import service.requests.LoginRequest;
