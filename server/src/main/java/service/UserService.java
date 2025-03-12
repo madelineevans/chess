@@ -27,7 +27,6 @@ public class UserService extends ParentService {
 
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
         String username = registerRequest.username();
-
         if(userDAO.exists(username)){
             throw new AlreadyTaken("Error: already taken");
         }
@@ -47,9 +46,11 @@ public class UserService extends ParentService {
 
     public LoginResult login(LoginRequest loginRequest) throws DataAccessException{
         String username = loginRequest.username();
+        String password = loginRequest.password();
+        //UserData user = new UserData(username, password, loginRequest.email())
         UserData user = userDAO.readData(username);
-        userDAO.verifyUser(user);
-        if(user == null || !Objects.equals(user.password(), loginRequest.password())){
+        userDAO.verifyUser(user, password);
+        if(user == null){// || !Objects.equals(user.password(), loginRequest.password())){
             throw new Unauthorized("Error: unauthorized");
         }
 
@@ -64,6 +65,5 @@ public class UserService extends ParentService {
         authDAO.deleteData(logoutRequest.authToken());
         return new LogoutResult();
     }
-
 }
 

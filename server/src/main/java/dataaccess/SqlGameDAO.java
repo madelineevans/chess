@@ -74,9 +74,6 @@ public class SqlGameDAO implements GameDAO {
             var statement = "SELECT gameID, json FROM game";
             try (var ps = conn.prepareStatement(statement)) {
                 try (var rs = ps.executeQuery()) {
-                    if(!rs.isBeforeFirst()) {
-                        throw new BadRequest("Error: list is empty");
-                    }
                     while (rs.next()) {
                         result.add(readGame(rs));
                     }
@@ -89,7 +86,7 @@ public class SqlGameDAO implements GameDAO {
     }
 
     @Override
-    public void updateGame(GameData game) {
+    public void updateGame(GameData game) throws DataAccessException{
         var statement = "UPDATE game SET gameID = ?, whiteUsername = ?, blackUsername = ?, gameName = ?, json = ? WHERE gameID = ?";
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement)){
@@ -108,8 +105,8 @@ public class SqlGameDAO implements GameDAO {
                 }
             }
         } catch (Exception e){
-            System.err.println("Unable to update game: " + e.getMessage());
-            //throw new DataAccessException("Unable to update game: " + e.getMessage());
+            //System.err.println("Unable to update game: " + e.getMessage());
+            throw new DataAccessException("Unable to update game: " + e.getMessage());
         }
     }
 

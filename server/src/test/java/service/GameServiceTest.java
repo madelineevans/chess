@@ -31,7 +31,7 @@ class GameServiceTest {
     static String authToken;
 
     @BeforeEach
-    void clear(){
+    void clear() throws DataAccessException {
         gService.clear();
     }
 

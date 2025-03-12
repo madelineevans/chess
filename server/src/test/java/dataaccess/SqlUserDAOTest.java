@@ -91,8 +91,8 @@ class SqlUserDAOTest {
     }
 
     @Test
-    void existsBad() {
-        assertThrows(DataAccessException.class, () -> db.exists("bob"));
+    void existsBad() throws DataAccessException {
+        assertFalse(db.exists("bob"));
     }
 
     public static void assertUserEqual(UserData expected, UserData actual) {

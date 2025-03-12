@@ -19,7 +19,7 @@ class ParentServiceTest {
     ParentService parent = new ParentService(memoryUserDAO, authDAO, memoryGameDAO);
 
     @Test
-    void clear() {
+    void clear() throws DataAccessException {
         memoryUserDAO.createData(new UserData("exUsername", "exPassword", "exEmail"));
         authDAO.createData(new AuthData("1234", "exUsername"));
         memoryGameDAO.createData(new GameData(1, "exWhite", "exBlack", "exGameName", new ChessGame()));

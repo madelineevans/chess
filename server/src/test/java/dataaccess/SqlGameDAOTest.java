@@ -3,10 +3,8 @@ package dataaccess;
 import chess.ChessGame;
 import dataaccess.exceptions.DataAccessException;
 import model.GameData;
-import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -50,12 +48,12 @@ class SqlGameDAOTest {
     }
 
     @Test
-    void deleteAllData() {
+    void deleteAllData() throws DataAccessException {
         assertDoesNotThrow(()-> db.createData(new GameData(1234, "game1")));
         assertDoesNotThrow(()-> db.createData(new GameData(1254, "game2")));
         assertDoesNotThrow(()-> db.deleteAllData());
 
-        assertThrows(DataAccessException.class, ()-> db.listData());
+        assertTrue(db.listData().isEmpty());
     }
 
     @Test

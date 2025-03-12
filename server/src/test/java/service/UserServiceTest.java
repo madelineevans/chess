@@ -26,7 +26,7 @@ class UserServiceTest {
     UserService uService = new UserService(memoryUserDAO, authDAO, memoryGameDAO);
 
     @BeforeEach
-    void clear(){
+    void clear() throws DataAccessException {
         uService.clear();
     }
 

@@ -20,21 +20,21 @@ public class Server {
     private final GameService gs;
 
     public Server(){
-        UserDAO userDAO = new MemoryUserDAO();
-        AuthDAO authDAO = new MemoryAuthDAO();
-        GameDAO gameDAO = new MemoryGameDAO();
-//        SqlUserDAO userDAO;
-//        SqlAuthDAO authDAO;
-//        SqlGameDAO gameDAO;
-//        try{
-//            userDAO = new SqlUserDAO();
-//            authDAO = new SqlAuthDAO();
-//            gameDAO = new SqlGameDAO();
-//        } catch(DataAccessException e){
-//            System.err.println("Error initializing DAOs: " + e.getMessage());
-//            e.printStackTrace();
-//            throw new RuntimeException("Failed to initialize server DAOs", e);
-//        }
+//        UserDAO userDAO = new MemoryUserDAO();
+//        AuthDAO authDAO = new MemoryAuthDAO();
+//        GameDAO gameDAO = new MemoryGameDAO();
+        UserDAO userDAO;
+        AuthDAO authDAO;
+        GameDAO gameDAO;
+        try{
+            userDAO = new SqlUserDAO();
+            authDAO = new SqlAuthDAO();
+            gameDAO = new SqlGameDAO();
+        } catch(DataAccessException e){
+            System.err.println("Error initializing DAOs: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Failed to initialize server DAOs", e);
+        }
 
         this.us = new UserService(userDAO, authDAO, gameDAO);
         this.gs = new GameService(userDAO, authDAO, gameDAO);

@@ -54,7 +54,7 @@ public class SqlUserDAO implements UserDAO {
                 }
             }
         } catch (Exception e){
-            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+            throw new Unauthorized("Error: unauthorized" + e.getMessage());
         }
     }
 
@@ -93,7 +93,7 @@ public class SqlUserDAO implements UserDAO {
                 ps.setString(1, username);
                 try(var rs = ps.executeQuery()){
                     if(!rs.isBeforeFirst()) {
-                        throw new BadRequest("Error: Not found");
+                        return false;
                     }
                     return rs.next();
                 }
@@ -115,9 +115,9 @@ public class SqlUserDAO implements UserDAO {
     }
 
     @Override
-    void verifyUser(UserData user) throws DataAccessException {
+    public void verifyUser(UserData user, String providedClearTextPassword) throws DataAccessException {
         String username = user.username();
-        String providedClearTextPassword = user.password();
+        //String providedClearTextPassword = user.password();
         var hashedPassword = readHashedPasswordFromDatabase(username);
         if(!BCrypt.checkpw(providedClearTextPassword, hashedPassword)){
             throw new Unauthorized("Error: unauthorized");

@@ -6,6 +6,7 @@ import model.UserData;
 import java.util.Collection;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class MemoryUserDAO implements UserDAO {
     final private Map<String, UserData> users = new HashMap<>();
@@ -18,8 +19,11 @@ public class MemoryUserDAO implements UserDAO {
     @Override
     public UserData readData(String username) throws DataAccessException { //find data by username
         UserData user = users.get(username);
+        if(user==null){
+            throw new Unauthorized("Error: unauthorized");
+        }
         try{
-            verifyUser(user);
+            verifyUser(user, user.password());
         }catch(DataAccessException e){
             throw new Unauthorized("Error: unauthorized");
         }
@@ -42,8 +46,11 @@ public class MemoryUserDAO implements UserDAO {
     }
 
     @Override
-    public void verifyUser(UserData user) throws Unauthorized {
+    public void verifyUser(UserData user, String password) throws Unauthorized {
         if(user == null){
+            throw new Unauthorized("Error: unauthorized");
+        }
+        if(!Objects.equals(user.password(), password)){
             throw new Unauthorized("Error: unauthorized");
         }
     }

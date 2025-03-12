@@ -53,7 +53,7 @@ public class SqlAuthDAO implements AuthDAO {
                 }
             }
         } catch (Exception e){
-            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+            throw new Unauthorized("Error: unauthorized");
         }
     }
 
