@@ -4,6 +4,8 @@ import dataaccess.exceptions.BadRequest;
 import dataaccess.exceptions.DataAccessException;
 import dataaccess.exceptions.Unauthorized;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.sql.*;
@@ -30,7 +32,7 @@ public class SqlUserDAO implements DataAccessSQL<UserData> {
             throw new DataAccessException("Error checking username preexistance" + e.getMessage());
         }
         var statement = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
-        var id = executeUpdate(statement, user.username(), user.password(), user.email());
+        var id = executeUpdate(statement, user.username(), createHashedPassword(user.password()), user.email());
     }
 
     @Override
@@ -101,9 +103,36 @@ public class SqlUserDAO implements DataAccessSQL<UserData> {
         var username = rs.getString("username");
         var password = rs.getString("password");
         var email = rs.getString("email");
-        //var json = rs.getString("json");
-        //var user = new Gson().fromJson(json, UserData.class);
         return new UserData(username, password, email);
+    }
+
+    private String createHashedPassword(String clearTextPassword) {
+        return BCrypt.hashpw(clearTextPassword, BCrypt.gensalt());
+    }
+
+    boolean verifyUser(String username, String providedClearTextPassword) {
+        var hashedPassword = readHashedPasswordFromDatabase(username);
+
+        return BCrypt.checkpw(providedClearTextPassword, hashedPassword);
+    }
+
+    private String readHashedPasswordFromDatabase(String username) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT password FROM user WHERE username=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, username);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getString("password");
+                    }
+                    else{
+                        throw new Unauthorized("Error: unauthorized");
+                    }
+                }
+            }
+        } catch (Exception e){
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        }
     }
 
     private final String[] createStatements = {

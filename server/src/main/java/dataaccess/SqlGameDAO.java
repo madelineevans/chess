@@ -1,5 +1,4 @@
 package dataaccess;
-
 import com.google.gson.Gson;
 import dataaccess.exceptions.AlreadyTaken;
 import dataaccess.exceptions.BadRequest;
@@ -34,8 +33,8 @@ public class SqlGameDAO implements DataAccessSQL<GameData> {
         }
         var statement = "INSERT INTO game (gameID, whiteUsername, blackUsername, gameName, json) VALUES (?, ?, ?, ?, ?)";
         var json = new Gson().toJson(game);
-        var id = executeUpdate(statement, game.gameID(), game.whiteUsername() != null ? game.whiteUsername() : "",
-                game.blackUsername() != null ? game.blackUsername() : "", game.gameName(), json);
+        var id = executeUpdate(statement, game.gameID(), game.whiteUsername(),
+                game.blackUsername(), game.gameName(), json);
     }
 
     @Override
@@ -86,23 +85,27 @@ public class SqlGameDAO implements DataAccessSQL<GameData> {
         return result;
     }
 
-//    public void updateGame(GameData game) {
-//        try ( var conn = DatabaseManager.getConnection()) {
-//            var statement = "UPDATE game SET ____ WHERE gameID = ?"
-//            try (var ps = conn.prepareStatement(statement)){
-//                ps.setInt(1, game.gameID());
-//                try (var rs = ps.executeQuery()){
-//                    if (rs.next()){
-//                        return readGame(rs);
-//                    }
-//                }
-//            }
-//        } catch (Exception e){
-//            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
-//        }
-//            games.put(game.gameID(), game);
-//        }
-//    }
+    public void updateGame(GameData game) throws DataAccessException {
+        var statement = "UPDATE game SET gameID = ?, whiteUsername = ?, blackUsername = ?, gameName = ?, json = ? WHERE gameID = ?";
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var ps = conn.prepareStatement(statement)){
+                var json = new Gson().toJson(game);
+                ps.setInt(1, game.gameID());
+                ps.setString(2, game.whiteUsername());
+                ps.setString(3, game.blackUsername());
+                ps.setString(4, game.gameName());
+                ps.setString(5, json);
+                ps.setInt(6, game.gameID());
+                var id = ps.executeUpdate();
+
+                if(id==0){
+                    throw new BadRequest("Error: no game found with this gameID");
+                }
+            }
+        } catch (Exception e){
+            throw new DataAccessException("Unable to update game: " + e.getMessage());
+        }
+    }
 
     private GameData readGame(ResultSet rs) throws SQLException {
         var gameID = rs.getInt("gameID");
@@ -116,8 +119,8 @@ public class SqlGameDAO implements DataAccessSQL<GameData> {
             CREATE TABLE IF NOT EXISTS  game (
                 `id` int NOT NULL AUTO_INCREMENT,
                 `gameID` int NOT NULL,
-                `whiteUsername` varchar(255) NOT NULL,
-                `blackUsername` varchar(255) NOT NULL,
+                `whiteUsername` varchar(255) NULL,
+                `blackUsername` varchar(255) NULL,
                 `gameName` varchar(255) NOT NULL,
                 `json` TEXT DEFAULT NULL,
                 PRIMARY KEY (`id`),

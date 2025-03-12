@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessGame;
 import dataaccess.exceptions.DataAccessException;
 import model.GameData;
 import model.UserData;
@@ -86,12 +87,18 @@ class SqlGameDAOTest {
 
     @Test
     void updateGame() {
-
+        var game = new GameData(1234, "game1");
+        assertDoesNotThrow(()-> db.createData(game));
+        var updatedGame = new GameData(1234, "whiteRulz", null, "game1", new ChessGame());
+        assertDoesNotThrow(()-> db.updateGame(updatedGame));
+        var actualGame = assertDoesNotThrow(()-> db.readData("1234"));
+        assertGameEqual(updatedGame, actualGame);
     }
 
     @Test
-    void updateBadGame() {
-
+    void updateBadGame() {  //if try update not-existing one
+        var updatedGame = new GameData(1234, "whiteRulz", null, "game1", new ChessGame());
+        assertThrows(DataAccessException.class, ()-> db.updateGame(updatedGame));
     }
 
     public static void assertGameEqual(GameData expected, GameData actual) {
