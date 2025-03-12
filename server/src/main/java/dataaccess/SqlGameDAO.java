@@ -2,7 +2,9 @@ package dataaccess;
 
 import com.google.gson.Gson;
 import dataaccess.exceptions.AlreadyTaken;
+import dataaccess.exceptions.BadRequest;
 import dataaccess.exceptions.DataAccessException;
+import dataaccess.exceptions.Unauthorized;
 import model.GameData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -47,12 +49,14 @@ public class SqlGameDAO implements DataAccessSQL<GameData> {
                     if (rs.next()){
                         return readGame(rs);
                     }
+                    else{
+                        throw new Unauthorized("Error: unauthorized");
+                    }
                 }
             }
         } catch (Exception e){
             throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
         }
-        return null;
     }
 
     @Override
@@ -68,6 +72,9 @@ public class SqlGameDAO implements DataAccessSQL<GameData> {
             var statement = "SELECT gameID, json FROM game";
             try (var ps = conn.prepareStatement(statement)) {
                 try (var rs = ps.executeQuery()) {
+                    if(!rs.isBeforeFirst()) {
+                        throw new BadRequest("Error: list is empty");
+                    }
                     while (rs.next()) {
                         result.add(readGame(rs));
                     }
