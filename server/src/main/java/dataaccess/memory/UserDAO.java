@@ -19,10 +19,12 @@ public class UserDAO implements DataAccess<UserData> {
     @Override
     public UserData readData(String username) throws DataAccessException { //find data by username
         UserData user = users.get(username);
-        if(user == null){
+        try{
+            verifyUser(user);
+        }catch(DataAccessException e){
             throw new Unauthorized("Error: unauthorized");
         }
-        return user;
+        return users.get(username);
     }
 
     @Override
@@ -37,5 +39,11 @@ public class UserDAO implements DataAccess<UserData> {
 
     public boolean exists(String username) {
         return users.containsKey(username);
+    }
+
+    public void verifyUser(UserData user) throws Unauthorized {
+        if(user == null){
+            throw new Unauthorized("Error: unauthorized");
+        }
     }
 }

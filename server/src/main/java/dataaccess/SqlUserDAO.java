@@ -5,7 +5,6 @@ import dataaccess.exceptions.DataAccessException;
 import dataaccess.exceptions.Unauthorized;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.sql.*;
@@ -110,10 +109,11 @@ public class SqlUserDAO implements DataAccessSQL<UserData> {
         return BCrypt.hashpw(clearTextPassword, BCrypt.gensalt());
     }
 
-    boolean verifyUser(String username, String providedClearTextPassword) {
+    void verifyUser(String username, String providedClearTextPassword) throws DataAccessException {
         var hashedPassword = readHashedPasswordFromDatabase(username);
-
-        return BCrypt.checkpw(providedClearTextPassword, hashedPassword);
+        if(!BCrypt.checkpw(providedClearTextPassword, hashedPassword)){
+            throw new Unauthorized("Error: unauthorized");
+        }
     }
 
     private String readHashedPasswordFromDatabase(String username) throws DataAccessException {

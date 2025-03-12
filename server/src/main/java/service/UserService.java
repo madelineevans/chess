@@ -45,6 +45,7 @@ public class UserService extends ParentService {
     public LoginResult login(LoginRequest loginRequest) throws DataAccessException{
         String username = loginRequest.username();
         UserData user = userDAO.readData(username);
+        userDAO.verifyUser(user);
         if(user == null || !Objects.equals(user.password(), loginRequest.password())){
             throw new Unauthorized("Error: unauthorized");
         }
