@@ -1,6 +1,7 @@
 package dataaccess;
 
 import com.google.gson.Gson;
+import dataaccess.exceptions.AlreadyTaken;
 import dataaccess.exceptions.DataAccessException;
 import model.GameData;
 import java.sql.ResultSet;
@@ -16,16 +17,30 @@ public class SqlGameDAO implements DataAccessSQL<GameData> {
 
     @Override
     public void createData(GameData game) throws DataAccessException {
-        var statement = "INSERT INTO game (gameID, whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?)";
+        var checkStatement = "SELECT COUNT(*) FROM game WHERE gameID = ?";
+        try (var conn = DatabaseManager.getConnection()){
+            try(var ps = conn.prepareStatement(checkStatement)){
+                ps.setInt(1, game.gameID());
+                try (var rs = ps.executeQuery()){
+                    if(rs.next() && rs.getInt(1)>0){
+                        throw new AlreadyTaken("Error: gameID already taken");
+                    }
+                }
+            }
+        } catch (SQLException e){
+            throw new DataAccessException("Error checking gameID preexistance" + e.getMessage());
+        }
+        var statement = "INSERT INTO game (gameID, whiteUsername, blackUsername, gameName, json) VALUES (?, ?, ?, ?, ?)";
         var json = new Gson().toJson(game);
-        var id = executeUpdate(statement, game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), game.game(), json);
+        var id = executeUpdate(statement, game.gameID(), game.whiteUsername() != null ? game.whiteUsername() : "",
+                game.blackUsername() != null ? game.blackUsername() : "", game.gameName(), json);
     }
 
     @Override
     public GameData readData(String stringID) throws DataAccessException {
         int gameID = Integer.parseInt(stringID);
         try(var conn = DatabaseManager.getConnection()){
-            var statement = "SELECT gameID, json FROM game WHERE gameID=?";
+            var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, json FROM game WHERE gameID=?";
             try (var ps = conn.prepareStatement(statement)){
                 ps.setInt(1, gameID);
                 try (var rs = ps.executeQuery()){
@@ -42,7 +57,7 @@ public class SqlGameDAO implements DataAccessSQL<GameData> {
 
     @Override
     public void deleteAllData() throws DataAccessException {
-        var statement = "TRUNCATE user";
+        var statement = "TRUNCATE game";
         executeUpdate(statement);
     }
 
@@ -97,10 +112,9 @@ public class SqlGameDAO implements DataAccessSQL<GameData> {
                 `whiteUsername` varchar(255) NOT NULL,
                 `blackUsername` varchar(255) NOT NULL,
                 `gameName` varchar(255) NOT NULL,
-                `game` varchar(255) NOT NULL,
                 `json` TEXT DEFAULT NULL,
                 PRIMARY KEY (`id`),
-                INDEX(gameID),
+                INDEX(gameID)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };

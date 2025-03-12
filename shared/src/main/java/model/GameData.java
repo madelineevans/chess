@@ -2,6 +2,8 @@ package model;
 
 import chess.ChessGame;
 
+import java.util.Objects;
+
 public record GameData(int gameID, String whiteUsername, String blackUsername, String gameName, ChessGame game) implements Data{
 
     public GameData(int gameID, String gameName){
@@ -24,8 +26,11 @@ public record GameData(int gameID, String whiteUsername, String blackUsername, S
                 game.equals(gameData.game);
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(gameID, gameName); // Include other fields if necessary
+    }
     public GameData setGameID(int gameID){
         return new GameData(gameID, this.whiteUsername, this.blackUsername, this.gameName, this.game);
     }
-
 }

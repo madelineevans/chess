@@ -19,6 +19,7 @@ class SqlGameDAOTest {
     void setup() throws DataAccessException {
         db = new SqlGameDAO();
         db.deleteAllData();
+        //db.configureDatabase(createStatements);
     }
 
     @Test
@@ -31,7 +32,7 @@ class SqlGameDAOTest {
     void createDataBad() {
         var game = new GameData(1234, "game1");
         assertDoesNotThrow(()-> db.createData(game));
-        var game2 = new GameData(1254, "game2");
+        var game2 = new GameData(1234, "game2");
         assertThrows(DataAccessException.class, ()-> db.createData(game2));
     }
 
@@ -111,4 +112,21 @@ class SqlGameDAOTest {
             assertGameEqual(expectedList[i], actualList[i]);
         }
     }
+//    private final String[] createStatements = {
+//            """
+//            DROP TABLE IF EXISTS game;
+//            """,
+//            """
+//            CREATE TABLE IF NOT EXISTS  game (
+//                `id` int NOT NULL AUTO_INCREMENT,
+//                `gameID` int NOT NULL,
+//                `whiteUsername` varchar(255) NOT NULL,
+//                `blackUsername` varchar(255) NOT NULL,
+//                `gameName` varchar(255) NOT NULL,
+//                `json` TEXT DEFAULT NULL,
+//                PRIMARY KEY (`id`),
+//                INDEX(gameID)
+//            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+//            """
+//    };
 }
