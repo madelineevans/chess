@@ -38,7 +38,10 @@ public class AuthDAO implements DataAccess<AuthData> {
         return auths.values();
     }
 
-    public void deleteData(String authToken){
+    public void deleteData(String authToken) throws DataAccessException {
+        if(auths.get(authToken)==null){
+            throw new Unauthorized("Error: authToken doesn't exist");
+        }
         auths.remove(authToken);
     }
 
