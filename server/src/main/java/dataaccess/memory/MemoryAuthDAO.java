@@ -1,11 +1,8 @@
 package dataaccess.memory;
-
 import dataaccess.AuthDAO;
-import dataaccess.DataAccess;
-import dataaccess.exceptions.DataAccessException;
-import dataaccess.exceptions.Unauthorized;
+import exceptions.DataAccessException;
+import exceptions.Unauthorized;
 import model.AuthData;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,7 +37,7 @@ public class MemoryAuthDAO implements AuthDAO {
     }
 
     @Override
-    public void deleteData(String authToken) throws DataAccessException {
+    public void deleteData(String authToken) throws DataAccessException{
         if(auths.get(authToken)==null){
             throw new Unauthorized("Error: authToken doesn't exist");
         }

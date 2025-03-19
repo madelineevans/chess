@@ -1,7 +1,7 @@
 package dataaccess.memory;
 import dataaccess.UserDAO;
-import dataaccess.exceptions.DataAccessException;
-import dataaccess.exceptions.Unauthorized;
+import exceptions.DataAccessException;
+import exceptions.Unauthorized;
 import model.UserData;
 import java.util.Collection;
 import java.util.Map;

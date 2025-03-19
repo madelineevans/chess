@@ -1,15 +1,20 @@
 package ui;
 import java.util.Arrays;
 import com.google.gson.Gson;
-import server.ServerFacade;
+import exceptions.DataAccessException;
 
 
 public class PreloginClient {
+    private String visitorName = null;
+    private final ServerFacade server;
+    private final String serverUrl;
+    //private final NotificationHandler notificationHandler;
+    //private State state = State.SIGNEDOUT;
 
-    public PreloginClient(String serverUrl, exception DataAccessException) {
+    public PreloginClient(String serverUrl, DataAccessException exception) {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
-        this.notificationHandler = notificationHandler;
+        //this.notificationHandler = notificationHandler;
     }
 
     public String eval(String input) {
@@ -36,7 +41,7 @@ public class PreloginClient {
         if (params.length >= 1) {
             state = State.SIGNEDIN;
             visitorName = String.join("-", params);
-            ws = new WebSocketFacade(serverUrl, notificationHandler);
+//            ws = new WebSocketFacade(serverUrl, notificationHandler);
             ws.enterPetShop(visitorName);
             return String.format("You signed in as %s.", visitorName);
         }

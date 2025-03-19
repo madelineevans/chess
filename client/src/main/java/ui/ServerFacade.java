@@ -1,10 +1,9 @@
-package server;
+package ui;
 import com.google.gson.Gson;
-import dataaccess.exceptions.DataAccessException;
-import dataaccess.exceptions.ResponseException;
-import model.*;
-import service.requests.*;
-import service.results.*;
+import exceptions.DataAccessException;
+import exceptions.ResponseException;
+import requests.*;
+import results.*;
 import java.io.*;
 import java.net.*;
 

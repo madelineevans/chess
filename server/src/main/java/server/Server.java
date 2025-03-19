@@ -1,17 +1,14 @@
 package server;
 import com.google.gson.Gson;
 import dataaccess.*;
-import dataaccess.exceptions.AlreadyTaken;
-import dataaccess.exceptions.BadRequest;
-import dataaccess.exceptions.DataAccessException;
-import dataaccess.exceptions.Unauthorized;
-import dataaccess.memory.MemoryAuthDAO;
-import dataaccess.memory.MemoryGameDAO;
-import dataaccess.memory.MemoryUserDAO;
+import exceptions.AlreadyTaken;
+import exceptions.BadRequest;
+import exceptions.DataAccessException;
+import exceptions.Unauthorized;
+import requests.*;
+import results.*;
 import service.GameService;
 import service.UserService;
-import service.requests.*;
-import service.results.*;
 import spark.*;
 import java.util.Map;
 

@@ -1,4 +1,4 @@
-package dataaccess.exceptions;
+package exceptions;
 import com.google.gson.Gson;
 import java.io.InputStream;
 import java.io.InputStreamReader;

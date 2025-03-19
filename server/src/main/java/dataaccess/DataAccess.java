@@ -1,10 +1,8 @@
 package dataaccess;
-import dataaccess.exceptions.DataAccessException;
+import exceptions.DataAccessException;
 import model.Data;
-
 import java.sql.SQLException;
 import java.util.Collection;
-
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
 

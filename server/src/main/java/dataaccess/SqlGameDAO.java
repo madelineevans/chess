@@ -1,17 +1,13 @@
 package dataaccess;
 import com.google.gson.Gson;
-import dataaccess.exceptions.AlreadyTaken;
-import dataaccess.exceptions.BadRequest;
-import dataaccess.exceptions.DataAccessException;
-import dataaccess.exceptions.Unauthorized;
+import exceptions.AlreadyTaken;
+import exceptions.BadRequest;
+import exceptions.DataAccessException;
 import model.GameData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
-import static java.sql.Types.NULL;
 
 public class SqlGameDAO implements GameDAO {
 

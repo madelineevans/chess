@@ -2,23 +2,18 @@ package service;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
-import dataaccess.exceptions.AlreadyTaken;
-import dataaccess.exceptions.BadRequest;
-import dataaccess.exceptions.DataAccessException;
-import dataaccess.exceptions.Unauthorized;
-import dataaccess.memory.MemoryAuthDAO;
-import dataaccess.memory.MemoryGameDAO;
-import dataaccess.memory.MemoryUserDAO;
+import exceptions.AlreadyTaken;
+import exceptions.BadRequest;
+import exceptions.DataAccessException;
+import exceptions.Unauthorized;
 import model.AuthData;
 import model.UserData;
-import service.requests.LoginRequest;
-import service.results.LoginResult;
-import service.requests.RegisterRequest;
-import service.results.LogoutResult;
-import service.results.RegisterResult;
-import service.requests.LogoutRequest;
-
-import java.util.Objects;
+import requests.LoginRequest;
+import results.LoginResult;
+import requests.RegisterRequest;
+import results.LogoutResult;
+import results.RegisterResult;
+import requests.LogoutRequest;
 
 public class UserService extends ParentService {
     public UserService(UserDAO userDAO, AuthDAO authDAO, GameDAO gameDAO) {

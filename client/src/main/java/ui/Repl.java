@@ -1,8 +1,6 @@
 package ui;
-
 import java.util.Scanner;
-
-import static client.EscapeSequences.*;
+//import static client.EscapeSequences.*;
 
 public class Repl{
     private final PetClient client;

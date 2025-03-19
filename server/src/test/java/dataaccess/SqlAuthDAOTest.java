@@ -1,9 +1,8 @@
 package dataaccess;
 
-import dataaccess.exceptions.BadRequest;
-import dataaccess.exceptions.DataAccessException;
+import exceptions.BadRequest;
+import exceptions.DataAccessException;
 import model.AuthData;
-import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -1,7 +1,7 @@
 package dataaccess.memory;
 import dataaccess.GameDAO;
-import dataaccess.exceptions.BadRequest;
-import dataaccess.exceptions.DataAccessException;
+import exceptions.BadRequest;
+import exceptions.DataAccessException;
 import model.GameData;
 import java.util.Collection;
 import java.util.HashMap;

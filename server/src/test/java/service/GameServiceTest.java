@@ -2,19 +2,19 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.memory.MemoryAuthDAO;
-import dataaccess.exceptions.DataAccessException;
+import exceptions.DataAccessException;
 import dataaccess.memory.MemoryGameDAO;
 import dataaccess.memory.MemoryUserDAO;
 import model.AuthData;
 import model.GameData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import service.requests.CreateRequest;
-import service.requests.JoinRequest;
-import service.requests.ListRequest;
-import service.results.CreateResult;
-import service.results.JoinResult;
-import service.results.ListResult;
+import requests.CreateRequest;
+import requests.JoinRequest;
+import requests.ListRequest;
+import results.CreateResult;
+import results.JoinResult;
+import results.ListResult;
 
 import java.util.Collection;
 import java.util.Objects;

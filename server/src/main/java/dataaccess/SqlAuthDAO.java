@@ -1,16 +1,10 @@
 package dataaccess;
-import dataaccess.exceptions.AlreadyTaken;
-import dataaccess.exceptions.BadRequest;
-import dataaccess.exceptions.DataAccessException;
-import dataaccess.exceptions.Unauthorized;
+import exceptions.*;
 import model.AuthData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
-import static java.sql.Types.NULL;
 
 public class SqlAuthDAO implements AuthDAO {
 
