@@ -22,7 +22,7 @@ public class ServerFacade {
 
     public LoginResult login(LoginRequest request) throws DataAccessException {
         var path = "/session";
-        return this.makeRequest("GET", path, request, LoginResult.class);
+        return this.makeRequest("POST", path, request, LoginResult.class);
     }
 
     public LogoutResult logout(LogoutRequest request) throws DataAccessException {
@@ -45,7 +45,9 @@ public class ServerFacade {
         return this.makeRequest("PUT", path, request, JoinResult.class);
     }
 
-    public void clear() {
+    public void clear() throws ResponseException {
+        var path = "/clear";
+        this.makeRequest("DELETE", path, null, Void.class);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
