@@ -1,6 +1,7 @@
 package server;
 import com.google.gson.Gson;
 import dataaccess.exceptions.DataAccessException;
+import dataaccess.exceptions.ResponseException;
 import model.*;
 import service.requests.*;
 import service.results.*;
@@ -15,32 +16,32 @@ public class ServerFacade {
         serverUrl = url;
     }
 
-    public RegisterResult register(RegisterRequest request) {
+    public RegisterResult register(RegisterRequest request) throws DataAccessException {
         var path = "/user";
         return this.makeRequest("POST", path, request, RegisterResult.class);
     }
 
-    public LoginResult login(LoginRequest request) {
+    public LoginResult login(LoginRequest request) throws DataAccessException {
         var path = "/session";
         return this.makeRequest("GET", path, request, LoginResult.class);
     }
 
-    public LogoutResult logout(LogoutRequest request) {
+    public LogoutResult logout(LogoutRequest request) throws DataAccessException {
         var path = "/session";
         return this.makeRequest("DELETE", path, request, LogoutResult.class);
     }
 
-    public ListResult listGames(ListRequest request) {
+    public ListResult listGames(ListRequest request) throws DataAccessException {
         var path = "/game";
         return this.makeRequest("GET", path, request, ListResult.class);
     }
 
-    public CreateResult createGames(CreateRequest request) {
+    public CreateResult createGames(CreateRequest request) throws DataAccessException {
         var path = "/game";
         return this.makeRequest("POST", path, request, CreateResult.class);
     }
 
-    public JoinResult joinGame(JoinRequest request) {
+    public JoinResult joinGame(JoinRequest request) throws DataAccessException {
         var path = "/game";
         return this.makeRequest("PUT", path, request, JoinResult.class);
     }
@@ -59,10 +60,10 @@ public class ServerFacade {
             http.connect();
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
-        } catch (DataAccessException ex) {
+        } catch (ResponseException ex) {
             throw ex;
         } catch (Exception ex) {
-            throw new DataAccessException(ex.getMessage());
+            throw new ResponseException(500, ex.getMessage());
         }
     }
 
@@ -82,11 +83,11 @@ public class ServerFacade {
         if (!isSuccessful(status)) {
             try (InputStream respErr = http.getErrorStream()) {
                 if (respErr != null) {
-                    throw DataAccessException.fromJson(respErr);
+                    throw ResponseException.fromJson(respErr);
                 }
             }
 
-            throw new DataAccessException(status, "other failure: " + status);
+            throw new ResponseException(status, "other failure: " + status);
         }
     }
 
