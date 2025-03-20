@@ -1,10 +1,13 @@
 package ui;
-
 import chess.ChessGame;
 import exceptions.DataAccessException;
+import requests.CreateRequest;
 import requests.JoinRequest;
+import requests.ListRequest;
 import requests.LoginRequest;
+import results.CreateResult;
 import results.JoinResult;
+import results.ListResult;
 import results.LoginResult;
 
 import java.util.Arrays;
@@ -14,9 +17,10 @@ public class PostloginClient extends Client{
     private final ServerFacade server;
     private final String serverUrl;
 
-    public PostloginClient(String serverUrl, DataAccessException exception) {
+    public PostloginClient(String serverUrl, String authToken) {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
+        this.authToken = authToken;
     }
 
     public String eval(String input) {
@@ -39,6 +43,29 @@ public class PostloginClient extends Client{
         }
     }
 
+    public String createGame(String... params) throws DataAccessException {
+        if(params.length > 1){
+            return "Error: please enter create <NAME>";
+        }
+        CreateRequest req = new CreateRequest(authToken, params[0]);
+        try{
+            CreateResult res = server.createGames(req);
+        } catch (DataAccessException e) {
+            throw new DataAccessException("Error: " + e.getMessage());
+        }
+        return "Created game " + params[0];
+    }
+
+    public String listGames() throws DataAccessException {
+        ListRequest req = new ListRequest(authToken);
+        try{
+            ListResult res = server.listGames(req);
+            return res.toString();
+        } catch (DataAccessException e) {
+            throw new DataAccessException("Error: " + e.getMessage());
+        }
+    }
+
     public String joinGame(String... params) throws DataAccessException {
         if(params.length<2) {
             return "Error: please enter join <ID> [WHITE|BLACK]";
@@ -49,7 +76,7 @@ public class PostloginClient extends Client{
             color = ChessGame.TeamColor.BLACK;
         }
 
-        JoinRequest req = new JoinRequest(authToken, color, params[0]);
+        JoinRequest req = new JoinRequest(authToken, color, Integer.parseInt(params[0]));
 
         try{
             JoinResult res = server.joinGame(req);

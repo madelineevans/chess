@@ -77,7 +77,6 @@ public class PreloginClient extends Client{
     }
 
     public String quit() throws ResponseException {
-
         state = State.SIGNEDOUT;
         return String.format("You signed out");
     }
