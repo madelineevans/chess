@@ -29,7 +29,7 @@ public class PreloginClient extends Client{
                 case "signin" -> signIn(params);
                 case "register" -> register();
                 case "help" -> help();
-                case "quit" -> quit();
+                case "quit" -> "quit";
                 default -> help();
             };
         } catch (DataAccessException ex) {
@@ -77,10 +77,10 @@ public class PreloginClient extends Client{
 
     }
 
-    public String quit(){
-        state = State.SIGNEDOUT;
-        return String.format("You signed out");
-    }
+//    public String quit(){
+//        state = State.SIGNEDOUT;
+//        return String.format("You signed out");
+//    }
 
     public String help() {
         if (state == State.SIGNEDOUT) {

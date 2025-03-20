@@ -30,11 +30,6 @@ public class Repl{
         System.out.println();
     }
 
-//    public void notify(Notification notification) {
-//        System.out.println(RED + notification.message());
-//        printPrompt();
-//    }
-
     private void printPrompt() {
         System.out.print("\n" + SET_TEXT_COLOR_BLACK + ">>> " + SET_TEXT_COLOR_GREEN);
     }

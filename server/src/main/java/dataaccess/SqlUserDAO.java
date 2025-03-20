@@ -28,7 +28,7 @@ public class SqlUserDAO implements UserDAO {
             throw new DataAccessException("Error checking username preexistance" + e.getMessage());
         }
         var statement = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
-        System.out.println("Original Password: " + user.password());
+        //System.out.println("Original Password: " + user.password());
         var id = executeUpdate(statement, user.username(), createHashedPassword(user.password()), user.email());
     }
 
@@ -106,7 +106,7 @@ public class SqlUserDAO implements UserDAO {
 
     private String createHashedPassword(String clearTextPassword) {
         String hashed = BCrypt.hashpw(clearTextPassword, BCrypt.gensalt());
-        System.out.println("Hashed Password: " + hashed);
+        //System.out.println("Hashed Password: " + hashed);
         return hashed;
         //return BCrypt.hashpw(clearTextPassword, BCrypt.gensalt());
     }

@@ -32,9 +32,9 @@ public class PostloginClient extends Client{
                 case "create" -> createGame();
                 case "list" -> listGames();
                 case "join" -> joinGame(params);
-                //case "observe" -> observeGame(params);
-                //case "logout" -> logout(params);
-                //case "quit" -> quit();
+                case "observe" -> observeGame(params);
+                case "logout" -> logout();
+                case "quit" -> "quit";
                 case "help" -> help();
                 default -> help();
             };
@@ -89,6 +89,18 @@ public class PostloginClient extends Client{
         //game.eval();
 
         return String.format("Joined game %s.", params[0]);
+    }
+
+    public String observeGame(String ... params) throws DataAccessException{
+        if(params.length<1) {
+            return "Error: please enter observe <ID>";
+        }
+
+        return String.format("Observing game %s.", params[0]);
+    }
+
+    public String logout(){
+
     }
 
     public String help() {

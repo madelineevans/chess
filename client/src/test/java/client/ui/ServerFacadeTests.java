@@ -1,11 +1,12 @@
 package ui;
 import exceptions.DataAccessException;
 import exceptions.ResponseException;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import requests.LoginRequest;
+import requests.LogoutRequest;
 import requests.RegisterRequest;
+import results.LoginResult;
+import results.LogoutResult;
 import server.Server;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -46,15 +47,32 @@ class ServerFacadeTests {
     }
 
     @Test
-    void registerBad() {
+    void registerBad() throws DataAccessException {
+        RegisterRequest req = new RegisterRequest("player1", "password", "p1@email.com");
+        var authData = facade.register(req);
+        RegisterRequest req2 = new RegisterRequest("player1", "password", "p1@email.com");
+        assertThrows(DataAccessException.class, () -> facade.register(req2));
     }
 
     @Test
-    void login() {
+    void login() throws DataAccessException {
+        RegisterRequest req = new RegisterRequest("player1", "password", "p1@email.com");
+        var authData = facade.register(req);
+        LoginResult res = facade.login(new LoginRequest("player1", "password"));
+        assertTrue(res.authToken().length() > 10);
     }
 
     @Test
-    void logout() {
+    void loginBad() throws DataAccessException {
+        assertThrows(DataAccessException.class, () -> facade.login(new LoginRequest("player1", "password")));
+    }
+
+    @Test
+    void logout() throws DataAccessException {
+        RegisterRequest req = new RegisterRequest("player1", "password", "p1@email.com");
+        var authData = facade.register(req);
+        LoginResult res = facade.login(new LoginRequest("player1", "password"));
+        LogoutResult Rres = facade.logout(new LogoutRequest(res.authToken()));
     }
 
     @Test
