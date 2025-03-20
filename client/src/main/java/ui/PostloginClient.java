@@ -32,9 +32,9 @@ public class PostloginClient extends Client{
                 case "create" -> createGame();
                 case "list" -> listGames();
                 case "join" -> joinGame(params);
-                case "observe" -> observeGame(params);
-                case "logout" -> logout(params);
-                case "quit" -> quit();
+                //case "observe" -> observeGame(params);
+                //case "logout" -> logout(params);
+                //case "quit" -> quit();
                 case "help" -> help();
                 default -> help();
             };
@@ -85,8 +85,8 @@ public class PostloginClient extends Client{
         }
 
         //add a bit to send to gamePlay
-        GameplayClient game = new GameplayClient();
-        game.eval();
+        //GameplayClient game = new GameplayClient();
+        //game.eval();
 
         return String.format("Joined game %s.", params[0]);
     }

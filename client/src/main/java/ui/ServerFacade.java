@@ -46,7 +46,7 @@ public class ServerFacade {
     }
 
     public void clear() throws ResponseException {
-        var path = "/clear";
+        var path = "/db";
         this.makeRequest("DELETE", path, null, Void.class);
     }
 

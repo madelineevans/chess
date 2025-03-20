@@ -13,7 +13,8 @@ public class PreloginClient extends Client{
     private final String serverUrl;
     private State state = State.SIGNEDOUT;
 
-    public PreloginClient(String serverUrl, DataAccessException exception) {
+    public PreloginClient(String serverUrl) {
+        System.out.println("Server URL: " + serverUrl);
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
         //this.notificationHandler = notificationHandler;
@@ -52,8 +53,8 @@ public class PreloginClient extends Client{
         }
 
         //add a bit to send to postLogin
-        PostloginClient post = new PostloginClient();
-        post.eval();
+        //PostloginClient post = new PostloginClient();
+        //post.eval();
 
         state = State.SIGNEDIN;
         return String.format("Logged in as %s.", params[0]);
@@ -76,7 +77,7 @@ public class PreloginClient extends Client{
 
     }
 
-    public String quit() throws ResponseException {
+    public String quit(){
         state = State.SIGNEDOUT;
         return String.format("You signed out");
     }

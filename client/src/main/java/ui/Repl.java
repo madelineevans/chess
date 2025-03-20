@@ -1,12 +1,12 @@
 package ui;
 import java.util.Scanner;
-import static EscapeSequences.*;
+import static ui.EscapeSequences.*;
 
 public class Repl{
-    private final Client client;
+    private final PreloginClient client;
 
     public Repl(String serverUrl) {
-        client = new Client(serverUrl, this);
+        client = new PreloginClient(serverUrl);
     }
 
     public void run() {
@@ -21,7 +21,7 @@ public class Repl{
 
             try {
                 result = client.eval(line);
-                System.out.print(BLUE + result);
+                System.out.print(result);
             } catch (Throwable e) {
                 var msg = e.toString();
                 System.out.print(msg);
@@ -30,13 +30,13 @@ public class Repl{
         System.out.println();
     }
 
-    public void notify(Notification notification) {
-        System.out.println(RED + notification.message());
-        printPrompt();
-    }
+//    public void notify(Notification notification) {
+//        System.out.println(RED + notification.message());
+//        printPrompt();
+//    }
 
     private void printPrompt() {
-        System.out.print("\n" + RESET + ">>> " + GREEN);
+        System.out.print("\n" + SET_TEXT_COLOR_BLACK + ">>> " + SET_TEXT_COLOR_GREEN);
     }
 
 }
