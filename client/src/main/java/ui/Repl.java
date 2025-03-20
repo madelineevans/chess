@@ -1,16 +1,16 @@
 package ui;
 import java.util.Scanner;
-//import static client.EscapeSequences.*;
+import static EscapeSequences.*;
 
 public class Repl{
-    private final PetClient client;
+    private final Client client;
 
     public Repl(String serverUrl) {
-        client = new PetClient(serverUrl, this);
+        client = new Client(serverUrl, this);
     }
 
     public void run() {
-        System.out.println("\uD83D\uDC36 Welcome to the pet store. Sign in to start.");
+        System.out.println("Sign in to start playing Chess.");
         System.out.print(client.help());
 
         Scanner scanner = new Scanner(System.in);

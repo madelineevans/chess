@@ -2,14 +2,16 @@ package ui;
 import java.util.Arrays;
 import com.google.gson.Gson;
 import exceptions.DataAccessException;
+import requests.LoginRequest;
+import requests.RegisterRequest;
+import results.LoginResult;
+import results.RegisterResult;
 
-
-public class PreloginClient {
+public class PreloginClient implements Client{
     private String visitorName = null;
     private final ServerFacade server;
     private final String serverUrl;
-    //private final NotificationHandler notificationHandler;
-    //private State state = State.SIGNEDOUT;
+    private State state = State.SIGNEDOUT;
 
     public PreloginClient(String serverUrl, DataAccessException exception) {
         server = new ServerFacade(serverUrl);
@@ -24,46 +26,60 @@ public class PreloginClient {
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "signin" -> signIn(params);
-                case "rescue" -> rescuePet(params);
-                case "list" -> listPets();
-                case "signout" -> signOut();
-                case "adopt" -> adoptPet(params);
-                case "adoptall" -> adoptAllPets();
-                case "quit" -> "quit";
+                case "register" -> register();
+                case "help" -> help();
+                case "quit" -> quit();
                 default -> help();
             };
-        } catch (ResponseException ex) {
+        } catch (DataAccessException ex) {
             return ex.getMessage();
         }
     }
 
-    public String signIn(String... params) throws ResponseException {
-        if (params.length >= 1) {
-            state = State.SIGNEDIN;
-            visitorName = String.join("-", params);
-//            ws = new WebSocketFacade(serverUrl, notificationHandler);
-            ws.enterPetShop(visitorName);
-            return String.format("You signed in as %s.", visitorName);
+    public String signIn(String... params) throws DataAccessException {
+        if(params.length<2) {
+            return "Error: please enter signin <username> <password>";
         }
-        throw new ResponseException(400, "Expected: <yourname>");
-    }
-    public String listPets() throws ResponseException {
-        assertSignedIn();
-        var pets = server.listPets();
-        var result = new StringBuilder();
-        var gson = new Gson();
-        for (var pet : pets) {
-            result.append(gson.toJson(pet)).append('\n');
+
+        LoginRequest req = new LoginRequest(params[0], params[1]);
+
+        try{
+            LoginResult res = server.login(req);
+        } catch (DataAccessException e) {
+            throw new DataAccessException("Error: " + e.getMessage());
         }
-        return result.toString();
+
+        //add a bit to send to postLogin
+        PostloginClient post = new PostloginClient();
+        post.eval();
+
+        state = State.SIGNEDIN;
+        return String.format("Logged in as %s.", params[0]);
     }
-    public String signOut() throws ResponseException {
-        assertSignedIn();
-        ws.leavePetShop(visitorName);
-        ws = null;
+
+    public String register(String... params) throws DataAccessException {
+        if(params.length<3) {
+            return "Error: please enter register <username> <password> <email>";
+        }
+
+        RegisterRequest req = new RegisterRequest(params[0], params[1], params[2]);
+
+        try{
+            RegisterResult res = server.register(req);
+        } catch (DataAccessException e) {
+            throw new DataAccessException("Error: " + e.getMessage());
+        }
+        state = State.SIGNEDIN;
+        return String.format("Registered as %s.", params[0]);
+
+    }
+
+    public String quit() throws ResponseException {
+
         state = State.SIGNEDOUT;
-        return String.format("%s left the shop", visitorName);
+        return String.format("You signed out");
     }
+
     public String help() {
         if (state == State.SIGNEDOUT) {
             return """
@@ -72,18 +88,16 @@ public class PreloginClient {
                     """;
         }
         return """
-                - list
-                - adopt <pet id>
-                - rescue <name> <CAT|DOG|FROG|FISH>
-                - adoptAll
-                - signOut
+                - help
+                - login
+                - register
                 - quit
                 """;
     }
 
-    private void assertSignedIn() throws ResponseException {
-        if (state == State.SIGNEDOUT) {
-            throw new ResponseException(400, "You must sign in");
-        }
-    }
+//    private void assertSignedIn() throws ResponseException {
+//        if (state == State.SIGNEDOUT) {
+//            throw new DataAccessException(400, "You must sign in");
+//        }
+//    }
 }
