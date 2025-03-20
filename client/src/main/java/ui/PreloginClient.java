@@ -45,6 +45,8 @@ public class PreloginClient implements Client{
 
         try{
             LoginResult res = server.login(req);
+            authToken = res.authToken();
+
         } catch (DataAccessException e) {
             throw new DataAccessException("Error: " + e.getMessage());
         }
@@ -88,10 +90,10 @@ public class PreloginClient implements Client{
                     """;
         }
         return """
-                - help
-                - login
-                - register
-                - quit
+                register <USERNAME> <PASSWORD> <EMAIL> - to create and account
+                login <USERNAME> <PASSWORD> - to play chess
+                quit - playing chess
+                help - with possible commands
                 """;
     }
 

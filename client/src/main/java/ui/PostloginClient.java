@@ -1,19 +1,21 @@
 package ui;
 
+import chess.ChessGame;
 import exceptions.DataAccessException;
+import requests.JoinRequest;
+import requests.LoginRequest;
+import results.JoinResult;
+import results.LoginResult;
 
 import java.util.Arrays;
 
 public class PostloginClient implements Client{
-    private String visitorName = null;
     private final ServerFacade server;
     private final String serverUrl;
-    private State state = State.SIGNEDOUT;
 
-    public PreloginClient(String serverUrl, DataAccessException exception) {
+    public PostloginClient(String serverUrl, DataAccessException exception) {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
-        //this.notificationHandler = notificationHandler;
     }
 
     public String eval(String input) {
@@ -22,12 +24,13 @@ public class PostloginClient implements Client{
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
-                case "logout" -> logout(params);
                 case "create game" -> createGame();
                 case "list games" -> listGames();
-                case "play game" ->
-                case "help" -> help();
+                case "join game" -> joinGame(params);
+                case "observe game" -> observeGame(params);
+                case "logout" -> logout(params);
                 case "quit" -> quit();
+                case "help" -> help();
                 default -> help();
             };
         } catch (DataAccessException ex) {
@@ -35,18 +38,40 @@ public class PostloginClient implements Client{
         }
     }
 
-    public String help() {
-        if (state == State.SIGNEDOUT) {
-            return """
-                    - signIn <yourname>
-                    - quit
-                    """;
+    public String joinGame(String... params) throws DataAccessException {
+        if(params.length<2) {
+            return "Error: please enter join <ID> [WHITE|BLACK]";
         }
+
+        ChessGame.TeamColor color = ChessGame.TeamColor.WHITE;
+        if(params[1]=="BLACK"){
+            color = ChessGame.TeamColor.BLACK;
+        }
+
+        JoinRequest req = new JoinRequest(authToken, color, params[0]);
+
+        try{
+            JoinResult res = server.joinGame(req);
+        } catch (DataAccessException e) {
+            throw new DataAccessException("Error: " + e.getMessage());
+        }
+
+        //add a bit to send to gamePlay
+        GameplayClient game = new GameplayClient();
+        game.eval();
+
+        return String.format("Joined game %s.", params[0]);
+    }
+
+    public String help() {
         return """
-                - help
-                - login
-                - register
-                - quit
+                create <NAME> - a game
+                list - games
+                join <ID> [WHITE|BLACK] - a game
+                observe <ID> - a game
+                logout - when you are done
+                quit
+                help
                 """;
     }
 }
