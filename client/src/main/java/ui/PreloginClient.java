@@ -7,7 +7,7 @@ import requests.RegisterRequest;
 import results.LoginResult;
 import results.RegisterResult;
 
-public class PreloginClient implements Client{
+public class PreloginClient extends Client{
     private String visitorName = null;
     private final ServerFacade server;
     private final String serverUrl;

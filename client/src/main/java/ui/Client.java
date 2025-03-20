@@ -1,5 +1,6 @@
 package ui;
 
-public interface Client {
-    public String authToken = "";
+abstract class Client {
+    protected String authToken;
+
 }

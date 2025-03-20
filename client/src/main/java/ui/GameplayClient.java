@@ -1,5 +1,5 @@
 package ui;
 
-public class GameplayClient implements Client{
+public class GameplayClient extends Client{
 
 }

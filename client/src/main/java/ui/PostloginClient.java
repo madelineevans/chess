@@ -8,8 +8,9 @@ import results.JoinResult;
 import results.LoginResult;
 
 import java.util.Arrays;
+import java.util.Objects;
 
-public class PostloginClient implements Client{
+public class PostloginClient extends Client{
     private final ServerFacade server;
     private final String serverUrl;
 
@@ -24,10 +25,10 @@ public class PostloginClient implements Client{
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
-                case "create game" -> createGame();
-                case "list games" -> listGames();
-                case "join game" -> joinGame(params);
-                case "observe game" -> observeGame(params);
+                case "create" -> createGame();
+                case "list" -> listGames();
+                case "join" -> joinGame(params);
+                case "observe" -> observeGame(params);
                 case "logout" -> logout(params);
                 case "quit" -> quit();
                 case "help" -> help();
@@ -44,7 +45,7 @@ public class PostloginClient implements Client{
         }
 
         ChessGame.TeamColor color = ChessGame.TeamColor.WHITE;
-        if(params[1]=="BLACK"){
+        if(Objects.equals(params[1], "BLACK")){
             color = ChessGame.TeamColor.BLACK;
         }
 
