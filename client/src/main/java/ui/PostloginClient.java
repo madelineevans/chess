@@ -1,15 +1,9 @@
 package ui;
 import chess.ChessGame;
 import exceptions.DataAccessException;
-import requests.CreateRequest;
-import requests.JoinRequest;
-import requests.ListRequest;
-import requests.LoginRequest;
-import results.CreateResult;
-import results.JoinResult;
-import results.ListResult;
-import results.LoginResult;
-
+import exceptions.ResponseException;
+import requests.*;
+import results.*;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -95,12 +89,25 @@ public class PostloginClient extends Client{
         if(params.length<1) {
             return "Error: please enter observe <ID>";
         }
-
         return String.format("Observing game %s.", params[0]);
     }
 
-    public String logout(){
+    public String logout() throws DataAccessException {
+        if (state == State.SIGNEDOUT) {
+            throw new ResponseException(400, "You must sign in");
+        }
+        LogoutRequest req = new LogoutRequest(authToken);
 
+        try{
+            LogoutResult res = server.logout(req);
+        } catch (DataAccessException e) {
+            throw new DataAccessException("Error: " + e.getMessage());
+        }
+
+        //add a bit to exit postLogin
+
+        state = State.SIGNEDOUT;
+        return "You are logged out";
     }
 
     public String help() {

@@ -29,7 +29,6 @@ class ServerFacadeTests {
         }catch(ResponseException e){
             throw new DataAccessException("Error with clearing: " + e);
         }
-
     }
 
 
@@ -88,6 +87,7 @@ class ServerFacadeTests {
     }
 
     @Test
-    void clear() {
+    void clear() throws ResponseException {
+        assertDoesNotThrow(facade.clear());
     }
 }

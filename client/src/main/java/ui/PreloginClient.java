@@ -11,7 +11,6 @@ public class PreloginClient extends Client{
     private String visitorName = null;
     private final ServerFacade server;
     private final String serverUrl;
-    private State state = State.SIGNEDOUT;
 
     public PreloginClient(String serverUrl) {
         System.out.println("Server URL: " + serverUrl);
