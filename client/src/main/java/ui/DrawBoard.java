@@ -13,9 +13,7 @@ public class DrawBoard {
     private static final int LINE_WIDTH_IN_PADDED_CHARS = 1;
 
     // Padded characters.
-    private static final String EMPTY = "   ";
-    private static final String X = " X ";
-    private static final String O = " O ";
+    //private static final String EMPTY = "\u2003\u2003";
 
     private static Random rand = new Random();
 
@@ -33,39 +31,39 @@ public class DrawBoard {
         out.print(SET_TEXT_COLOR_RED);
     }
 
-//    private static void drawHeaders(PrintStream out) {
-//
-//        setBlack(out);
-//
-//        String[] headers = { "TIC", "TAC", "TOE" };
-//        for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
-//            drawHeader(out, headers[boardCol]);
-//
-//            if (boardCol < BOARD_SIZE_IN_SQUARES - 1) {
-//                out.print(EMPTY.repeat(LINE_WIDTH_IN_PADDED_CHARS));
-//            }
-//        }
-//
-//        out.println();
-//    }
+    private static void drawHeaders(PrintStream out) {
 
-//    private static void drawHeader(PrintStream out, String headerText) {
-//        int prefixLength = SQUARE_SIZE_IN_PADDED_CHARS / 2;
-//        int suffixLength = SQUARE_SIZE_IN_PADDED_CHARS - prefixLength - 1;
-//
-//        out.print(EMPTY.repeat(prefixLength));
-//        printHeaderText(out, headerText);
-//        out.print(EMPTY.repeat(suffixLength));
-//    }
+        setBlack(out);
 
-//    private static void printHeaderText(PrintStream out, String player) {
-//        out.print(SET_BG_COLOR_BLACK);
-//        out.print(SET_TEXT_COLOR_GREEN);
-//
-//        out.print(player);
-//
-//        setBlack(out);
-//    }
+        String[] headers = { "TIC", "TAC", "TOE" };
+        for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
+            drawHeader(out, headers[boardCol]);
+
+            if (boardCol < BOARD_SIZE_IN_SQUARES - 1) {
+                out.print(EMPTY.repeat(LINE_WIDTH_IN_PADDED_CHARS));
+            }
+        }
+
+        out.println();
+    }
+
+    private static void drawHeader(PrintStream out, String headerText) {
+        int prefixLength = SQUARE_SIZE_IN_PADDED_CHARS / 2;
+        int suffixLength = SQUARE_SIZE_IN_PADDED_CHARS - prefixLength - 1;
+
+        out.print(EMPTY.repeat(prefixLength));
+        printHeaderText(out, headerText);
+        out.print(EMPTY.repeat(suffixLength));
+    }
+
+    private static void printHeaderText(PrintStream out, String player) {
+        out.print(SET_BG_COLOR_BLACK);
+        out.print(SET_TEXT_COLOR_GREEN);
+
+        out.print(player);
+
+        setBlack(out);
+    }
 
 //    private static void drawTicTacToeBoard(PrintStream out) {
 //
@@ -82,55 +80,30 @@ public class DrawBoard {
 //    }
 
     private static void drawChessBoard(PrintStream out){
+        //drawHeaders(out);
         for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) { //for each row call a row printer
-            //drawWhiteSquare(out);
-            if(boardRow%2==0){
-                drawWhiteRow(out);
+            if(boardRow == 1){
+                drawBlackRow(out, WHITE_PAWN);
+            }
+            else if(boardRow == 6){
+                drawWhiteRow(out, BLACK_PAWN);
+            }
+            else if(boardRow%2==0){
+                drawWhiteRow(out, EMPTY);
             }
             else{
-                drawBlackRow(out);
+                drawBlackRow(out, EMPTY);
             }
         }
     }
 
-    private static void drawRowOfSquares(PrintStream out) {
-
-        for (int squareRow = 0; squareRow < SQUARE_SIZE_IN_PADDED_CHARS; ++squareRow) {
-            for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
-                setWhite(out);
-
-                if (squareRow == SQUARE_SIZE_IN_PADDED_CHARS / 2) {
-                    int prefixLength = SQUARE_SIZE_IN_PADDED_CHARS / 2;
-                    int suffixLength = SQUARE_SIZE_IN_PADDED_CHARS - prefixLength - 1;
-
-                    out.print(EMPTY.repeat(prefixLength));
-                    printPlayer(out, rand.nextBoolean() ? X : O);
-                    out.print(EMPTY.repeat(suffixLength));
-                }
-                else {
-                    out.print(EMPTY.repeat(SQUARE_SIZE_IN_PADDED_CHARS));
-                }
-
-//                if (boardCol < BOARD_SIZE_IN_SQUARES - 1) {
-//                    // Draw vertical column separator.
-//                    setRed(out);
-//                    out.print(EMPTY.repeat(LINE_WIDTH_IN_PADDED_CHARS));
-//                }
-
-                setBlack(out);
-            }
-
-            out.println();
-        }
-    }
-
-    private static void drawWhiteRow(PrintStream out) {
+    private static void drawWhiteRow(PrintStream out, String player) {
         for (int lineRow = 0; lineRow < LINE_WIDTH_IN_PADDED_CHARS; ++lineRow) {
             for (int col = 0; col < BOARD_SIZE_IN_SQUARES; ++col) {
                 if (col % 2 == 0) {
-                    drawWhiteSquare(out);
+                    drawWhiteSquare(out, player);
                 } else {
-                    drawBlackSquare(out);
+                    drawBlackSquare(out, player);
                 }
                 //out.print(" "); // Print a space to visualize the square.
             }
@@ -138,13 +111,14 @@ public class DrawBoard {
         }
     }
 
-    private static void drawBlackRow(PrintStream out) {
+    private static void drawBlackRow(PrintStream out, String player) {
         for (int lineRow = 0; lineRow < LINE_WIDTH_IN_PADDED_CHARS; ++lineRow) {
             for (int col = 0; col < BOARD_SIZE_IN_SQUARES; ++col) {
+                //String player = EMPTY;
                 if (col % 2 == 0) {
-                    drawBlackSquare(out);
+                    drawBlackSquare(out, "A");
                 } else {
-                    drawWhiteSquare(out);
+                    drawWhiteSquare(out, "A");
                 }
                 //out.print(" "); // Print a space to visualize the square.
             }
@@ -153,14 +127,14 @@ public class DrawBoard {
         }
     }
 
-    private static void drawWhiteSquare(PrintStream out){
-        setWhite(out);
-        out.print(EMPTY);
+    private static void drawWhiteSquare(PrintStream out, String player){
+        setGrey(out);
+        out.print(player);
         out.print(RESET_BG_COLOR);
     }
-    private static void drawBlackSquare(PrintStream out){
-        setBlack(out);
-        out.print(EMPTY);
+    private static void drawBlackSquare(PrintStream out, String player){
+        setDarkGreen(out);
+        out.print(player);
         out.print(RESET_BG_COLOR);
     }
 
@@ -169,9 +143,14 @@ public class DrawBoard {
         out.print(SET_TEXT_COLOR_WHITE);
     }
 
-    private static void setRed(PrintStream out) {
-        out.print(SET_BG_COLOR_RED);
-        out.print(SET_TEXT_COLOR_RED);
+    private static void setGrey(PrintStream out) {
+        out.print(SET_BG_COLOR_LIGHT_GREY);
+        out.print(SET_TEXT_COLOR_LIGHT_GREY);
+    }
+
+    private static void setDarkGreen(PrintStream out) {
+        out.print(SET_BG_COLOR_DARK_GREEN);
+        out.print(SET_TEXT_COLOR_DARK_GREY);
     }
 
     private static void setBlack(PrintStream out) {
