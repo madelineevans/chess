@@ -11,6 +11,7 @@ public class PreloginClient extends Client{
     private String visitorName = null;
     private final ServerFacade server;
     private final String serverUrl;
+    private boolean registered = false;
 
     public PreloginClient(String serverUrl) {
         System.out.println("Server URL: " + serverUrl);
@@ -25,8 +26,8 @@ public class PreloginClient extends Client{
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
-                case "signin" -> signIn(params);
-                case "register" -> register();
+                case "login" -> Login(params);
+                case "register" -> register(params);
                 case "help" -> help();
                 case "quit" -> "quit";
                 default -> help();
@@ -36,9 +37,13 @@ public class PreloginClient extends Client{
         }
     }
 
-    public String signIn(String... params) throws DataAccessException {
+    public String Login(String... params) throws DataAccessException {
+        if(!registered){
+            return "Please register before logging in.";
+        }
+
         if(params.length<2) {
-            return "Error: please enter signin <username> <password>";
+            return "Error: please enter login <username> <password>";
         }
 
         LoginRequest req = new LoginRequest(params[0], params[1]);
@@ -52,8 +57,8 @@ public class PreloginClient extends Client{
         }
 
         //add a bit to send to postLogin
-        //PostloginClient post = new PostloginClient();
-        //post.eval();
+        PostloginClient post = new PostloginClient(serverUrl, authToken);
+        post.eval("help");
 
         state = State.SIGNEDIN;
         return String.format("Logged in as %s.", params[0]);
@@ -71,7 +76,7 @@ public class PreloginClient extends Client{
         } catch (DataAccessException e) {
             throw new DataAccessException("Error: " + e.getMessage());
         }
-        state = State.SIGNEDIN;
+        registered = true;
         return String.format("Registered as %s.", params[0]);
 
     }
@@ -82,12 +87,6 @@ public class PreloginClient extends Client{
 //    }
 
     public String help() {
-        if (state == State.SIGNEDOUT) {
-            return """
-                    - signIn <yourname>
-                    - quit
-                    """;
-        }
         return """
                 register <USERNAME> <PASSWORD> <EMAIL> - to create and account
                 login <USERNAME> <PASSWORD> - to play chess
