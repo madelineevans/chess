@@ -87,7 +87,7 @@ class ServerFacadeTests {
     }
 
     @Test
-    void clear() throws ResponseException {
+    void clear() throws DataAccessException {
         assertDoesNotThrow(facade.clear());
     }
 }

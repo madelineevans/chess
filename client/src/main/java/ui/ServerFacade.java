@@ -44,12 +44,12 @@ public class ServerFacade {
         return this.makeRequest("PUT", path, request, JoinResult.class);
     }
 
-    public void clear() throws ResponseException {
+    public void clear() throws DataAccessException {
         var path = "/db";
         this.makeRequest("DELETE", path, null, Void.class);
     }
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
+    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws DataAccessException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
@@ -60,7 +60,7 @@ public class ServerFacade {
             http.connect();
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
-        } catch (ResponseException ex) {
+        } catch (DataAccessException ex) {
             throw ex;
         } catch (Exception ex) {
             throw new ResponseException(500, ex.getMessage());
@@ -78,16 +78,16 @@ public class ServerFacade {
         }
     }
 
-    private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
+    private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, DataAccessException {
         var status = http.getResponseCode();
         if (!isSuccessful(status)) {
             try (InputStream respErr = http.getErrorStream()) {
                 if (respErr != null) {
-                    throw ResponseException.fromJson(respErr);
+                    throw new DataAccessException("Server error: " + ResponseException.fromJson(respErr).getMessage());
                 }
             }
 
-            throw new ResponseException(status, "other failure: " + status);
+            throw new DataAccessException("HTTP error: " + status);
         }
     }
 

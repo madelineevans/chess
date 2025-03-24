@@ -3,7 +3,7 @@ import java.util.Scanner;
 import static ui.EscapeSequences.*;
 
 public class Repl{
-    private final PreloginClient client;
+    private Client client;
 
     public Repl(String serverUrl) {
         client = new PreloginClient(serverUrl);
@@ -22,6 +22,13 @@ public class Repl{
             try {
                 result = client.eval(line);
                 System.out.print(result);
+                if (client instanceof PreloginClient && result.startsWith("Logged in")) {
+                    transitionTo(new PostloginClient(client.getServerUrl(), client.getAuthToken()));
+                } else if (client instanceof PostloginClient && result.startsWith("Joined game")) {
+                    transitionTo(new GameplayClient(client.getServerUrl(), client.getAuthToken()));
+                }
+
+
             } catch (Throwable e) {
                 var msg = e.toString();
                 System.out.print(msg);
@@ -32,6 +39,11 @@ public class Repl{
 
     private void printPrompt() {
         System.out.print("\n" + SET_TEXT_COLOR_BLACK + ">>> " + SET_TEXT_COLOR_GREEN);
+    }
+
+    private void transitionTo(Client newClient){
+        this.client = newClient;
+        System.out.print(client.help());
     }
 
 }

@@ -1,7 +1,6 @@
 package ui;
 import chess.ChessGame;
 import exceptions.DataAccessException;
-import exceptions.ResponseException;
 import requests.*;
 import results.*;
 import java.util.Arrays;
@@ -9,11 +8,10 @@ import java.util.Objects;
 
 public class PostloginClient extends Client{
     private final ServerFacade server;
-    private final String serverUrl;
 
     public PostloginClient(String serverUrl, String authToken) {
+        super(serverUrl);
         server = new ServerFacade(serverUrl);
-        this.serverUrl = serverUrl;
         this.authToken = authToken;
     }
 
@@ -93,9 +91,9 @@ public class PostloginClient extends Client{
     }
 
     public String logout() throws DataAccessException {
-        if (state == State.SIGNEDOUT) {
-            throw new ResponseException(400, "You must sign in");
-        }
+//        if (loggedIn) {
+//            throw new ResponseException(400, "You must login");
+//        }
         LogoutRequest req = new LogoutRequest(authToken);
 
         try{
@@ -106,7 +104,7 @@ public class PostloginClient extends Client{
 
         //add a bit to exit postLogin
 
-        state = State.SIGNEDOUT;
+        //state = State.SIGNEDOUT;
         return "You are logged out";
     }
 

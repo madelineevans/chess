@@ -1,23 +1,23 @@
 package ui;
 import java.util.Arrays;
+import java.util.Objects;
+
 import com.google.gson.Gson;
 import exceptions.DataAccessException;
+import exceptions.ResponseException;
 import requests.LoginRequest;
 import requests.RegisterRequest;
 import results.LoginResult;
 import results.RegisterResult;
 
 public class PreloginClient extends Client{
-    private String visitorName = null;
     private final ServerFacade server;
-    private final String serverUrl;
-    private boolean registered = false;
+    //private boolean registered = false;
+    private boolean loggedin = false;
 
     public PreloginClient(String serverUrl) {
-        System.out.println("Server URL: " + serverUrl);
+        super(serverUrl);
         server = new ServerFacade(serverUrl);
-        this.serverUrl = serverUrl;
-        //this.notificationHandler = notificationHandler;
     }
 
     public String eval(String input) {
@@ -38,13 +38,13 @@ public class PreloginClient extends Client{
     }
 
     public String Login(String... params) throws DataAccessException {
-        if(!registered){
-            return "Please register before logging in.";
-        }
-
-        if(params.length<2) {
+        if(!(params.length == 2)) {
             return "Error: please enter login <username> <password>";
         }
+
+//        if(!checkRegistered()){
+//            return "Please register before logging in.";
+//        }
 
         LoginRequest req = new LoginRequest(params[0], params[1]);
 
@@ -52,16 +52,21 @@ public class PreloginClient extends Client{
             LoginResult res = server.login(req);
             authToken = res.authToken();
 
+//        } catch (ResponseException e){
+//            if(e.getMessage().startsWith("Cannot invoke")){
+//                //registered = true;
+//                return "That username is already registered, please login";
+//            }
         } catch (DataAccessException e) {
             throw new DataAccessException("Error: " + e.getMessage());
         }
 
         //add a bit to send to postLogin
-        PostloginClient post = new PostloginClient(serverUrl, authToken);
-        post.eval("help");
+//        PostloginClient post = new PostloginClient(serverUrl, authToken);
+//        post.eval("help");
 
-        state = State.SIGNEDIN;
-        return String.format("Logged in as %s.", params[0]);
+        loggedin = true;
+        return String.format("Logged in as %s.\n", params[0]);
     }
 
     public String register(String... params) throws DataAccessException {
@@ -73,18 +78,19 @@ public class PreloginClient extends Client{
 
         try{
             RegisterResult res = server.register(req);
+//        } catch (ResponseException e){
+//            if(e.getMessage().startsWith("Cannot invoke")){
+//                //registered = true;
+//                return "That username is already registered, please login";
+//            }
         } catch (DataAccessException e) {
+            System.out.println(e.toString());
             throw new DataAccessException("Error: " + e.getMessage());
         }
-        registered = true;
+        //registered = true;
         return String.format("Registered as %s.", params[0]);
 
     }
-
-//    public String quit(){
-//        state = State.SIGNEDOUT;
-//        return String.format("You signed out");
-//    }
 
     public String help() {
         return """
@@ -95,9 +101,8 @@ public class PreloginClient extends Client{
                 """;
     }
 
-//    private void assertSignedIn() throws ResponseException {
-//        if (state == State.SIGNEDOUT) {
-//            throw new DataAccessException(400, "You must sign in");
-//        }
+//    public boolean checkRegistered(){
+//        return registered;
 //    }
+
 }
