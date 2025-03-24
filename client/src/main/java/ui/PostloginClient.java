@@ -36,7 +36,7 @@ public class PostloginClient extends Client{
     }
 
     public String createGame(String... params) throws DataAccessException {
-        if(params.length > 1){
+        if(params.length != 1){
             return "Error: please enter create <NAME>";
         }
         CreateRequest req = new CreateRequest(authToken, params[0]);
@@ -49,6 +49,7 @@ public class PostloginClient extends Client{
     }
 
     public String listGames() throws DataAccessException {
+        //add something to check if any games
         ListRequest req = new ListRequest(authToken);
         try{
             ListResult res = server.listGames(req);
@@ -59,9 +60,11 @@ public class PostloginClient extends Client{
     }
 
     public String joinGame(String... params) throws DataAccessException {
-        if(params.length<2) {
+        if(params.length!=2) {
             return "Error: please enter join <ID> [WHITE|BLACK]";
         }
+
+        //add something to check if that came exists
 
         ChessGame.TeamColor color = ChessGame.TeamColor.WHITE;
         if(Objects.equals(params[1], "BLACK")){
@@ -84,9 +87,12 @@ public class PostloginClient extends Client{
     }
 
     public String observeGame(String ... params) throws DataAccessException{
-        if(params.length<1) {
+        if(params.length!=1) {
             return "Error: please enter observe <ID>";
         }
+
+        // check there's a game to observe
+
         return String.format("Observing game %s.", params[0]);
     }
 
