@@ -1,11 +1,13 @@
 package ui;
 import com.google.gson.Gson;
+import exceptions.AlreadyTaken;
 import exceptions.DataAccessException;
 import exceptions.ResponseException;
 import requests.*;
 import results.*;
 import java.io.*;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 
 public class ServerFacade {
     private final String serverUrl;
@@ -83,7 +85,7 @@ public class ServerFacade {
         if (!isSuccessful(status)) {
             try (InputStream respErr = http.getErrorStream()) {
                 if (respErr != null) {
-                    throw new DataAccessException("Server error: " + ResponseException.fromJson(respErr).getMessage());
+                    throw new AlreadyTaken("Error: it's already taken");// + ResponseException.fromJson(respErr).getMessage());
                 }
             }
 
@@ -96,6 +98,8 @@ public class ServerFacade {
         if (http.getContentLength() < 0) {
             try (InputStream respBody = http.getInputStream()) {
                 InputStreamReader reader = new InputStreamReader(respBody);
+//                String responseStr = new String(respBody.readAllBytes(), StandardCharsets.UTF_8);   //debugging line
+//                System.out.println("Raw response: " + responseStr); // Debugging line
                 if (responseClass != null) {
                     response = new Gson().fromJson(reader, responseClass);
                 }

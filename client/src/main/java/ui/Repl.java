@@ -21,13 +21,24 @@ public class Repl{
 
             try {
                 result = client.eval(line);
+
+                if ("exit_to_prelogin".equals(result)) {
+                    System.out.println("Returning to pre-login screen...");
+                    transitionTo(new PreloginClient(client.getServerUrl()));
+                    continue;
+                }
+                if ("exit_to_postlogin".equals(result)) {
+                    System.out.println("Returning to post-login screen...");
+                    transitionTo(new PostloginClient(client.getServerUrl(), client.getAuthToken()));
+                    continue;
+                }
+
                 System.out.print(result);
                 if (client instanceof PreloginClient && result.startsWith("Logged in")) {
                     transitionTo(new PostloginClient(client.getServerUrl(), client.getAuthToken()));
                 } else if (client instanceof PostloginClient && result.startsWith("Joined game")) {
                     transitionTo(new GameplayClient(client.getServerUrl(), client.getAuthToken()));
                 }
-
 
             } catch (Throwable e) {
                 var msg = e.toString();

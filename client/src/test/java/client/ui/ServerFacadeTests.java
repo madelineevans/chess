@@ -50,6 +50,7 @@ class ServerFacadeTests {
         RegisterRequest req = new RegisterRequest("player1", "password", "p1@email.com");
         var authData = facade.register(req);
         RegisterRequest req2 = new RegisterRequest("player1", "password", "p1@email.com");
+        //facade.register(req2);
         assertThrows(DataAccessException.class, () -> facade.register(req2));
     }
 
@@ -88,6 +89,6 @@ class ServerFacadeTests {
 
     @Test
     void clear() throws DataAccessException {
-        assertDoesNotThrow(facade.clear());
+        assertDoesNotThrow(() -> facade.clear());
     }
 }

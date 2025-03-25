@@ -21,12 +21,12 @@ public class PostloginClient extends Client{
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
-                case "create" -> createGame();
+                case "create" -> createGame(params);
                 case "list" -> listGames();
                 case "join" -> joinGame(params);
                 case "observe" -> observeGame(params);
                 case "logout" -> logout();
-                case "quit" -> "quit";
+                case "quit" -> "quit_to_prelogin";
                 case "help" -> help();
                 default -> help();
             };
@@ -78,10 +78,6 @@ public class PostloginClient extends Client{
         } catch (DataAccessException e) {
             throw new DataAccessException("Error: " + e.getMessage());
         }
-
-        //add a bit to send to gamePlay
-        //GameplayClient game = new GameplayClient();
-        //game.eval();
 
         return String.format("Joined game %s.", params[0]);
     }

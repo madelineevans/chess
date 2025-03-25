@@ -1,10 +1,7 @@
 package ui;
 import java.util.Arrays;
-import java.util.Objects;
-
-import com.google.gson.Gson;
+import exceptions.AlreadyTaken;
 import exceptions.DataAccessException;
-import exceptions.ResponseException;
 import requests.LoginRequest;
 import requests.RegisterRequest;
 import results.LoginResult;
@@ -57,13 +54,11 @@ public class PreloginClient extends Client{
 //                //registered = true;
 //                return "That username is already registered, please login";
 //            }
+//        } catch (AlreadyTaken e){
+//            return "That username is already registered, please login"; //"please login with the correct password"
         } catch (DataAccessException e) {
             throw new DataAccessException("Error: " + e.getMessage());
         }
-
-        //add a bit to send to postLogin
-//        PostloginClient post = new PostloginClient(serverUrl, authToken);
-//        post.eval("help");
 
         loggedin = true;
         return String.format("Logged in as %s.\n", params[0]);
@@ -83,6 +78,8 @@ public class PreloginClient extends Client{
 //                //registered = true;
 //                return "That username is already registered, please login";
 //            }
+        } catch (AlreadyTaken e){
+            return "That username is already registered, please login";
         } catch (DataAccessException e) {
             System.out.println(e.toString());
             throw new DataAccessException("Error: " + e.getMessage());
