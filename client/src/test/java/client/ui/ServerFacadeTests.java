@@ -2,9 +2,8 @@ package ui;
 import exceptions.DataAccessException;
 import exceptions.ResponseException;
 import org.junit.jupiter.api.*;
-import requests.LoginRequest;
-import requests.LogoutRequest;
-import requests.RegisterRequest;
+import requests.*;
+import results.CreateResult;
 import results.LoginResult;
 import results.LogoutResult;
 import server.Server;
@@ -68,23 +67,48 @@ class ServerFacadeTests {
     }
 
     @Test
+    void createGames() throws DataAccessException {
+        RegisterRequest req = new RegisterRequest("player1", "password", "p1@email.com");
+        var authData = facade.register(req);
+        LoginResult res = facade.login(new LoginRequest("player1", "password"));
+        CreateRequest cReq = new CreateRequest(res.authToken(), "game1");
+        CreateResult cRes = facade.createGames(cReq);
+        assertNotNull(cRes, "Game creation should return a result");
+    }
+
+    @Test
+    void createBadGames() throws DataAccessException {
+        RegisterRequest req = new RegisterRequest("player1", "password", "p1@email.com");
+        var authData = facade.register(req);
+        LoginResult res = facade.login(new LoginRequest("player1", "password"));
+        CreateRequest cReq = new CreateRequest(res.authToken(), "game1");
+        CreateResult cRes = facade.createGames(cReq);
+        CreateRequest c2Req = new CreateRequest(res.authToken(), "game2");
+        assertThrows(DataAccessException.class, () -> facade.createGames(c2Req));
+    }
+
+    @Test
+    void listGames() throws DataAccessException {
+        RegisterRequest req = new RegisterRequest("player1", "password", "p1@email.com");
+        var authData = facade.register(req);
+        LoginResult res = facade.login(new LoginRequest("player1", "password"));
+        CreateRequest cReq = new CreateRequest(res.authToken(), "game1");
+        CreateResult cRes = facade.createGames(cReq);
+        ListRequest lReq = new ListRequest(res.authToken());
+        facade.listGames();
+        //assertTrue(res.authToken().length() > 10);
+    }
+
+    @Test
+    void joinGame() {
+    }
+
+    @Test
     void logout() throws DataAccessException {
         RegisterRequest req = new RegisterRequest("player1", "password", "p1@email.com");
         var authData = facade.register(req);
         LoginResult res = facade.login(new LoginRequest("player1", "password"));
         LogoutResult Rres = facade.logout(new LogoutRequest(res.authToken()));
-    }
-
-    @Test
-    void listGames() {
-    }
-
-    @Test
-    void createGames() {
-    }
-
-    @Test
-    void joinGame() {
     }
 
     @Test
