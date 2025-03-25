@@ -1,4 +1,5 @@
 package ui;
+import exceptions.BadRequest;
 import exceptions.DataAccessException;
 import exceptions.ResponseException;
 import org.junit.jupiter.api.*;
@@ -95,7 +96,17 @@ class ServerFacadeTests {
         CreateRequest cReq = new CreateRequest(res.authToken(), "game1");
         CreateResult cRes = facade.createGames(cReq);
         ListRequest lReq = new ListRequest(res.authToken());
-        facade.listGames();
+        facade.listGames(lReq);
+        //assertTrue(res.authToken().length() > 10);
+    }
+
+    @Test
+    void listBadGames() throws DataAccessException {
+        RegisterRequest req = new RegisterRequest("player1", "password", "p1@email.com");
+        var authData = facade.register(req);
+        LoginResult res = facade.login(new LoginRequest("player1", "password"));
+        ListRequest lReq = new ListRequest(res.authToken());
+        assertThrows(BadRequest.class, () -> facade.listGames(lReq));
         //assertTrue(res.authToken().length() > 10);
     }
 

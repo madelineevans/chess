@@ -1,6 +1,7 @@
 package ui;
 import com.google.gson.Gson;
 import exceptions.AlreadyTaken;
+import exceptions.BadRequest;
 import exceptions.DataAccessException;
 import exceptions.ResponseException;
 import requests.*;
@@ -85,7 +86,7 @@ public class ServerFacade {
         if (!isSuccessful(status)) {
             try (InputStream respErr = http.getErrorStream()) {
                 if (respErr != null) {
-                    throw new AlreadyTaken("Error: it's already taken");// + ResponseException.fromJson(respErr).getMessage());
+                    throw new BadRequest("Error: BadRequest" +ResponseException.fromJson(respErr).getMessage());
                 }
             }
 
@@ -95,14 +96,19 @@ public class ServerFacade {
 
     private static <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws IOException {
         T response = null;
-        if (http.getContentLength() < 0) {
-            try (InputStream respBody = http.getInputStream()) {
-                InputStreamReader reader = new InputStreamReader(respBody);
-//                String responseStr = new String(respBody.readAllBytes(), StandardCharsets.UTF_8);   //debugging line
-//                System.out.println("Raw response: " + responseStr); // Debugging line
-                if (responseClass != null) {
-                    response = new Gson().fromJson(reader, responseClass);
-                }
+//        if (http.getContentLength() < 0) {
+        try (InputStream respBody = http.getInputStream()) {
+            InputStreamReader reader = new InputStreamReader(respBody);
+            if (responseClass != null && responseClass != Void.class) {
+                BufferedReader bufferedReader = new BufferedReader(reader);//debug
+                StringBuilder responseStr = new StringBuilder();//debug
+                String line;//debug
+                while ((line = bufferedReader.readLine()) != null) {//debug
+                    responseStr.append(line);//debug
+                }//debug
+                System.out.println("Raw response: " + responseStr.toString());//debug
+
+                response = new Gson().fromJson(reader, responseClass);
             }
         }
         return response;

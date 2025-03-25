@@ -1,5 +1,6 @@
 package ui;
 import chess.ChessGame;
+import exceptions.BadRequest;
 import exceptions.DataAccessException;
 import requests.*;
 import results.*;
@@ -40,12 +41,13 @@ public class PostloginClient extends Client{
             return "Error: please enter create <NAME>";
         }
         CreateRequest req = new CreateRequest(authToken, params[0]);
+        CreateResult res = null;
         try{
-            CreateResult res = server.createGames(req);
+            res = server.createGames(req);
         } catch (DataAccessException e) {
             throw new DataAccessException("Error: " + e.getMessage());
         }
-        return "Created game " + params[0];
+        return "Created game " + params[0] + "Game ID: " + Integer.toString(res.gameID());
     }
 
     public String listGames() throws DataAccessException {
@@ -54,6 +56,8 @@ public class PostloginClient extends Client{
         try{
             ListResult res = server.listGames(req);
             return res.toString();
+        } catch (BadRequest e){
+            return "Error: no games available. Please add a game to list them";
         } catch (DataAccessException e) {
             throw new DataAccessException("Error: " + e.getMessage());
         }
