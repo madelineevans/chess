@@ -34,7 +34,7 @@ public class ServerFacade {
 
     public ListResult listGames(ListRequest request) throws DataAccessException {
         var path = "/game";
-        return this.makeRequest("GET", path, request, ListResult.class, request.authToken());
+        return this.makeRequest("GET", path, null, ListResult.class, request.authToken());
     }
 
     public CreateResult createGames(CreateRequest request) throws DataAccessException {
@@ -56,7 +56,6 @@ public class ServerFacade {
         try {
             //tells it the endpoint
             URL url = (new URI(serverUrl + path)).toURL();
-            System.out.println(url.toString()); //debug to see if url is correct
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
 

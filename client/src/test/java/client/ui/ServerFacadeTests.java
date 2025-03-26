@@ -84,8 +84,7 @@ class ServerFacadeTests {
         LoginResult res = facade.login(new LoginRequest("player1", "password"));
         CreateRequest cReq = new CreateRequest(res.authToken(), "game1");
         CreateResult cRes = facade.createGames(cReq);
-        CreateRequest c2Req = new CreateRequest(res.authToken(), "game1");
-        assertThrows(DataAccessException.class, () -> facade.createGames(c2Req));
+        assertThrows(DataAccessException.class, () -> facade.createGames(cReq));
     }
 
     @Test
@@ -97,7 +96,7 @@ class ServerFacadeTests {
         CreateResult cRes = facade.createGames(cReq);
         ListRequest lReq = new ListRequest(res.authToken());
         facade.listGames(lReq);
-        //assertTrue(res.authToken().length() > 10);
+        assertTrue(res.authToken().length() > 10);
     }
 
     @Test
