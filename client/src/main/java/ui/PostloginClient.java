@@ -61,7 +61,10 @@ public class PostloginClient extends Client{
             int i = 1;
             for(GameData game : res.games()){
                 games.append(Integer.toString(i)).append(": ");
-                games.append(game.toString()).append("\n");
+                games.append("GameName=").append(game.gameName());
+                games.append(", WhiteUsername=").append(game.whiteUsername());
+                games.append(", BlackUsername=").append(game.blackUsername());
+                games.append("\n");
                 i++;
             }
             return games.toString();
@@ -77,14 +80,23 @@ public class PostloginClient extends Client{
             return "Error: please enter join <ID> [WHITE|BLACK]";
         }
 
-        //add something to check if that came exists
-
         ChessGame.TeamColor color = ChessGame.TeamColor.WHITE;
-        if(Objects.equals(params[1], "BLACK")){
+        if(Objects.equals(params[1], "BLACK") || Objects.equals(params[1], "black")){
             color = ChessGame.TeamColor.BLACK;
         }
 
-        JoinRequest req = new JoinRequest(authToken, color, Integer.parseInt(params[0]));
+        int gameNum = Integer.parseInt(params[0]);
+        ListResult lRes = server.listGames(new ListRequest(authToken));
+
+        int i = 1;
+        int gameID=99999;
+        for(GameData game : lRes.games()){
+            if(i==gameNum){
+                gameID = game.gameID();
+            }
+            i++;
+        }
+        JoinRequest req = new JoinRequest(authToken, color, gameID);
 
         try{
             JoinResult res = server.joinGame(req);

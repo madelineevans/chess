@@ -40,7 +40,7 @@ public class Repl{
                 result = client.eval(line);
 
                 System.out.print(result);
-                if (client instanceof PreloginClient && result.startsWith("Logged in")) {
+                if (client instanceof PreloginClient && (result.startsWith("Logged in") || (result.startsWith("Registered")))) {
                     transitionTo(new PostloginClient(client.getServerUrl(), client.getAuthToken()));
                 } else if (client instanceof PostloginClient && result.startsWith("Joined game")) {
                     String color;

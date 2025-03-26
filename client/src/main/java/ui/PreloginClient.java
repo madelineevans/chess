@@ -55,7 +55,7 @@ public class PreloginClient extends Client{
     }
 
     public String register(String... params) throws DataAccessException {
-        if(params.length<3) {
+        if(params.length!=3) {
             return "Error: please enter register <username> <password> <email>";
         }
 
@@ -63,6 +63,7 @@ public class PreloginClient extends Client{
 
         try{
             RegisterResult res = server.register(req);
+            authToken = res.authToken();
         } catch (DataAccessException e) {
             if(e.getMessage().startsWith("Cannot invoke")) {
                 return "That username is already registered, please login";
