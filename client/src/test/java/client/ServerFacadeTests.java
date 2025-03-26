@@ -7,7 +7,6 @@ import results.CreateResult;
 import results.LoginResult;
 import server.Server;
 import ui.ServerFacade;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class ServerFacadeTests {
