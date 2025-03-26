@@ -12,26 +12,32 @@ public class Repl{
     public void run() {
         System.out.println("Login to start playing Chess.");
         System.out.print(client.help());
+        String line = "";
 
         Scanner scanner = new Scanner(System.in);
         var result = "";
         while (!result.equals("quit")) {
-            printPrompt();
-            String line = scanner.nextLine();
+
+            if (!result.equals("quit_to_prelogin") && !result.equals("quit_to_postlogin")) {
+                printPrompt();
+                line = scanner.nextLine();
+            }
 
             try {
-                result = client.eval(line);
-
-                if ("exit_to_prelogin".equals(result)) {
-                    System.out.println("Returning to pre-login screen...");
+                if ("quit_to_prelogin".equals(result)) {
+                    System.out.println("Returning to pre-login screen...\n");
                     transitionTo(new PreloginClient(client.getServerUrl()));
+                    result = "";
                     continue;
                 }
-                if ("exit_to_postlogin".equals(result)) {
-                    System.out.println("Returning to post-login screen...");
+                else if ("quit_to_postlogin".equals(result)) {
+                    System.out.println("Returning to post-login screen...\n");
                     transitionTo(new PostloginClient(client.getServerUrl(), client.getAuthToken()));
+                    result = "";
                     continue;
                 }
+
+                result = client.eval(line);
 
                 System.out.print(result);
                 if (client instanceof PreloginClient && result.startsWith("Logged in")) {

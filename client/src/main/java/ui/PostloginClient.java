@@ -28,7 +28,7 @@ public class PostloginClient extends Client{
                 case "join" -> joinGame(params);
                 case "observe" -> observeGame(params);
                 case "logout" -> logout();
-                case "quit" -> "quit_to_prelogin";
+                case "quit" -> "quit";
                 case "help" -> help();
                 default -> help();
             };
@@ -116,10 +116,7 @@ public class PostloginClient extends Client{
             throw new DataAccessException("Error: " + e.getMessage());
         }
 
-        //add a bit to exit postLogin
-
-        //state = State.SIGNEDOUT;
-        return "You are logged out";
+        return "quit_to_prelogin";
     }
 
     public String help() {
