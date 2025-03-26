@@ -48,7 +48,7 @@ public class PostloginClient extends Client{
         } catch (DataAccessException e) {
             throw new DataAccessException("Error: " + e.getMessage());
         }
-        return "Created game " + params[0] + " Game ID: " + Integer.toString(res.gameID());
+        return "Created game " + params[0];
     }
 
     public String listGames() throws DataAccessException {
@@ -79,10 +79,24 @@ public class PostloginClient extends Client{
         if(params.length!=2) {
             return "Error: please enter join <ID> [WHITE|BLACK]";
         }
+        try {
+            Integer.parseInt(params[0]); // Attempt to convert to int
+        } catch (NumberFormatException e) {
+            return "Error: please enter the number then color: join <ID> [WHITE|BLACK]";
+        }
+        if(!(params[1] instanceof String)){
+            return "Error: please enter the number then color: join <ID> [WHITE|BLACK]";
+        }
 
-        ChessGame.TeamColor color = ChessGame.TeamColor.WHITE;
+        ChessGame.TeamColor color = null;
         if(Objects.equals(params[1], "BLACK") || Objects.equals(params[1], "black")){
             color = ChessGame.TeamColor.BLACK;
+        }
+        else if(Objects.equals(params[1], "WHITE") || Objects.equals(params[1], "white")){
+            color = ChessGame.TeamColor.WHITE;
+        }
+        else{
+            return "Error: please only use white or black";
         }
 
         int gameNum = Integer.parseInt(params[0]);
@@ -102,7 +116,7 @@ public class PostloginClient extends Client{
             JoinResult res = server.joinGame(req);
         } catch (DataAccessException e) {
             if(e.getMessage().startsWith("Cannot invoke")) {
-                return "Not a real gameID or that color is taken";
+                return "Not a game or that color is taken";
             }
             throw new DataAccessException("Error: " + e.getMessage());
         }

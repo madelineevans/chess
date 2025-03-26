@@ -159,10 +159,10 @@ public class DrawBoard {
                     drawBorderSquare(out, row);
                 }
                 else if(Objects.equals(textColor, SET_TEXT_COLOR_MAGENTA)){
-                    pinkQueenRow(out, player, textColor, col);
+                    blueQueenRow(out, player, textColor, col);
                 }
                 else{
-                    blueQueenRow(out, player, textColor, col);
+                    pinkQueenRow(out, player, textColor, col);
                 }
             }
             out.println();
@@ -198,16 +198,16 @@ public class DrawBoard {
 
     private static void pinkQueenRow(PrintStream out, String player, String textColor, int col) {
         if (col % 2 == 0) {
-            drawBlackSquare(out, player, textColor);
-        } else {
             drawWhiteSquare(out, player, textColor);
+        } else {
+            drawBlackSquare(out, player, textColor);
         }
     }
     private static void blueQueenRow(PrintStream out, String player, String textColor, int col){
         if (col % 2 == 0) {
-            drawWhiteSquare(out, player, textColor);
-        } else {
             drawBlackSquare(out, player, textColor);
+        } else {
+            drawWhiteSquare(out, player, textColor);
         }
     }
 
