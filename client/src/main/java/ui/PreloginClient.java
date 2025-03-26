@@ -1,6 +1,5 @@
 package ui;
 import java.util.Arrays;
-import exceptions.AlreadyTaken;
 import exceptions.DataAccessException;
 import requests.LoginRequest;
 import requests.RegisterRequest;
@@ -9,7 +8,6 @@ import results.RegisterResult;
 
 public class PreloginClient extends Client{
     private final ServerFacade server;
-    //private boolean registered = false;
     private boolean loggedin = false;
 
     public PreloginClient(String serverUrl) {
@@ -65,8 +63,6 @@ public class PreloginClient extends Client{
 
         try{
             RegisterResult res = server.register(req);
-//        } catch (AlreadyTaken e){
-//            return "That username is already registered, please login";
         } catch (DataAccessException e) {
             if(e.getMessage().startsWith("Cannot invoke")) {
                 return "That username is already registered, please login";
@@ -85,9 +81,5 @@ public class PreloginClient extends Client{
                 help - with possible commands
                 """;
     }
-
-//    public boolean checkRegistered(){
-//        return registered;
-//    }
 
 }

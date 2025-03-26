@@ -98,7 +98,6 @@ public class ServerFacade {
 
     private static <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws IOException {
         T response = null;
-//        if (http.getContentLength() < 0) {
         try (InputStream respBody = http.getInputStream()) {
             InputStreamReader reader = new InputStreamReader(respBody);
             if (responseClass != null && responseClass != Void.class) {

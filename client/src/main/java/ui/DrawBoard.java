@@ -7,10 +7,6 @@ import java.util.Random;
 import static ui.EscapeSequences.*;
 
 public class DrawBoard {
-//    public DrawBoard(){
-//        var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
-//    }
-
     // Board dimensions.
     private static final int BOARD_SIZE_IN_SQUARES = 10;
     private static final int SQUARE_SIZE_IN_PADDED_CHARS = 1;
@@ -20,17 +16,6 @@ public class DrawBoard {
     private static final String EMPTY = "   ";
 
     private static Random rand = new Random();
-
-
-//    public static void main(String[] args) {
-//        var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
-//
-//        out.print(ERASE_SCREEN);
-//
-//        drawChessBoard(out);
-//        out.println();
-//        drawChessBoardUpsidedown(out);
-//    }
 
     public static void drawChessBoard(PrintStream out){
         for (int boardRow = BOARD_SIZE_IN_SQUARES-1; boardRow >= 0; --boardRow) { //for each row call a row printer

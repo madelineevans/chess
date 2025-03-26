@@ -5,7 +5,6 @@ import java.util.Arrays;
 
 public class GameplayClient extends Client{
     private final ServerFacade server;
-    //DrawBoard board = new DrawBoard();
     PrintStream out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 
     public GameplayClient(String serverUrl, String authToken) {

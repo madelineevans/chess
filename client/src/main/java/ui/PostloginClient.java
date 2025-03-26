@@ -92,11 +92,6 @@ public class PostloginClient extends Client{
             throw new DataAccessException("Error: " + e.getMessage());
         }
 
-//        System.out.println("showing params");
-//        for(String p : params){
-//            System.out.println(p);
-//        }
-
         return String.format("Joined game %s as %s.", params[0], params[1]);
     }
 
