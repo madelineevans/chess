@@ -19,48 +19,54 @@ public class ServerFacade {
 
     public RegisterResult register(RegisterRequest request) throws DataAccessException {
         var path = "/user";
-        return this.makeRequest("POST", path, request, RegisterResult.class);
+        return this.makeRequest("POST", path, request, RegisterResult.class, null);
     }
 
     public LoginResult login(LoginRequest request) throws DataAccessException {
         var path = "/session";
-        return this.makeRequest("POST", path, request, LoginResult.class);
+        return this.makeRequest("POST", path, request, LoginResult.class, null);
     }
 
     public LogoutResult logout(LogoutRequest request) throws DataAccessException {
         var path = "/session";
-        return this.makeRequest("DELETE", path, request, LogoutResult.class);
+        return this.makeRequest("DELETE", path, request, LogoutResult.class, request.authToken());
     }
 
     public ListResult listGames(ListRequest request) throws DataAccessException {
         var path = "/game";
-        return this.makeRequest("GET", path, request, ListResult.class);
+        return this.makeRequest("GET", path, request, ListResult.class, request.authToken());
     }
 
     public CreateResult createGames(CreateRequest request) throws DataAccessException {
         var path = "/game";
-        return this.makeRequest("POST", path, request, CreateResult.class);
+        return this.makeRequest("POST", path, request, CreateResult.class, request.authToken());
     }
 
     public JoinResult joinGame(JoinRequest request) throws DataAccessException {
         var path = "/game";
-        return this.makeRequest("PUT", path, request, JoinResult.class);
+        return this.makeRequest("PUT", path, request, JoinResult.class, request.authToken());
     }
 
     public void clear() throws DataAccessException {
         var path = "/db";
-        this.makeRequest("DELETE", path, null, Void.class);
+        this.makeRequest("DELETE", path, null, Void.class, null);
     }
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws DataAccessException {
+    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws DataAccessException {
         try {
+            //tells it the endpoint
             URL url = (new URI(serverUrl + path)).toURL();
+            System.out.println(url.toString()); //debug to see if url is correct
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
-            http.setDoOutput(true);
 
+            if(authToken!=null){
+                http.addRequestProperty("authorization", authToken);  //this adds the header
+            }
+            http.setDoOutput(true); //okay now we write out data
             writeBody(request, http);
-            http.connect();
+
+            http.connect(); //actually makes the request
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
         } catch (DataAccessException ex) {
@@ -73,7 +79,6 @@ public class ServerFacade {
 
     private static void writeBody(Object request, HttpURLConnection http) throws IOException {
         if (request != null) {
-            http.addRequestProperty("Content-Type", "application/json");
             String reqData = new Gson().toJson(request);
             try (OutputStream reqBody = http.getOutputStream()) {
                 reqBody.write(reqData.getBytes());
@@ -100,14 +105,6 @@ public class ServerFacade {
         try (InputStream respBody = http.getInputStream()) {
             InputStreamReader reader = new InputStreamReader(respBody);
             if (responseClass != null && responseClass != Void.class) {
-                BufferedReader bufferedReader = new BufferedReader(reader);//debug
-                StringBuilder responseStr = new StringBuilder();//debug
-                String line;//debug
-                while ((line = bufferedReader.readLine()) != null) {//debug
-                    responseStr.append(line);//debug
-                }//debug
-                System.out.println("Raw response: " + responseStr.toString());//debug
-
                 response = new Gson().fromJson(reader, responseClass);
             }
         }

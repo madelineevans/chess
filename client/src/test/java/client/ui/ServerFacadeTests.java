@@ -84,7 +84,7 @@ class ServerFacadeTests {
         LoginResult res = facade.login(new LoginRequest("player1", "password"));
         CreateRequest cReq = new CreateRequest(res.authToken(), "game1");
         CreateResult cRes = facade.createGames(cReq);
-        CreateRequest c2Req = new CreateRequest(res.authToken(), "game2");
+        CreateRequest c2Req = new CreateRequest(res.authToken(), "game1");
         assertThrows(DataAccessException.class, () -> facade.createGames(c2Req));
     }
 
