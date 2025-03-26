@@ -23,8 +23,4 @@ public class ResponseException extends DataAccessException {
         String message = map.get("message").toString();
         return new ResponseException(status, message);
     }
-
-    public int StatusCode() {
-        return statusCode;
-    }
 }
