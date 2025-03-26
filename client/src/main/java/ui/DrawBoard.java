@@ -159,18 +159,10 @@ public class DrawBoard {
                     drawBorderSquare(out, row);
                 }
                 else if(Objects.equals(textColor, SET_TEXT_COLOR_MAGENTA)){
-                    if (col % 2 == 0) {
-                        drawBlackSquare(out, player, textColor);
-                    } else {
-                        drawWhiteSquare(out, player, textColor);
-                    }
+                    pinkQueenRow(out, player, textColor, col);
                 }
                 else{
-                    if (col % 2 == 0) {
-                        drawWhiteSquare(out, player, textColor);
-                    } else {
-                        drawBlackSquare(out, player, textColor);
-                    }
+                    blueQueenRow(out, player, textColor, col);
                 }
             }
             out.println();
@@ -194,21 +186,28 @@ public class DrawBoard {
                     drawBorderSquare(out, row);
                 }
                 else if(Objects.equals(textColor, SET_TEXT_COLOR_BLUE)){
-                    if (col % 2 == 0) {
-                        drawBlackSquare(out, player, textColor);
-                    } else {
-                        drawWhiteSquare(out, player, textColor);
-                    }
+                    blueQueenRow(out, player, textColor, col);
                 }
                 else{
-                    if (col % 2 == 0) {
-                        drawWhiteSquare(out, player, textColor);
-                    } else {
-                        drawBlackSquare(out, player, textColor);
-                    }
+                    pinkQueenRow(out, player, textColor, col);
                 }
             }
             out.println();
+        }
+    }
+
+    private static void pinkQueenRow(PrintStream out, String player, String textColor, int col) {
+        if (col % 2 == 0) {
+            drawBlackSquare(out, player, textColor);
+        } else {
+            drawWhiteSquare(out, player, textColor);
+        }
+    }
+    private static void blueQueenRow(PrintStream out, String player, String textColor, int col){
+        if (col % 2 == 0) {
+            drawWhiteSquare(out, player, textColor);
+        } else {
+            drawBlackSquare(out, player, textColor);
         }
     }
 
