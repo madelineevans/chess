@@ -6,7 +6,6 @@ import org.junit.jupiter.api.*;
 import requests.*;
 import results.CreateResult;
 import results.LoginResult;
-import results.LogoutResult;
 import server.Server;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -123,7 +122,7 @@ class ServerFacadeTests {
         RegisterRequest req = new RegisterRequest("player1", "password", "p1@email.com");
         var authData = facade.register(req);
         LoginResult res = facade.login(new LoginRequest("player1", "password"));
-        LogoutResult Rres = facade.logout(new LogoutRequest(res.authToken()));
+        assertDoesNotThrow(() -> facade.logout(new LogoutRequest(res.authToken())));
     }
 
     @Test

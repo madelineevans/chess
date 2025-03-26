@@ -89,6 +89,9 @@ public class PostloginClient extends Client{
         try{
             JoinResult res = server.joinGame(req);
         } catch (DataAccessException e) {
+            if(e.getMessage().startsWith("Cannot invoke")) {
+                return "Not a real gameID or that color is taken";
+            }
             throw new DataAccessException("Error: " + e.getMessage());
         }
 
@@ -100,7 +103,7 @@ public class PostloginClient extends Client{
             return "Error: please enter observe <ID>";
         }
 
-        // check there's a game to observe
+        //check that the ID is for a real game and if not send an error
 
         return String.format("Observing game %s.", params[0]);
     }

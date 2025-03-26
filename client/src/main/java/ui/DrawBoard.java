@@ -76,17 +76,7 @@ public class DrawBoard {
     private static void drawBorder(PrintStream out){
         for (int lineRow = 0; lineRow < LINE_WIDTH_IN_PADDED_CHARS; ++lineRow) {
             for (int col = 0; col < BOARD_SIZE_IN_SQUARES; ++col) {
-                String val = switch (col) {
-                    case 1 -> "h";
-                    case 2 -> "g";
-                    case 3 -> "f";
-                    case 4 -> "e";
-                    case 5 -> "d";
-                    case 6 -> "c";
-                    case 7 -> "b";
-                    case 8 -> "a";
-                    default -> " ";
-                };
+                String val = setColLetter(col);
                 drawBorderSquare(out, val);
             }
         }
@@ -96,21 +86,25 @@ public class DrawBoard {
     private static void drawReverseBorder(PrintStream out){
         for (int lineRow = 0; lineRow < LINE_WIDTH_IN_PADDED_CHARS; ++lineRow) {
             for (int col = BOARD_SIZE_IN_SQUARES-1; col >= 0; --col) {
-                String val = switch (col) {
-                    case 1 -> "h";
-                    case 2 -> "g";
-                    case 3 -> "f";
-                    case 4 -> "e";
-                    case 5 -> "d";
-                    case 6 -> "c";
-                    case 7 -> "b";
-                    case 8 -> "a";
-                    default -> " ";
-                };
+                String val = setColLetter(col);
                 drawBorderSquare(out, val);
             }
         }
         out.println();
+    }
+
+    private static String setColLetter(int col){
+        return switch (col) {
+            case 1 -> "h";
+            case 2 -> "g";
+            case 3 -> "f";
+            case 4 -> "e";
+            case 5 -> "d";
+            case 6 -> "c";
+            case 7 -> "b";
+            case 8 -> "a";
+            default -> " ";
+        };
     }
 
     private static void drawBlackRow(PrintStream out, String player, String textColor, String row) {

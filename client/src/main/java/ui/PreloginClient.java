@@ -21,7 +21,7 @@ public class PreloginClient extends Client{
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
-                case "login" -> Login(params);
+                case "login" -> login(params);
                 case "register" -> register(params);
                 case "help" -> help();
                 case "quit" -> "quit";
@@ -32,7 +32,7 @@ public class PreloginClient extends Client{
         }
     }
 
-    public String Login(String... params) throws DataAccessException {
+    public String login(String... params) throws DataAccessException {
         if(!(params.length == 2)) {
             return "Error: please enter login <username> <password>";
         }
