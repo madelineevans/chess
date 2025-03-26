@@ -43,7 +43,16 @@ public class Repl{
                 if (client instanceof PreloginClient && result.startsWith("Logged in")) {
                     transitionTo(new PostloginClient(client.getServerUrl(), client.getAuthToken()));
                 } else if (client instanceof PostloginClient && result.startsWith("Joined game")) {
-                    transitionTo(new GameplayClient(client.getServerUrl(), client.getAuthToken()));
+                    String color;
+                    if(result.endsWith("black.")){
+                        color = "black";
+                    }
+                    else{
+                        color = "white";
+                    }
+                    transitionToGame(new GameplayClient(client.getServerUrl(), client.getAuthToken()), color);
+                } else if (client instanceof PostloginClient && result.startsWith("Observing")) {
+                    transitionToGame(new GameplayClient(client.getServerUrl(), client.getAuthToken()), "white");
                 }
 
             } catch (Throwable e) {
@@ -60,6 +69,12 @@ public class Repl{
 
     private void transitionTo(Client newClient){
         this.client = newClient;
+        System.out.print(client.help());
+    }
+
+    private void transitionToGame(GameplayClient newClient, String color){
+        this.client = newClient;
+        client.renderBoard(color);
         System.out.print(client.help());
     }
 

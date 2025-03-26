@@ -1,6 +1,4 @@
 package ui;
-import exceptions.DataAccessException;
-
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -16,14 +14,14 @@ public class GameplayClient extends Client{
         this.authToken = authToken;
     }
 
-    public String printBoard(){
+    public void printBoard(){
+        System.out.println("\n");
         DrawBoard.drawChessBoard(out);
-        return "White board";
     }
 
-    public String printUpsidedownBoard(){
-        DrawBoard.drawChessBoardUpsidown(out);
-        return "Black board";
+    public void printBlackBoard(){
+        System.out.println("\n");
+        DrawBoard.drawChessBoardUpsidedown(out);
     }
 
     @Override
@@ -32,8 +30,6 @@ public class GameplayClient extends Client{
         var cmd = (tokens.length > 0) ? tokens[0] : "help";
         var params = Arrays.copyOfRange(tokens, 1, tokens.length);
         return switch (cmd) {
-            case "white" -> printBoard();
-            case "black" -> printUpsidedownBoard();
             case "quit" -> "quit_to_postlogin";
             case "help" -> help();
             default -> help();
@@ -42,6 +38,9 @@ public class GameplayClient extends Client{
 
     @Override
     public String help() {
-        return "not yet implemented";
+        return """
+                quit
+                help
+                """;
     }
 }

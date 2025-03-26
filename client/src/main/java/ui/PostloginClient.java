@@ -62,6 +62,7 @@ public class PostloginClient extends Client{
             for(GameData game : res.games()){
                 games.append(Integer.toString(i)).append(": ");
                 games.append(game.toString()).append("\n");
+                i++;
             }
             return games.toString();
         } catch (BadRequest e){
@@ -91,7 +92,12 @@ public class PostloginClient extends Client{
             throw new DataAccessException("Error: " + e.getMessage());
         }
 
-        return String.format("Joined game %s.", params[0]);
+//        System.out.println("showing params");
+//        for(String p : params){
+//            System.out.println(p);
+//        }
+
+        return String.format("Joined game %s as %s.", params[0], params[1]);
     }
 
     public String observeGame(String ... params) throws DataAccessException{
@@ -105,9 +111,6 @@ public class PostloginClient extends Client{
     }
 
     public String logout() throws DataAccessException {
-//        if (loggedIn) {
-//            throw new ResponseException(400, "You must login");
-//        }
         LogoutRequest req = new LogoutRequest(authToken);
 
         try{

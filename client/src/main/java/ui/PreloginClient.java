@@ -39,24 +39,16 @@ public class PreloginClient extends Client{
             return "Error: please enter login <username> <password>";
         }
 
-//        if(!checkRegistered()){
-//            return "Please register before logging in.";
-//        }
-
         LoginRequest req = new LoginRequest(params[0], params[1]);
 
         try{
             LoginResult res = server.login(req);
             authToken = res.authToken();
 
-//        } catch (ResponseException e){
-//            if(e.getMessage().startsWith("Cannot invoke")){
-//                //registered = true;
-//                return "That username is already registered, please login";
-//            }
-//        } catch (AlreadyTaken e){
-//            return "That username is already registered, please login"; //"please login with the correct password"
         } catch (DataAccessException e) {
+            if(e.getMessage().startsWith("Cannot invoke")) {
+                return "That username/password is not recognized. Please register or use correct password";
+            }
             throw new DataAccessException("Error: " + e.getMessage());
         }
 
@@ -73,18 +65,14 @@ public class PreloginClient extends Client{
 
         try{
             RegisterResult res = server.register(req);
-//        } catch (ResponseException e){
-//            if(e.getMessage().startsWith("Cannot invoke")){
-//                //registered = true;
-//                return "That username is already registered, please login";
-//            }
-        } catch (AlreadyTaken e){
-            return "That username is already registered, please login";
+//        } catch (AlreadyTaken e){
+//            return "That username is already registered, please login";
         } catch (DataAccessException e) {
-            System.out.println(e.toString());
+            if(e.getMessage().startsWith("Cannot invoke")) {
+                return "That username is already registered, please login";
+            }
             throw new DataAccessException("Error: " + e.getMessage());
         }
-        //registered = true;
         return String.format("Registered as %s.", params[0]);
 
     }

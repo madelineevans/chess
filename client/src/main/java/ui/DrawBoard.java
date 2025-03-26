@@ -29,7 +29,7 @@ public class DrawBoard {
 //
 //        drawChessBoard(out);
 //        out.println();
-//        drawChessBoardUpsidown(out);
+//        drawChessBoardUpsidedown(out);
 //    }
 
     public static void drawChessBoard(PrintStream out){
@@ -57,9 +57,10 @@ public class DrawBoard {
                 drawBlackRow(out, EMPTY, SET_TEXT_COLOR_WHITE, Integer.toString(boardRow));
             }
         }
+        out.print(SET_TEXT_COLOR_GREEN);
     }
 
-    public static void drawChessBoardUpsidown(PrintStream out){
+    public static void drawChessBoardUpsidedown(PrintStream out){
         for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) { //for each row call a row printer
             if(boardRow == 2){
                 drawBlackRow(out, " P ", SET_TEXT_COLOR_MAGENTA, Integer.toString(boardRow));
@@ -84,6 +85,7 @@ public class DrawBoard {
                 drawWhiteRow(out, EMPTY, SET_TEXT_COLOR_WHITE, Integer.toString(boardRow));
             }
         }
+        out.print(SET_TEXT_COLOR_GREEN);
     }
 
     private static void drawBorder(PrintStream out){
