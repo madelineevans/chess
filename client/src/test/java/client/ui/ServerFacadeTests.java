@@ -1,12 +1,10 @@
 package ui;
 import chess.ChessGame;
-import exceptions.BadRequest;
 import exceptions.DataAccessException;
 import exceptions.ResponseException;
 import org.junit.jupiter.api.*;
 import requests.*;
 import results.CreateResult;
-import results.JoinResult;
 import results.LoginResult;
 import results.LogoutResult;
 import server.Server;
@@ -81,11 +79,7 @@ class ServerFacadeTests {
 
     @Test
     void createBadGames() throws DataAccessException {
-        RegisterRequest req = new RegisterRequest("player1", "password", "p1@email.com");
-        var authData = facade.register(req);
-        LoginResult res = facade.login(new LoginRequest("player1", "password"));
-        CreateRequest cReq = new CreateRequest(res.authToken(), "game1");
-        CreateResult cRes = facade.createGames(cReq);
+        CreateRequest cReq = new CreateRequest("1234", "game1");
         assertThrows(DataAccessException.class, () -> facade.createGames(cReq));
     }
 
@@ -103,12 +97,8 @@ class ServerFacadeTests {
 
     @Test
     void listBadGames() throws DataAccessException {
-        RegisterRequest req = new RegisterRequest("player1", "password", "p1@email.com");
-        var authData = facade.register(req);
-        LoginResult res = facade.login(new LoginRequest("player1", "password"));
-        ListRequest lReq = new ListRequest(res.authToken());
-        assertThrows(BadRequest.class, () -> facade.listGames(lReq));
-        //assertTrue(res.authToken().length() > 10);
+        ListRequest lReq = new ListRequest("1234");
+        assertThrows(DataAccessException.class, () -> facade.listGames(lReq));
     }
 
     @Test
@@ -119,13 +109,13 @@ class ServerFacadeTests {
         CreateRequest cReq = new CreateRequest(res.authToken(), "game1");
         CreateResult cRes = facade.createGames(cReq);
         JoinRequest jReq = new JoinRequest(res.authToken(), ChessGame.TeamColor.WHITE, cRes.gameID());
-        assertDoesNotThrow(facade.joinGame(jReq));
+        assertDoesNotThrow(() -> facade.joinGame(jReq));
     }
 
     @Test
     void joinBadGame() {
         JoinRequest jReq = new JoinRequest("1234", ChessGame.TeamColor.WHITE, 1234);
-        assertThrows(BadRequest.class, () -> facade.joinGame(jReq));
+        assertThrows(DataAccessException.class, () -> facade.joinGame(jReq));
     }
 
     @Test
@@ -138,7 +128,7 @@ class ServerFacadeTests {
 
     @Test
     void logoutBad() throws DataAccessException {
-        LogoutResult Rres = facade.logout(new LogoutRequest("1234"));
+        assertThrows(DataAccessException.class, () -> facade.logout(new LogoutRequest("1234")));
     }
 
     @Test

@@ -1,6 +1,5 @@
 package ui;
 import com.google.gson.Gson;
-import exceptions.AlreadyTaken;
 import exceptions.BadRequest;
 import exceptions.DataAccessException;
 import exceptions.ResponseException;
@@ -8,7 +7,6 @@ import requests.*;
 import results.*;
 import java.io.*;
 import java.net.*;
-import java.nio.charset.StandardCharsets;
 
 public class ServerFacade {
     private final String serverUrl;
