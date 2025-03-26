@@ -2,6 +2,7 @@ package ui;
 import chess.ChessGame;
 import exceptions.BadRequest;
 import exceptions.DataAccessException;
+import model.GameData;
 import requests.*;
 import results.*;
 import java.util.Arrays;
@@ -47,7 +48,7 @@ public class PostloginClient extends Client{
         } catch (DataAccessException e) {
             throw new DataAccessException("Error: " + e.getMessage());
         }
-        return "Created game " + params[0] + "Game ID: " + Integer.toString(res.gameID());
+        return "Created game " + params[0] + " Game ID: " + Integer.toString(res.gameID());
     }
 
     public String listGames() throws DataAccessException {
@@ -55,7 +56,14 @@ public class PostloginClient extends Client{
         ListRequest req = new ListRequest(authToken);
         try{
             ListResult res = server.listGames(req);
-            return res.toString();
+            StringBuilder games = new StringBuilder();
+            games.append("Games: \n");
+            int i = 1;
+            for(GameData game : res.games()){
+                games.append(Integer.toString(i)).append(": ");
+                games.append(game.toString()).append("\n");
+            }
+            return games.toString();
         } catch (BadRequest e){
             return "Error: no games available. Please add a game to list them";
         } catch (DataAccessException e) {
