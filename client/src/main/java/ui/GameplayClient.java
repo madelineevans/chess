@@ -38,8 +38,12 @@ public class GameplayClient extends Client{
     @Override
     public String help() {
         return """
-                quit
                 help
+                redraw - redraws the chess board
+                leave - removes you from the game
+                move - makes your desired move
+                resign - forfeit the game
+                highlight - highlights legal moves you can make                
                 """;
     }
 }
