@@ -11,10 +11,12 @@ import service.GameService;
 import service.UserService;
 import spark.*;
 import java.util.Map;
+import server.WebSocketHandler;
 
 public class Server {
     private final UserService us;
     private final GameService gs;
+    private final WebSocketHandler webSocketHandler;
 
     public Server(){
         UserDAO userDAO;
@@ -32,11 +34,13 @@ public class Server {
 
         this.us = new UserService(userDAO, authDAO, gameDAO);
         this.gs = new GameService(userDAO, authDAO, gameDAO);
+        webSocketHandler = new WebSocketHandler();
     }
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
         Spark.staticFiles.location("web");
+        Spark.webSocket("/ws", webSocketHandler);
 
         // Register your endpoints and handle exceptions here.
         Spark.post("/user",this::register); //registration
