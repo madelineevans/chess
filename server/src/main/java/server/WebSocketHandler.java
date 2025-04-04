@@ -1,5 +1,4 @@
 package server;
-
 import chess.ChessMove;
 import chess.ChessPosition;
 import com.google.gson.Gson;
@@ -8,10 +7,10 @@ import exceptions.Unauthorized;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import websocket.commands.*;
 import websocket.messages.*;
 import java.io.IOException;
-
 
 @WebSocket
 public class WebSocketHandler {
@@ -26,7 +25,7 @@ public class WebSocketHandler {
             //maybe change this bit? throwing a custom unauthorized exception
             String username = getUsername(command.getAuthToken());
 
-            saveSession(command.getGameID(), session);
+            saveSession(command.getGameID(), session, username);
 
             switch(command.getCommandType()){
                 case CONNECT -> connect(session, username, (ConnectCommand) command);
@@ -77,11 +76,21 @@ public class WebSocketHandler {
         //render game unplayable, how to implement???
     }
 
-    private void saveSession(int gameID, Session session){
+    private void saveSession(int gameID, Session session, String username){
         //checks if session is already in connectionManager
-        if(connections.find(gameID)==null){
+        if(connections.find(username)==null){   //originally this checked for the gameID, so if doesnt work go back
             //if not, adds it
-            connections.add(gameID, session); //key and value
+            connections.add(username, session, gameID); //key and value
+        }
+    }
+
+    public void sendMessage(RemoteEndpoint remote, ServerMessage message) {
+        try {
+            Gson gson = new Gson();
+            String json = gson.toJson(message);
+            remote.sendString(json);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
