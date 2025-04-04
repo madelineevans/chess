@@ -1,15 +1,15 @@
 package server;
 
+import chess.ChessMove;
+import chess.ChessPosition;
 import com.google.gson.Gson;
-import exception.ResponseException;
+import exceptions.ResponseException;
 import exceptions.Unauthorized;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import webSocketMessages.Action;
-import webSocketMessages.Notification;
 import websocket.commands.*;
-
+import websocket.messages.*;
 import java.io.IOException;
 
 
@@ -34,49 +34,47 @@ public class WebSocketHandler {
                 case LEAVE -> leaveGame(session, username, (LeaveCommand) command);
                 case RESIGN -> resign(session, username, (ResignCommand) command);
             }
-        } catch (UnauthorizedException ex){
+        } catch (Unauthorized ex){
             //serialize and send error message
             sendMessage(session.getRemote(), new ErrorMessage("Error: unauthorized"));
         } catch (Exception ex){
             ex.printStackTrace();
-            sendMessage(session.getRemote(), new ErrorMessage("Error: " + ex.getMessage());
+            sendMessage(session.getRemote(), new ErrorMessage("Error: " + ex.getMessage()));
         }
     }
 
-    private void connect(Session session, String username, ConnectCommand command){
+    private void connect(Session session, String username, ConnectCommand command) throws IOException {
         //send a message to everyone else that a play has connected
-    }
-    private void enter(String visitorName, Session session) throws IOException {
-        connections.add(visitorName, session);
-        var message = String.format("%s is in the shop", visitorName);
-        var notification = new Notification(Notification.Type.ARRIVAL, message);
-        connections.broadcast(visitorName, notification);
+        int gameID = command.getGameID();
+        connections.add(username, session, gameID);
+        var message = String.format("%s connected to the game as color ____ ", username); //add in a way to say what color their joining as
+        var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        connections.broadcast(username, gameID, notification);
     }
 
-    private void makeMove(Session session, String username, MakeMoveCommand command){
-
-    }
-    public void makeNoise(String petName, String sound) throws ResponseException {
+    private void makeMove(Session session, String username, MakeMoveCommand command) throws ResponseException {
         try {
-            var message = String.format("%s says %s", petName, sound);
-            var notification = new Notification(Notification.Type.NOISE, message);
-            connections.broadcast("", notification);
+            ChessMove move = command.getMove();
+            ChessPosition start = move.getStartPosition();
+            ChessPosition end = move.getEndPosition();
+
+            var message = String.format("%s moves from %s to %s", username, start.toString(), end.toString());
+            var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            connections.broadcast(username, command.getGameID(), notification);
         } catch (Exception ex) {
             throw new ResponseException(500, ex.getMessage());
         }
     }
 
-    private void leaveGame(Session session, String username, LeaveCommand command){
-
+    private void leaveGame(Session session, String username, LeaveCommand command) throws IOException {
+        connections.remove(username);
+        var message = String.format("%s left the game", username);
+        var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        connections.broadcast(username, command.getGameID(), notification);
     }
-    private void resign(Session session, String username, ResignCommand command){
 
-    }
-    private void exit(String visitorName) throws IOException {
-        connections.remove(visitorName);
-        var message = String.format("%s left the shop", visitorName);
-        var notification = new Notification(Notification.Type.DEPARTURE, message);
-        connections.broadcast(visitorName, notification);
+    private void resign(Session session, String username, ResignCommand command) {
+        //render game unplayable, how to implement???
     }
 
     private void saveSession(int gameID, Session session){
