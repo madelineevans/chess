@@ -48,11 +48,6 @@ public class ParentService {
         return authData;
     }
 
-    public String getUsername(String auth) throws DataAccessException {
-        AuthData authData = getAuth(auth);
-        return authData.username();
-    }
-
     public static String generateToken() {
         return UUID.randomUUID().toString();
     }

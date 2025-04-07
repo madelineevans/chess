@@ -6,17 +6,22 @@ import model.GameData;
 import requests.*;
 import results.*;
 import ui.ServerFacade;
+import ui.websocket.NotificationHandler;
+import ui.websocket.WebSocketFacade;
 
 import java.util.Arrays;
 import java.util.Objects;
 
 public class PostloginClient extends Client {
     private final ServerFacade server;
+    private final NotificationHandler notificationHandler;
+    private WebSocketFacade ws;
 
-    public PostloginClient(String serverUrl, String authToken) {
+    public PostloginClient(String serverUrl, String authToken, NotificationHandler notificationHandler) {
         super(serverUrl);
         server = new ServerFacade(serverUrl);
         this.authToken = authToken;
+        this.notificationHandler = notificationHandler;
     }
 
     public String eval(String input) {
@@ -113,9 +118,11 @@ public class PostloginClient extends Client {
             i++;
         }
         JoinRequest req = new JoinRequest(authToken, color, gameID);
+        ws = new WebSocketFacade(serverUrl, notificationHandler);
 
         try{
             JoinResult res = server.joinGame(req);
+            ws.connect(authToken, gameID);
         } catch (DataAccessException e) {
             if(e.getMessage().startsWith("Cannot invoke")) {
                 return "Not a game or that color is taken";
@@ -131,10 +138,9 @@ public class PostloginClient extends Client {
             return "Error: please enter observe <ID>";
         }
 
-        //check that the ID is for a real game and if not send an error
-        visitorName = String.join("-", params);
-        ws = new WebSocketFacade(serverUrl, notificationHandler);
-        ws.enterPetShop(visitorName);
+        //websocket stuff
+//        ws = new WebSocketFacade(serverUrl, notificationHandler);
+//        ws.enterPetShop(visitorName);
 
 
         return String.format("Observing game %s.", params[0]);

@@ -65,4 +65,8 @@ public class GameService extends ParentService{
         gameDAO.updateGame(updatedGame);
         return new JoinResult();
     }
+
+    public GameData getGame(int ID) throws DataAccessException {
+        return gameDAO.readData(Integer.toString(ID));
+    }
 }
