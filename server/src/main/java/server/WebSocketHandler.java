@@ -2,12 +2,15 @@ package server;
 import chess.ChessMove;
 import chess.ChessPosition;
 import com.google.gson.Gson;
+import exceptions.DataAccessException;
 import exceptions.ResponseException;
 import exceptions.Unauthorized;
+import model.AuthData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
+import service.ParentService;
 import websocket.commands.*;
 import websocket.messages.*;
 import java.io.IOException;
@@ -16,6 +19,11 @@ import java.io.IOException;
 public class WebSocketHandler {
 
     private final ConnectionManager connections = new ConnectionManager();
+    private final ParentService service; // or UserService or GameService
+
+    public WebSocketHandler(ParentService service) {
+        this.service = service;
+    }
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) {
@@ -33,12 +41,12 @@ public class WebSocketHandler {
                 case LEAVE -> leaveGame(session, username, (LeaveCommand) command);
                 case RESIGN -> resign(session, username, (ResignCommand) command);
             }
-        } catch (Unauthorized ex){
-            //serialize and send error message
-            sendMessage(session.getRemote(), new ErrorMessage("Error: unauthorized"));
+//        } catch (Unauthorized ex){
+//            //serialize and send error message
+//            sendMessage(session.getRemote(), new ErrorNotification(ServerMessage.ServerMessageType.ERROR, "Error: unauthorized"));
         } catch (Exception ex){
             ex.printStackTrace();
-            sendMessage(session.getRemote(), new ErrorMessage("Error: " + ex.getMessage()));
+            sendMessage(session.getRemote(), new ErrorNotification(ServerMessage.ServerMessageType.ERROR, "Error: " + ex.getMessage()));
         }
     }
 
@@ -94,10 +102,13 @@ public class WebSocketHandler {
         }
     }
 
-    private String getUsername(String authToken){
-        int authInt = Integer.parseInt(authToken);
-        //validate the authtoken
-        String username =
-        return username;
+    public String getUsername(String authToken) {
+        try {
+            AuthData authData = service.getAuth(authToken);
+            return authData.username();
+            //return getUsername(authToken);
+        } catch (DataAccessException e) {
+            throw new RuntimeException("Failed to access data ", e);
+        }
     }
 }

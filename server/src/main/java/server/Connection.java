@@ -8,8 +8,8 @@ public class Connection {
     public Session session;
     public int gameID;
 
-    public Connection(String visitorName, Session session, int gameID) {
-        this.username = visitorName;
+    public Connection(String username, Session session, int gameID) {
+        this.username = username;
         this.session = session;
         this.gameID = gameID;
     }

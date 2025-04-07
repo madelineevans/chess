@@ -34,7 +34,7 @@ public class Server {
 
         this.us = new UserService(userDAO, authDAO, gameDAO);
         this.gs = new GameService(userDAO, authDAO, gameDAO);
-        webSocketHandler = new WebSocketHandler();
+        this.webSocketHandler = new WebSocketHandler(this.us); // or pass `gs`, or a shared `ParentService`
     }
 
     public int run(int desiredPort) {

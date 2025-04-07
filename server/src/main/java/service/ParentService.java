@@ -1,5 +1,4 @@
 package service;
-
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
@@ -8,7 +7,6 @@ import exceptions.Unauthorized;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
@@ -49,9 +47,16 @@ public class ParentService {
         }
         return authData;
     }
+
+    public String getUsername(String auth) throws DataAccessException {
+        AuthData authData = getAuth(auth);
+        return authData.username();
+    }
+
     public static String generateToken() {
         return UUID.randomUUID().toString();
     }
+
     public static Integer generateInt() {
         Random random = new Random();
         return random.nextInt(1000);
