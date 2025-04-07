@@ -1,4 +1,4 @@
-package ui;
+package ui.clients;
 
 public abstract class Client {
     protected String serverUrl;

@@ -1,12 +1,13 @@
-package ui;
+package ui.clients;
 import java.util.Arrays;
 import exceptions.DataAccessException;
 import requests.LoginRequest;
 import requests.RegisterRequest;
 import results.LoginResult;
 import results.RegisterResult;
+import ui.ServerFacade;
 
-public class PreloginClient extends Client{
+public class PreloginClient extends Client {
     private final ServerFacade server;
     private boolean loggedin = false;
 

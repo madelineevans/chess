@@ -1,12 +1,12 @@
-package ui;
+package ui.clients;
 import chess.ChessGame;
-import chess.ChessMove;
-
+import ui.DrawBoard;
+import ui.ServerFacade;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-public class GameplayClient extends Client{
+public class GameplayClient extends Client {
     private final ServerFacade server;
     PrintStream out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 
@@ -27,12 +27,12 @@ public class GameplayClient extends Client{
     }
 
     public void redraw(){
-        ChessGame.TeamColor color; // = //determine own color
-        if(color = ChessGame.TeamColor.WHITE){
-            printBoard();
+        ChessGame.TeamColor color = ; //determine own color if not passed in
+        if(color == ChessGame.TeamColor.BLACK){
+            printBlackBoard();
         }
         else{
-            printBlackBoard();
+            printBoard();
         }
     }
 

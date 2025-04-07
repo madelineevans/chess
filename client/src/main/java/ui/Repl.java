@@ -1,4 +1,10 @@
 package ui;
+
+import ui.clients.Client;
+import ui.clients.GameplayClient;
+import ui.clients.PostloginClient;
+import ui.clients.PreloginClient;
+
 import java.util.Scanner;
 import static ui.EscapeSequences.*;
 

@@ -1,14 +1,16 @@
-package ui;
+package ui.clients;
 import chess.ChessGame;
 import exceptions.BadRequest;
 import exceptions.DataAccessException;
 import model.GameData;
 import requests.*;
 import results.*;
+import ui.ServerFacade;
+
 import java.util.Arrays;
 import java.util.Objects;
 
-public class PostloginClient extends Client{
+public class PostloginClient extends Client {
     private final ServerFacade server;
 
     public PostloginClient(String serverUrl, String authToken) {
@@ -130,6 +132,10 @@ public class PostloginClient extends Client{
         }
 
         //check that the ID is for a real game and if not send an error
+        visitorName = String.join("-", params);
+        ws = new WebSocketFacade(serverUrl, notificationHandler);
+        ws.enterPetShop(visitorName);
+
 
         return String.format("Observing game %s.", params[0]);
     }
