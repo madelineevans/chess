@@ -89,6 +89,7 @@ public class ChessGame {
             throw new InvalidMoveException("Invalid move: " + move);
         }
         ChessPiece piece = gameBoard.getPiece(start);
+        System.out.println("Piece color: "+piece.getTeamColor().toString()+" turn color: "+ turn.toString());   //debug
         if(piece.getTeamColor()!=turn){
             throw new InvalidMoveException("Invalid move: " + move);
         }

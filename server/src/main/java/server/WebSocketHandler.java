@@ -1,7 +1,5 @@
 package server;
-import chess.ChessGame;
-import chess.ChessMove;
-import chess.ChessPosition;
+import chess.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -53,8 +51,8 @@ public class WebSocketHandler {
             String username = getUsername(command.getAuthToken());
             saveSession(command.getGameID(), session, username);
 
-            System.out.println("Received raw message: " + message);             //debug
-            System.out.println("Command type: " + command.getCommandType());    //debug
+            //System.out.println("Received raw message: " + message);             //debug
+            //System.out.println("Command type: " + command.getCommandType());    //debug
 
             switch(command.getCommandType()){
                 //case CONNECT -> System.out.println("got in the CONNECT switch");
@@ -73,9 +71,9 @@ public class WebSocketHandler {
     }
 
     private void connect(Session session, String username, ConnectCommand command) throws IOException, DataAccessException {
-        System.out.println("got inside WSHandler.connect");
+        //System.out.println("got inside WSHandler.connect");
         int gameID = command.getGameID();
-        System.out.println("GameID: " + gameID + " username: " + username);
+        //System.out.println("GameID: " + gameID + " username: " + username);
 
         //verify gameID first
         GameData game;
@@ -87,10 +85,9 @@ public class WebSocketHandler {
             return;
         }
 
-
         connections.add(username, session, gameID);
         var message = String.format("%s connected to the game ", username);
-        System.out.println(message);
+        //System.out.println(message);
         var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
         connections.broadcast(username, gameID, notification);
 
@@ -101,13 +98,44 @@ public class WebSocketHandler {
 
     private void makeMove(Session session, String username, MakeMoveCommand command) throws ResponseException {
         try {
+            System.out.println("in wsH makeMove");
             ChessMove move = command.getMove();
             ChessPosition start = move.getStartPosition();
-            ChessPosition end = move.getEndPosition();
+            System.out.println("move " + move.toString());
 
             GameData gameD = gService.getGame(command.getGameID());
             ChessGame game = gameD.game();
-            game.makeMove(move);
+
+            ChessPiece piece = game.getBoard().getPiece(start);
+            ChessGame.TeamColor playerColor = piece.getTeamColor();
+            ChessGame.TeamColor turnColor = game.getTeamTurn();
+
+            if (piece == null) {
+                throw new ResponseException(400, "No piece at start position.");
+            }
+
+            //check correct player's turn
+            if (playerColor != turnColor) {
+                throw new ResponseException(403, "It's not this color's turn.");
+            }
+
+            //Check correct player for that color
+            if ((playerColor == ChessGame.TeamColor.WHITE && !username.equals(gameD.whiteUsername())) ||
+                    (playerColor == ChessGame.TeamColor.BLACK && !username.equals(gameD.blackUsername()))) {
+                throw new ResponseException(403, "It's not your turn.");
+            }
+
+            try{
+                game.makeMove(move);    //this should check if valid move
+            } catch (InvalidMoveException e){
+                System.out.println("Invalid move!!!");
+                ErrorNotification errorN = new ErrorNotification(ServerMessage.ServerMessageType.ERROR, "invalid move");
+                connections.broadcastSelf(username, errorN);
+                return;
+                //throw new Error("Invalid move");
+            } catch (Exception e){
+                throw new Exception(e.getMessage());
+            }
 
             GameData updatedGameD = new GameData(
                     gameD.gameID(),
@@ -121,7 +149,7 @@ public class WebSocketHandler {
             var loadNotification = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, updatedGameD);
             connections.broadcastAll(command.getGameID(), loadNotification);
 
-            var message = String.format("%s moves from %s to %s", username, start.toString(), end.toString());
+            var message = String.format("%s made move %s", username, move.toString());
             var updateNotification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             connections.broadcast(username, command.getGameID(), updateNotification);
 
@@ -138,6 +166,8 @@ public class WebSocketHandler {
                         ServerMessage.ServerMessageType.NOTIFICATION, "Check!"));
             }
         } catch (Exception ex) {
+//            ErrorNotification errorN = new ErrorNotification(ServerMessage.ServerMessageType.ERROR, ex.toString());
+//            connections.broadcastAll(gameD.gameID, errorN);
             throw new ResponseException(500, ex.getMessage());
         }
     }
