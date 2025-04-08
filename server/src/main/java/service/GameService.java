@@ -62,8 +62,12 @@ public class GameService extends ParentService{
             throw new BadRequest("Error: bad request");
         }
 
-        gameDAO.updateGame(updatedGame);
+        updateGame(updatedGame);
         return new JoinResult();
+    }
+
+    public void updateGame(GameData gameToUpdate) throws DataAccessException {
+        gameDAO.updateGame(gameToUpdate);
     }
 
     public GameData getGame(int ID) throws DataAccessException {

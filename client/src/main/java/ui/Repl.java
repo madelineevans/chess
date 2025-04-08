@@ -4,12 +4,14 @@ import ui.clients.Client;
 import ui.clients.GameplayClient;
 import ui.clients.PostloginClient;
 import ui.clients.PreloginClient;
+import ui.websocket.NotificationHandler;
 
 import java.util.Scanner;
 import static ui.EscapeSequences.*;
 
 public class Repl{
     private Client client;
+    private NotificationHandler nh;
 
     public Repl(String serverUrl) {
         client = new PreloginClient(serverUrl);
@@ -38,7 +40,7 @@ public class Repl{
                 }
                 else if ("quit_to_postlogin".equals(result)) {
                     System.out.println("Returning to post-login screen...\n");
-                    transitionTo(new PostloginClient(client.getServerUrl(), client.getAuthToken()));
+                    transitionTo(new PostloginClient(client.getServerUrl(), client.getAuthToken(), nh));
                     result = "";
                     continue;
                 }
@@ -47,8 +49,9 @@ public class Repl{
 
                 System.out.print(result);
                 if (client instanceof PreloginClient && (result.startsWith("Logged in") || (result.startsWith("Registered")))) {
-                    transitionTo(new PostloginClient(client.getServerUrl(), client.getAuthToken()));
+                    transitionTo(new PostloginClient(client.getServerUrl(), client.getAuthToken(), nh));
                 } else if (client instanceof PostloginClient && result.startsWith("Joined game")) {
+
                     String color;
                     if(result.endsWith("black.")){
                         color = "black";
@@ -56,9 +59,10 @@ public class Repl{
                     else{
                         color = "white";
                     }
-                    transitionToGame(new GameplayClient(client.getServerUrl(), client.getAuthToken()), color);
+
+                    transitionToGame(new GameplayClient(client.getServerUrl(), client.getAuthToken(), color, findGameID(result), nh));
                 } else if (client instanceof PostloginClient && result.startsWith("Observing")) {
-                    transitionToGame(new GameplayClient(client.getServerUrl(), client.getAuthToken()), "white");
+                    transitionToGame(new GameplayClient(client.getServerUrl(), client.getAuthToken(), "white", findGameID(result), nh));
                 }
 
             } catch (Throwable e) {
@@ -82,6 +86,13 @@ public class Repl{
         this.client = newClient;
         client.renderBoard(color);
         System.out.print(client.help());
+    }
+
+    private int findGameID(String result){
+        String[] parts = result.split(" ");
+        int gameID = Integer.parseInt(parts[2]); // parts[2] = "123"
+        //System.out.println("Game ID: " + gameID);
+        return gameID;
     }
 
 }

@@ -1,4 +1,5 @@
 package server;
+import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
 import com.google.gson.Gson;
@@ -104,9 +105,38 @@ public class WebSocketHandler {
             ChessPosition start = move.getStartPosition();
             ChessPosition end = move.getEndPosition();
 
+            GameData gameD = gService.getGame(command.getGameID());
+            ChessGame game = gameD.game();
+            game.makeMove(move);
+
+            GameData updatedGameD = new GameData(
+                    gameD.gameID(),
+                    gameD.whiteUsername(),
+                    gameD.blackUsername(),
+                    gameD.gameName(),
+                    game
+            );
+
+            gService.updateGame(updatedGameD);
+            var loadNotification = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, updatedGameD);
+            connections.broadcastAll(command.getGameID(), loadNotification);
+
             var message = String.format("%s moves from %s to %s", username, start.toString(), end.toString());
-            var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-            connections.broadcast(username, command.getGameID(), notification);
+            var updateNotification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            connections.broadcast(username, command.getGameID(), updateNotification);
+
+            //if check, stalemate or checkmate, send notification to ALL
+            ChessGame.TeamColor currentTurn = game.getTeamTurn();
+            if (game.isInCheckmate(currentTurn)) {
+                connections.broadcastAll(command.getGameID(), new NotificationMessage(
+                        ServerMessage.ServerMessageType.NOTIFICATION, "Checkmate! Game over."));
+            } else if (game.isInStalemate(currentTurn)) {
+                connections.broadcastAll(command.getGameID(), new NotificationMessage(
+                        ServerMessage.ServerMessageType.NOTIFICATION, "Stalemate! Game drawn."));
+            } else if (game.isInCheck(currentTurn)) {
+                connections.broadcastAll(command.getGameID(), new NotificationMessage(
+                        ServerMessage.ServerMessageType.NOTIFICATION, "Check!"));
+            }
         } catch (Exception ex) {
             throw new ResponseException(500, ex.getMessage());
         }

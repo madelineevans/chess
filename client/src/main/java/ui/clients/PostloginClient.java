@@ -146,7 +146,7 @@ public class PostloginClient extends Client {
         int gameID = Integer.parseInt(params[0]);
         ws = new WebSocketFacade(serverUrl, notificationHandler);
         ws.connect(authToken, gameID);
-        return String.format("Observing game %s.", params[0]);
+        return String.format("Observing game %s from white side.", params[0]);
     }
 
     public String logout() throws DataAccessException {

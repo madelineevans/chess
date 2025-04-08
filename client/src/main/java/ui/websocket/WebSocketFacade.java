@@ -1,7 +1,9 @@
 package ui.websocket;
+import chess.ChessMove;
 import com.google.gson.Gson;
 import exceptions.ResponseException;
 import websocket.commands.ConnectCommand;
+import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 import javax.websocket.*;
@@ -52,6 +54,19 @@ public class WebSocketFacade extends Endpoint {
             throw new ResponseException(500, ex.getMessage());
         }
     }
+
+    public void makeMove(String authToken, int gameID, ChessMove move) throws ResponseException {
+        try {
+            System.out.println("got to WSFacade makeMove");
+            var command = new MakeMoveCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, move);
+            System.out.println("Sending makeMove command for user with auth: " + authToken);
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+
+        } catch (IOException ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
+    }
+
 //    public void enterPetShop(String visitorName) throws ResponseException {
 //        try {
 //            var action = new Action(Action.Type.ENTER, visitorName);
