@@ -72,17 +72,28 @@ public class WebSocketHandler {
     }
 
     private void connect(Session session, String username, ConnectCommand command) throws IOException, DataAccessException {
-        //send a message to everyone else that a player has connected
         System.out.println("got inside WSHandler.connect");
         int gameID = command.getGameID();
         System.out.println("GameID: " + gameID + " username: " + username);
+
+        //verify gameID first
+        GameData game;
+        try{
+            game = gService.getGame(gameID);
+        } catch (Exception e){
+            String error = String.format("GameID %s does not exist", gameID);
+            sendMessage(session.getRemote(), new ErrorNotification(ServerMessage.ServerMessageType.ERROR, error));
+            return;
+        }
+
+
         connections.add(username, session, gameID);
         var message = String.format("%s connected to the game ", username);
         System.out.println(message);
         var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
         connections.broadcast(username, gameID, notification);
 
-        GameData game = gService.getGame(gameID);
+        //GameData game = gService.getGame(gameID);
         var loadMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
         sendMessage(session.getRemote(), loadMessage);
     }

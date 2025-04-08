@@ -1,4 +1,5 @@
 package server;
+import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,7 +29,8 @@ public class ConnectionManager {
             if (c.session.isOpen()) {
                 if(c.gameID == gameID){
                     if (!c.username.equals(excludeVisitorName)) {
-                        c.send(notification.toString());
+                        Gson gson = new Gson();
+                        c.send(gson.toJson(notification));
                     }
                 }
             } else {

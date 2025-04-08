@@ -121,6 +121,7 @@ public class PostloginClient extends Client {
         ws = new WebSocketFacade(serverUrl, notificationHandler);
 
         try{
+            System.out.println("Player connecting to Game");
             JoinResult res = server.joinGame(req);
             ws.connect(authToken, gameID);
         } catch (DataAccessException e) {
@@ -141,8 +142,10 @@ public class PostloginClient extends Client {
         //websocket stuff
 //        ws = new WebSocketFacade(serverUrl, notificationHandler);
 //        ws.enterPetShop(visitorName);
-
-
+        System.out.println("Observer connecting to Game");
+        int gameID = Integer.parseInt(params[0]);
+        ws = new WebSocketFacade(serverUrl, notificationHandler);
+        ws.connect(authToken, gameID);
         return String.format("Observing game %s.", params[0]);
     }
 
