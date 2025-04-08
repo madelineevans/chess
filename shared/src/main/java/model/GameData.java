@@ -3,13 +3,20 @@ import chess.ChessGame;
 import java.util.Objects;
 
 public record GameData(int gameID, String whiteUsername, String blackUsername, String gameName, ChessGame game) implements Data{
-
+    public static boolean resigned = false;
     public GameData(int gameID, String gameName){
         this(gameID, null, null, gameName, new ChessGame());
     }
-
     public int returnID(){
         return this.gameID;
+    }
+
+    public boolean isResigned() {
+        return resigned;
+    }
+
+    public void setResigned(boolean resigned) {
+        this.resigned = resigned;
     }
 
     @Override

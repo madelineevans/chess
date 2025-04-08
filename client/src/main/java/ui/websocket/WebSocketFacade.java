@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import exceptions.ResponseException;
 import websocket.commands.ConnectCommand;
 import websocket.commands.MakeMoveCommand;
+import websocket.commands.ResignCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 import javax.websocket.*;
@@ -62,6 +63,17 @@ public class WebSocketFacade extends Endpoint {
             System.out.println("Sending makeMove command for user with auth: " + authToken);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
 
+        } catch (IOException ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
+    }
+
+    public void resign(String authToken, int gameID) throws ResponseException {
+        try {
+            System.out.println("got to WSFacade resign");
+            var command = new ResignCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID);
+            System.out.println("Sending resign command for user with auth: " + authToken);
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex) {
             throw new ResponseException(500, ex.getMessage());
         }

@@ -3,6 +3,7 @@ import chess.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import exceptions.BadRequest;
 import exceptions.DataAccessException;
 import exceptions.ResponseException;
 import exceptions.Unauthorized;
@@ -18,6 +19,7 @@ import service.UserService;
 import websocket.commands.*;
 import websocket.messages.*;
 import java.io.IOException;
+import java.util.Objects;
 
 @WebSocket
 public class WebSocketHandler {
@@ -125,6 +127,11 @@ public class WebSocketHandler {
                 throw new ResponseException(403, "It's not your turn.");
             }
 
+            //check if resigned
+            if (gameD.isResigned()) {
+                throw new ResponseException(403, "Game is already over.");
+            }
+
             try{
                 game.makeMove(move);    //this should check if valid move
             } catch (InvalidMoveException e){
@@ -179,8 +186,26 @@ public class WebSocketHandler {
         connections.broadcast(username, command.getGameID(), notification);
     }
 
-    private void resign(Session session, String username, ResignCommand command) {
-        //render game unplayable, how to implement???
+    private void resign(Session session, String username, ResignCommand command) throws IOException, DataAccessException {
+        System.out.println("in wsH resign");
+        System.out.println("Username: " + username);
+
+        if(Objects.equals(username, "observer")){
+            throw new BadRequest("Error, observer can't resign");
+        }
+
+        GameData gameD = gService.getGame(command.getGameID());
+        if(gameD.isResigned()){
+            throw new BadRequest("Error, already resigned");
+        }
+
+        gameD.setResigned(true);
+        gService.updateGame(gameD);
+
+        var message = String.format("%s resigned from the game", username);
+        var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        connections.broadcastAll(command.getGameID(), notification);
+        connections.remove(username);
     }
 
     private void saveSession(int gameID, Session session, String username){

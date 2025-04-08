@@ -13,6 +13,7 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Scanner;
 
 public class GameplayClient extends Client {
     private final ServerFacade server;
@@ -63,14 +64,29 @@ public class GameplayClient extends Client {
             throw new DataAccessException("Error: " + e.getMessage());
         }
 
-
+        redraw();
         return String.format("Made move %s", params[0]);
     }
 
-    public void resign(){
+    public String resign() throws DataAccessException {
         //ask the user if they really want to resign
         //if yes, resign them
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Are you sure you want to resign? (yes/no): ");
+        String input = scanner.nextLine().trim().toLowerCase();
 
+        if (!input.equals("yes")) {
+            return "Resignation cancelled.";
+        }
+
+        ws = new WebSocketFacade(serverUrl, notificationHandler);
+        try{
+            ws.resign(authToken, gameID);
+        }catch(Exception e){
+            throw new DataAccessException("Error: " + e.getMessage());
+        }
+        redraw();
+        return "Resigned from game";
     }
 
     public void highlightMoves(){
