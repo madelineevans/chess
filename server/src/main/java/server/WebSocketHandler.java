@@ -84,7 +84,7 @@ public class WebSocketHandler {
 
         GameData game = gService.getGame(gameID);
         var loadMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
-        session.getRemote().sendString("WebSocket response: " + loadMessage);
+        sendMessage(session.getRemote(), loadMessage);
     }
 
     private void makeMove(Session session, String username, MakeMoveCommand command) throws ResponseException {
