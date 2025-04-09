@@ -42,13 +42,14 @@ public class GameplayClient extends Client {
         DrawBoard.drawChessBoardUpsidedown(out);
     }
 
-    public void redraw(){
+    public String redraw(){
         if(Objects.equals(color, "black")){
             printBlackBoard();
         }
         else if (Objects.equals(color, "white")){
             printBoard();
         }
+        return "Current Board";
     }
 
     public String makeMove(String... params) throws DataAccessException {
@@ -105,7 +106,7 @@ public class GameplayClient extends Client {
                 case "leave" -> "quit_to_postlogin";
                 case "move" -> makeMove(params);
                 case "resign" -> resign();
-                case "highlight" -> highlightMoves();
+                //case "highlight" -> highlightMoves();
 
                 default -> help();
             };
