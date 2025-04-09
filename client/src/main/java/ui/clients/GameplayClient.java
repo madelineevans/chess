@@ -90,8 +90,8 @@ public class GameplayClient extends Client {
         return "Resigned from game";
     }
 
-    public void highlightMoves(){
-
+    public String highlightMoves(){
+        return "Here are your possible moves!";
     }
 
     @Override
@@ -106,7 +106,7 @@ public class GameplayClient extends Client {
                 case "leave" -> "quit_to_postlogin";
                 case "move" -> makeMove(params);
                 case "resign" -> resign();
-                //case "highlight" -> highlightMoves();
+                case "highlight" -> highlightMoves();
 
                 default -> help();
             };
