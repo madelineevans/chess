@@ -70,7 +70,7 @@ public class GameService extends ParentService{
         gameDAO.updateGame(gameToUpdate);
     }
 
-    public GameData getGame(int ID) throws DataAccessException {
-        return gameDAO.readData(Integer.toString(ID));
+    public GameData getGame(int id) throws DataAccessException {
+        return gameDAO.readData(Integer.toString(id));
     }
 }
