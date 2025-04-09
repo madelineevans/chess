@@ -3,12 +3,10 @@ import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
 import exceptions.DataAccessException;
-import exceptions.ResponseException;
 import ui.DrawBoard;
 import ui.ServerFacade;
 import ui.websocket.NotificationHandler;
 import ui.websocket.WebSocketFacade;
-
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -32,24 +30,24 @@ public class GameplayClient extends Client {
         this.notificationHandler = notificationHandler;
     }
 
-    public void printBoard(){
+    public void printBoard(ChessGame game){
         System.out.println("\n");
         //find the current game somehow and call it game
-        //DrawBoard.drawChessBoard(out, game);
+        DrawBoard.drawChessBoard(out, game);
     }
 
-    public void printBlackBoard(){
+    public void printBlackBoard(ChessGame game){
         System.out.println("\n");
         //find the current game somehow and call it game
-        //DrawBoard.drawChessBoardUpsidedown(out, game);
+        DrawBoard.drawChessBoardUpsidedown(out, game);
     }
 
-    public String redraw(){
+    public String redraw(ChessGame game){
         if(Objects.equals(color, "black")){
-            printBlackBoard();
+            printBlackBoard(game);
         }
         else if (Objects.equals(color, "white")){
-            printBoard();
+            printBoard(game);
         }
         return "Current Board";
     }
@@ -66,8 +64,8 @@ public class GameplayClient extends Client {
         }catch(Exception e){
             throw new DataAccessException("Error: " + e.getMessage());
         }
-
-        redraw();
+        //get updated Game
+        //redraw(updatedGame);
         return String.format("Made move %s", params[0]);
     }
 
@@ -88,7 +86,7 @@ public class GameplayClient extends Client {
         }catch(Exception e){
             throw new DataAccessException("Error: " + e.getMessage());
         }
-        redraw();
+        //redraw();
         return "Resigned from game";
     }
 
@@ -104,7 +102,7 @@ public class GameplayClient extends Client {
         try{
             return switch (cmd) {
                 case "help" -> help();
-                case "redraw" -> redraw();
+                //case "redraw" -> redraw();
                 case "leave" -> "quit_to_postlogin";
                 case "move" -> makeMove(params);
                 case "resign" -> resign();

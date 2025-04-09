@@ -62,7 +62,7 @@ public class DrawBoard {
         }
         out.print(SET_BG_COLOR_LIGHT_GREY + "   ");
         out.println(RESET_BG_COLOR);
-
+        out.print(SET_TEXT_COLOR_GREEN);
     }
 
     public static void drawChessBoardUpsidedown(PrintStream out, ChessGame game){
@@ -112,7 +112,7 @@ public class DrawBoard {
         }
         out.print(SET_BG_COLOR_LIGHT_GREY + "   ");
         out.println(RESET_BG_COLOR);
-
+        out.print(SET_TEXT_COLOR_GREEN);
     }
 
     private static void drawWhiteSquare(PrintStream out, String player, String textColor){

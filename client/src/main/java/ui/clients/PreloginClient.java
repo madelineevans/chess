@@ -71,7 +71,7 @@ public class PreloginClient extends Client {
             }
             throw new DataAccessException("Error: " + e.getMessage());
         }
-        return String.format("Registered as %s.", params[0]);
+        return String.format("Registered as %s. \n", params[0]);
 
     }
 

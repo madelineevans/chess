@@ -47,9 +47,9 @@ public class WebSocketFacade extends Endpoint {
 
     public void connect(String authToken, int gameID) throws ResponseException {
         try {
-            System.out.println("got to WSFacade connect");
+            //System.out.println("got to WSFacade connect");
             var command = new ConnectCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
-            System.out.println("Sending connect command for user with auth: " + authToken);
+            //System.out.println("Sending connect command for user with auth: " + authToken);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex) {
             throw new ResponseException(500, ex.getMessage());
@@ -70,9 +70,9 @@ public class WebSocketFacade extends Endpoint {
 
     public void resign(String authToken, int gameID) throws ResponseException {
         try {
-            System.out.println("got to WSFacade resign");
+            //System.out.println("got to WSFacade resign");
             var command = new ResignCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID);
-            System.out.println("Sending resign command for user with auth: " + authToken);
+            //System.out.println("Sending resign command for user with auth: " + authToken);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex) {
             throw new ResponseException(500, ex.getMessage());

@@ -1,5 +1,7 @@
 package ui.clients;
 
+import chess.ChessGame;
+
 public abstract class Client {
     protected String serverUrl;
     protected String authToken;
@@ -21,11 +23,12 @@ public abstract class Client {
     }
 
     public void renderBoard(String color) {
+        ChessGame game = new ChessGame();
         if (this instanceof GameplayClient) {
             if ("white".equals(color)) {
-                ((GameplayClient)this).printBoard();
+                ((GameplayClient)this).printBoard(game);
             } else {
-                ((GameplayClient)this).printBlackBoard();
+                ((GameplayClient)this).printBlackBoard(game);
             }
         }
     }

@@ -6,7 +6,6 @@ import com.google.gson.JsonParser;
 import exceptions.BadRequest;
 import exceptions.DataAccessException;
 import exceptions.ResponseException;
-import exceptions.Unauthorized;
 import model.AuthData;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
@@ -14,7 +13,6 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import service.GameService;
-import service.ParentService;
 import service.UserService;
 import websocket.commands.*;
 import websocket.messages.*;
@@ -103,7 +101,7 @@ public class WebSocketHandler {
             System.out.println("in wsH makeMove");
             ChessMove move = command.getMove();
             ChessPosition start = move.getStartPosition();
-            System.out.println("move " + move.toString());
+            System.out.println("username: " + username + " makes move: " + move.toString());
 
             GameData gameD = gService.getGame(command.getGameID());
             ChessGame game = gameD.game();
@@ -113,17 +111,20 @@ public class WebSocketHandler {
             ChessGame.TeamColor turnColor = game.getTeamTurn();
 
             if (piece == null) {
+                System.out.println("no piece to move");
                 throw new ResponseException(400, "No piece at start position.");
             }
 
             //check correct player's turn
             if (playerColor != turnColor) {
+                System.out.println("not this color's turn");
                 throw new ResponseException(403, "It's not this color's turn.");
             }
 
             //Check correct player for that color
             if ((playerColor == ChessGame.TeamColor.WHITE && !username.equals(gameD.whiteUsername())) ||
                     (playerColor == ChessGame.TeamColor.BLACK && !username.equals(gameD.blackUsername()))) {
+                System.out.println("not your turn");
                 throw new ResponseException(403, "It's not your turn.");
             }
 
@@ -200,8 +201,8 @@ public class WebSocketHandler {
     }
 
     private void resign(Session session, String username, ResignCommand command) throws IOException, DataAccessException {
-        System.out.println("in wsH resign");
-        System.out.println("Username: " + username);
+        //System.out.println("in wsH resign");
+        //System.out.println("Username: " + username);
 
         if(Objects.equals(username, "observer")){
             throw new BadRequest("Error, observer can't resign");
