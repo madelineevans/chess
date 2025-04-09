@@ -1,5 +1,9 @@
 package ui;
 
+import chess.ChessBoard;
+import chess.ChessGame;
+import chess.ChessPiece;
+import chess.ChessPosition;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
@@ -7,208 +11,108 @@ import java.util.Random;
 import static ui.EscapeSequences.*;
 
 public class DrawBoard {
-    // Board dimensions.
-    private static final int BOARD_SIZE_IN_SQUARES = 10;
-    private static final int SQUARE_SIZE_IN_PADDED_CHARS = 1;
-    private static final int LINE_WIDTH_IN_PADDED_CHARS = 1;
-
     // Padded characters.
     private static final String EMPTY = "   ";
 
-    private static Random rand = new Random();
+    public static void drawChessBoard(PrintStream out, ChessGame game) {
+        ChessBoard board = game.getBoard();
 
-    public static void drawChessBoard(PrintStream out){
-        for (int boardRow = BOARD_SIZE_IN_SQUARES-1; boardRow >= 0; --boardRow) { //for each row call a row printer
-            if(boardRow == 2){
-                drawWhiteRow(out, " P ", SET_TEXT_COLOR_MAGENTA, Integer.toString(boardRow));
-            }
-            else if(boardRow == 7){
-                drawBlackRow(out, " P ", SET_TEXT_COLOR_BLUE, Integer.toString(boardRow));
-            }
-            else if(boardRow == 0 || boardRow == 9){
-                drawReverseBorder(out);
-            }
-            else if(boardRow == 1 || boardRow == 8){
-                String text = SET_TEXT_COLOR_MAGENTA;
-                if(boardRow == 8){
-                    text = SET_TEXT_COLOR_BLUE;
-                }
-                drawQueenRow(out, text, Integer.toString(boardRow));
-            }
-            else if(boardRow%2==0){
-                drawWhiteRow(out, EMPTY, SET_TEXT_COLOR_WHITE, Integer.toString(boardRow));
-            }
-            else{
-                drawBlackRow(out, EMPTY, SET_TEXT_COLOR_WHITE, Integer.toString(boardRow));
-            }
+        out.print(SET_BG_COLOR_LIGHT_GREY + "   ");
+        for (char c = 'a'; c <= 'h'; c++) {
+            out.print(SET_TEXT_COLOR_DARK_GREY + SET_BG_COLOR_LIGHT_GREY + " " + c + " ");
         }
-        out.print(SET_TEXT_COLOR_GREEN);
-    }
+        out.print(SET_BG_COLOR_LIGHT_GREY + "   ");
+        out.println(RESET_BG_COLOR);
+        //out.print("\n");
 
-    public static void drawChessBoardUpsidedown(PrintStream out){
-        for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) { //for each row call a row printer
-            if(boardRow == 2){
-                drawBlackRow(out, " P ", SET_TEXT_COLOR_MAGENTA, Integer.toString(boardRow));
-            }
-            else if(boardRow == 7){
-                drawWhiteRow(out, " P ", SET_TEXT_COLOR_BLUE, Integer.toString(boardRow));
-            }
-            else if(boardRow == 0 || boardRow == 9){
-                drawBorder(out);
-            }
-            else if(boardRow == 1 || boardRow == 8){
-                String text = SET_TEXT_COLOR_MAGENTA;
-                if(boardRow == 8){
-                    text = SET_TEXT_COLOR_BLUE;
+        for (int row = 8; row >= 1; row--) {
+            out.print(SET_TEXT_COLOR_DARK_GREY + SET_BG_COLOR_LIGHT_GREY + " " + row + " ");
+            for (int col = 1; col <= 8; col++) {
+                ChessPosition pos = new ChessPosition(row, col);
+                ChessPiece piece = board.getPiece(pos);
+
+                String player = EMPTY;
+                String color = SET_TEXT_COLOR_WHITE;
+
+                if (piece != null) {
+                    if(piece.getPieceType() == ChessPiece.PieceType.KNIGHT){
+                        player = " N ";
+                    }
+                    else{
+                        player = " " + piece.getPieceType().toString().charAt(0) + " ";
+                    }
+                    color = piece.getTeamColor() == ChessGame.TeamColor.WHITE ? SET_TEXT_COLOR_MAGENTA : SET_TEXT_COLOR_BLUE;
                 }
-                drawReverseQueenRow(out, text, Integer.toString(boardRow));
-            }
-            else if(boardRow%2==0){
-                drawBlackRow(out, EMPTY, SET_TEXT_COLOR_WHITE, Integer.toString(boardRow));
-            }
-            else{
-                drawWhiteRow(out, EMPTY, SET_TEXT_COLOR_WHITE, Integer.toString(boardRow));
-            }
-        }
-        out.print(SET_TEXT_COLOR_GREEN);
-    }
 
-    private static void drawBorder(PrintStream out){
-        for (int lineRow = 0; lineRow < LINE_WIDTH_IN_PADDED_CHARS; ++lineRow) {
-            for (int col = 0; col < BOARD_SIZE_IN_SQUARES; ++col) {
-                String val = setColLetter(col);
-                drawBorderSquare(out, val);
-            }
-        }
-        out.println();
-    }
-
-    private static void drawReverseBorder(PrintStream out){
-        for (int lineRow = 0; lineRow < LINE_WIDTH_IN_PADDED_CHARS; ++lineRow) {
-            for (int col = BOARD_SIZE_IN_SQUARES-1; col >= 0; --col) {
-                String val = setColLetter(col);
-                drawBorderSquare(out, val);
-            }
-        }
-        out.println();
-    }
-
-    private static String setColLetter(int col){
-        return switch (col) {
-            case 1 -> "h";
-            case 2 -> "g";
-            case 3 -> "f";
-            case 4 -> "e";
-            case 5 -> "d";
-            case 6 -> "c";
-            case 7 -> "b";
-            case 8 -> "a";
-            default -> " ";
-        };
-    }
-
-    private static void drawBlackRow(PrintStream out, String player, String textColor, String row) {
-        for (int lineRow = 0; lineRow < LINE_WIDTH_IN_PADDED_CHARS; ++lineRow) {
-            for (int col = 0; col < BOARD_SIZE_IN_SQUARES; ++col) {
-                if((col== 0 || col == 9) && (!Objects.equals(row, "0") || !row.equals("9"))){
-                    drawBorderSquare(out, row);
-                }
-                else if (col % 2 == 0) {
-                    drawWhiteSquare(out, player, textColor);
-                }
-                else {
-                    drawBlackSquare(out, player, textColor);
-                }
-            }
-            out.println();
-        }
-    }
-
-    private static void drawWhiteRow(PrintStream out, String player, String textColor, String row) {
-        for (int lineRow = 0; lineRow < LINE_WIDTH_IN_PADDED_CHARS; ++lineRow) {
-            for (int col = 0; col < BOARD_SIZE_IN_SQUARES; ++col) {
-                //String player = EMPTY;
-                if((col== 0 || col == 9) && (!Objects.equals(row, "0") || !row.equals("9"))){
-                    drawBorderSquare(out, row);
-                }
-                else if (col % 2 == 0) {
-                    drawBlackSquare(out, player, textColor);
+                if ((row + col) % 2 == 0) {
+                    drawBlackSquare(out, player, color);
                 } else {
-                    drawWhiteSquare(out, player, textColor);
+                    drawWhiteSquare(out, player, color);
                 }
-            }
 
-            out.println();
+            }
+            out.print(SET_TEXT_COLOR_DARK_GREY + SET_BG_COLOR_LIGHT_GREY + " " + row + " ");
+            out.println(RESET_BG_COLOR);
+            //out.println();
         }
+
+        out.print(SET_BG_COLOR_LIGHT_GREY + "   ");
+        for (char c = 'a'; c <= 'h'; c++) {
+            out.print(SET_TEXT_COLOR_DARK_GREY + SET_BG_COLOR_LIGHT_GREY + " " + c + " ");
+        }
+        out.print(SET_BG_COLOR_LIGHT_GREY + "   ");
+        out.println(RESET_BG_COLOR);
+
     }
 
-    private static void drawReverseQueenRow(PrintStream out, String textColor, String row){
-        for (int lineRow = 0; lineRow < LINE_WIDTH_IN_PADDED_CHARS; ++lineRow) {
-            for (int col = 0; col < BOARD_SIZE_IN_SQUARES; ++col) {
+    public static void drawChessBoardUpsidedown(PrintStream out, ChessGame game){
+        ChessBoard board = game.getBoard();
+
+        out.print(SET_BG_COLOR_LIGHT_GREY + "   ");
+        for (char c = 'h'; c >= 'a'; c--) {
+            out.print(SET_TEXT_COLOR_DARK_GREY + SET_BG_COLOR_LIGHT_GREY + " " + c + " ");
+        }
+        out.print(SET_BG_COLOR_LIGHT_GREY + "   ");
+        out.println(RESET_BG_COLOR);
+
+        for (int row = 1; row <= 8; row++) {
+            out.print(SET_TEXT_COLOR_DARK_GREY + SET_BG_COLOR_LIGHT_GREY + " " + row + " ");
+            for (int col = 8; col >= 1; col--) {
+                ChessPosition pos = new ChessPosition(row, col);
+                ChessPiece piece = board.getPiece(pos);
+
                 String player = EMPTY;
-                player = switch (col) {
-                    case 1, 8 -> " R ";
-                    case 2, 7 -> " N ";
-                    case 3, 6 -> " B ";
-                    case 4 -> " K ";
-                    case 5 -> " Q ";
-                    default -> player;
-                };
+                String color = SET_TEXT_COLOR_WHITE;
 
-                if((col== 0 || col == 9) && (!Objects.equals(row, "0") || !row.equals("9"))){
-                    drawBorderSquare(out, row);
+                if (piece != null) {
+                    if(piece.getPieceType() == ChessPiece.PieceType.KNIGHT){
+                        player = " N ";
+                    }
+                    else{
+                        player = " " + piece.getPieceType().toString().charAt(0) + " ";
+                    }
+
+                    color = piece.getTeamColor() == ChessGame.TeamColor.WHITE ? SET_TEXT_COLOR_MAGENTA : SET_TEXT_COLOR_BLUE;
                 }
-                else if(Objects.equals(textColor, SET_TEXT_COLOR_MAGENTA)){
-                    blueQueenRow(out, player, textColor, col);
+
+                if ((row + col) % 2 == 0) {
+                    drawBlackSquare(out, player, color);
+                } else {
+                    drawWhiteSquare(out, player, color);
                 }
-                else{
-                    pinkQueenRow(out, player, textColor, col);
-                }
+
             }
-            out.println();
+            out.print(SET_TEXT_COLOR_DARK_GREY + SET_BG_COLOR_LIGHT_GREY + " " + row + " ");
+            out.println(RESET_BG_COLOR);
         }
-    }
 
-    private static void drawQueenRow(PrintStream out, String textColor, String row){
-        for (int lineRow = 0; lineRow < LINE_WIDTH_IN_PADDED_CHARS; ++lineRow) {
-            for (int col = 0; col < BOARD_SIZE_IN_SQUARES; ++col) {
-                String player = EMPTY;
-                player = switch (col) {
-                    case 1, 8 -> " R ";
-                    case 2, 7 -> " N ";
-                    case 3, 6 -> " B ";
-                    case 4 -> " Q ";
-                    case 5 -> " K ";
-                    default -> player;
-                };
+        out.print(SET_BG_COLOR_LIGHT_GREY + "   ");
+        for (char c = 'h'; c >= 'a'; c--) {
+            out.print(SET_TEXT_COLOR_DARK_GREY + SET_BG_COLOR_LIGHT_GREY + " " + c + " ");
+        }
+        out.print(SET_BG_COLOR_LIGHT_GREY + "   ");
+        out.println(RESET_BG_COLOR);
 
-                if((col== 0 || col == 9) && (!Objects.equals(row, "0") || !row.equals("9"))){
-                    drawBorderSquare(out, row);
-                }
-                else if(Objects.equals(textColor, SET_TEXT_COLOR_BLUE)){
-                    blueQueenRow(out, player, textColor, col);
-                }
-                else{
-                    pinkQueenRow(out, player, textColor, col);
-                }
-            }
-            out.println();
-        }
-    }
-
-    private static void pinkQueenRow(PrintStream out, String player, String textColor, int col) {
-        if (col % 2 == 0) {
-            drawWhiteSquare(out, player, textColor);
-        } else {
-            drawBlackSquare(out, player, textColor);
-        }
-    }
-    private static void blueQueenRow(PrintStream out, String player, String textColor, int col){
-        if (col % 2 == 0) {
-            drawBlackSquare(out, player, textColor);
-        } else {
-            drawWhiteSquare(out, player, textColor);
-        }
     }
 
     private static void drawWhiteSquare(PrintStream out, String player, String textColor){

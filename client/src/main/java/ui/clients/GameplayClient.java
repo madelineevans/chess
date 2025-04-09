@@ -34,12 +34,14 @@ public class GameplayClient extends Client {
 
     public void printBoard(){
         System.out.println("\n");
-        DrawBoard.drawChessBoard(out);
+        //find the current game somehow and call it game
+        //DrawBoard.drawChessBoard(out, game);
     }
 
     public void printBlackBoard(){
         System.out.println("\n");
-        DrawBoard.drawChessBoardUpsidedown(out);
+        //find the current game somehow and call it game
+        //DrawBoard.drawChessBoardUpsidedown(out, game);
     }
 
     public String redraw(){
