@@ -179,8 +179,21 @@ public class WebSocketHandler {
         }
     }
 
-    private void leaveGame(Session session, String username, LeaveCommand command) throws IOException {
+    private void leaveGame(Session session, String username, LeaveCommand command) throws IOException, DataAccessException {
         connections.remove(username);
+
+        GameData gameD = gService.getGame(command.getGameID());
+        String whiteUsername = gameD.whiteUsername();
+        String blackUsername = gameD.blackUsername();
+
+        GameData updatedGameD = gameD;
+        if (username.equals(whiteUsername)) {
+            updatedGameD = new GameData(gameD.gameID(), null, blackUsername, gameD.gameName(), gameD.game());
+        } else if (username.equals(blackUsername)) {
+            updatedGameD = new GameData(gameD.gameID(), whiteUsername, null, gameD.gameName(), gameD.game());
+        }
+        gService.updateGame(updatedGameD);
+
         var message = String.format("%s left the game", username);
         var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
         connections.broadcast(username, command.getGameID(), notification);
