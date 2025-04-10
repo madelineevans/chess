@@ -22,8 +22,8 @@ public abstract class Client {
         return authToken;
     }
 
-    public void renderBoard(String color) {
-        ChessGame game = new ChessGame();
+    public void renderBoard(String color, ChessGame game) {
+        //ChessGame game = new ChessGame();
         if (this instanceof GameplayClient) {
             if ("white".equals(color)) {
                 ((GameplayClient)this).printBoard(game);

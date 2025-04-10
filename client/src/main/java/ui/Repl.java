@@ -1,10 +1,12 @@
 package ui;
 
+import exceptions.ResponseException;
 import ui.clients.Client;
 import ui.clients.GameplayClient;
 import ui.clients.PostloginClient;
 import ui.clients.PreloginClient;
 import ui.websocket.NotificationHandler;
+import ui.websocket.WebSocketFacade;
 
 import java.util.Scanner;
 import static ui.EscapeSequences.*;
@@ -12,9 +14,15 @@ import static ui.EscapeSequences.*;
 public class Repl{
     private Client client;
     private NotificationHandler nh;
+    private WebSocketFacade ws;
+    private final String serverUrl;
 
-    public Repl(String serverUrl) {
-        client = new PreloginClient(serverUrl);
+    public Repl(String serverUrl) throws ResponseException {
+        this.serverUrl = serverUrl;
+        this.client = new PreloginClient(serverUrl);
+        this.nh = new NotificationHandler(client);
+        this.ws = new WebSocketFacade(serverUrl, nh);
+        //this.nh = new NotificationHandler(client);
     }
 
     public void run() {
@@ -40,7 +48,7 @@ public class Repl{
                 }
                 else if ("quit_to_postlogin".equals(result)) {
                     System.out.println("Returning to post-login screen...\n");
-                    transitionTo(new PostloginClient(client.getServerUrl(), client.getAuthToken(), nh));
+                    transitionTo(new PostloginClient(client.getServerUrl(), client.getAuthToken(), nh, ws));
                     result = "";
                     continue;
                 }
@@ -49,7 +57,7 @@ public class Repl{
 
                 System.out.print(result);
                 if (client instanceof PreloginClient && (result.startsWith("Logged in") || (result.startsWith("Registered")))) {
-                    transitionTo(new PostloginClient(client.getServerUrl(), client.getAuthToken(), nh));
+                    transitionTo(new PostloginClient(client.getServerUrl(), client.getAuthToken(), nh, ws));
                 } else if (client instanceof PostloginClient && result.startsWith("Joined game")) {
 
                     String color;
@@ -60,9 +68,9 @@ public class Repl{
                         color = "white";
                     }
 
-                    transitionToGame(new GameplayClient(client.getServerUrl(), client.getAuthToken(), color, findGameID(result), nh), color);
+                    transitionToGame(new GameplayClient(client.getServerUrl(), client.getAuthToken(), color, findGameID(result), nh, ws), color);
                 } else if (client instanceof PostloginClient && result.startsWith("Observing")) {
-                    transitionToGame(new GameplayClient(client.getServerUrl(), client.getAuthToken(), "white", findGameID(result), nh), "white");
+                    transitionToGame(new GameplayClient(client.getServerUrl(), client.getAuthToken(), "white", findGameID(result), nh, ws), "white");
                 }
 
             } catch (Throwable e) {

@@ -8,7 +8,6 @@ import results.*;
 import ui.ServerFacade;
 import ui.websocket.NotificationHandler;
 import ui.websocket.WebSocketFacade;
-
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -118,7 +117,7 @@ public class PostloginClient extends Client {
             i++;
         }
         JoinRequest req = new JoinRequest(authToken, color, gameID);
-        ws = new WebSocketFacade(serverUrl, notificationHandler);
+        //ws = new WebSocketFacade(serverUrl, notificationHandler);
 
         try{
             System.out.println("Player connecting to Game");
@@ -139,13 +138,23 @@ public class PostloginClient extends Client {
             return "Error: please enter observe <ID>";
         }
 
-        //websocket stuff
-//        ws = new WebSocketFacade(serverUrl, notificationHandler);
-//        ws.enterPetShop(visitorName);
         System.out.println("Observer connecting to Game");
-        int gameID = Integer.parseInt(params[0]);
-        ws = new WebSocketFacade(serverUrl, notificationHandler);
-        ws.connect(authToken, gameID);
+        //ws = new WebSocketFacade(serverUrl, notificationHandler);
+        try{
+            int gameNum = Integer.parseInt(params[0]);
+            ListResult lRes = server.listGames(new ListRequest(authToken));
+            int i = 1;
+            int gameID=99999;
+            for(GameData game : lRes.games()){
+                if(i==gameNum){
+                    gameID = game.gameID();
+                }
+                i++;
+            }
+            ws.connect(authToken, gameID);
+        } catch (Exception e){
+            throw new Error("Error: "+ e.getMessage());
+        }
         return String.format("Observing game %s from white side.", params[0]);
     }
 

@@ -43,6 +43,7 @@ public class WebSocketFacade extends Endpoint {
     //Endpoint requires this method, but you don't have to do anything
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
+        //System.out.println("WebSocket connected: " + session.getId());  //debug
     }
 
     public void connect(String authToken, int gameID) throws ResponseException {
@@ -62,7 +63,6 @@ public class WebSocketFacade extends Endpoint {
             var command = new MakeMoveCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, move);
             System.out.println("Sending makeMove command for user with auth: " + authToken);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
-
         } catch (IOException ex) {
             throw new ResponseException(500, ex.getMessage());
         }

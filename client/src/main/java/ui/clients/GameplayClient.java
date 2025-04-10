@@ -21,13 +21,14 @@ public class GameplayClient extends Client {
     private int gameID;
     private String color;
 
-    public GameplayClient(String serverUrl, String authToken, String color, int gameID, NotificationHandler notificationHandler) {
+    public GameplayClient(String serverUrl, String authToken, String color, int gameID, NotificationHandler notificationHandler, WebSocketFacade ws) {
         super(serverUrl);
         server = new ServerFacade(serverUrl);
         this.authToken = authToken;
         this.color = color;
         this.gameID = gameID;
         this.notificationHandler = notificationHandler;
+        this.ws = ws;
     }
 
     public void printBoard(ChessGame game){
@@ -58,7 +59,7 @@ public class GameplayClient extends Client {
         }
         ChessMove move = parseMove(params[0]);
 
-        ws = new WebSocketFacade(serverUrl, notificationHandler);
+        //ws = new WebSocketFacade(serverUrl, notificationHandler);
         try{
             ws.makeMove(authToken, gameID, move);
         }catch(Exception e){
@@ -80,7 +81,7 @@ public class GameplayClient extends Client {
             return "Resignation cancelled.";
         }
 
-        ws = new WebSocketFacade(serverUrl, notificationHandler);
+        //ws = new WebSocketFacade(serverUrl, notificationHandler);
         try{
             ws.resign(authToken, gameID);
         }catch(Exception e){

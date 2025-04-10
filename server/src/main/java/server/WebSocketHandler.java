@@ -34,6 +34,7 @@ public class WebSocketHandler {
     @OnWebSocketMessage
     public void onMessage(Session session, String message) {
         try{
+            System.out.println("got in WSHandler OnWSMessage");
             //UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
             JsonObject jsonObject = JsonParser.parseString(message).getAsJsonObject();
             UserGameCommand.CommandType type = UserGameCommand.CommandType.valueOf(jsonObject.get("commandType").getAsString());
@@ -51,8 +52,8 @@ public class WebSocketHandler {
             String username = getUsername(command.getAuthToken());
             saveSession(command.getGameID(), session, username);
 
-            //System.out.println("Received raw message: " + message);             //debug
-            //System.out.println("Command type: " + command.getCommandType());    //debug
+            System.out.println("Received raw message: " + message);             //debug
+            System.out.println("Command type: " + command.getCommandType());    //debug
 
             switch(command.getCommandType()){
                 //case CONNECT -> System.out.println("got in the CONNECT switch");
@@ -66,34 +67,42 @@ public class WebSocketHandler {
 //            sendMessage(session.getRemote(), new ErrorNotification(ServerMessage.ServerMessageType.ERROR, "Error: unauthorized"));
         } catch (Exception ex){
             ex.printStackTrace();
+
             sendMessage(session.getRemote(), new ErrorNotification(ServerMessage.ServerMessageType.ERROR, "Error: " + ex.getMessage()));
         }
     }
 
     private void connect(Session session, String username, ConnectCommand command) throws IOException, DataAccessException {
-        //System.out.println("got inside WSHandler.connect");
-        int gameID = command.getGameID();
-        //System.out.println("GameID: " + gameID + " username: " + username);
-
-        //verify gameID first
-        GameData game;
         try{
-            game = gService.getGame(gameID);
-        } catch (Exception e){
-            String error = String.format("GameID %s does not exist", gameID);
-            sendMessage(session.getRemote(), new ErrorNotification(ServerMessage.ServerMessageType.ERROR, error));
+            //System.out.println("got inside WSHandler.connect");
+            int gameID = command.getGameID();
+            //System.out.println("GameID: " + gameID + " username: " + username);
+
+            //verify gameID first
+            GameData game;
+            try{
+                game = gService.getGame(gameID);
+            } catch (Exception e){
+                String error = String.format("GameID %s does not exist", gameID);
+                sendMessage(session.getRemote(), new ErrorNotification(ServerMessage.ServerMessageType.ERROR, error));
+                return;
+            }
+
+            connections.add(username, session, gameID);
+            var message = String.format("%s connected to the game ", username);
+            //System.out.println(message);
+            var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            connections.broadcast(username, gameID, notification);
+
+            //GameData game = gService.getGame(gameID);
+            var loadMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
+            sendMessage(session.getRemote(), loadMessage);
+        } catch (Error ex){
+            //System.out.println("got here");
+            ErrorNotification errorN = new ErrorNotification(ServerMessage.ServerMessageType.ERROR, ex.getMessage());
+            connections.broadcastSelf(username, errorN);
             return;
         }
-
-        connections.add(username, session, gameID);
-        var message = String.format("%s connected to the game ", username);
-        //System.out.println(message);
-        var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-        connections.broadcast(username, gameID, notification);
-
-        //GameData game = gService.getGame(gameID);
-        var loadMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
-        sendMessage(session.getRemote(), loadMessage);
     }
 
     private void makeMove(Session session, String username, MakeMoveCommand command) throws ResponseException {
@@ -112,25 +121,36 @@ public class WebSocketHandler {
 
             if (piece == null) {
                 System.out.println("no piece to move");
-                throw new ResponseException(400, "No piece at start position.");
+                ErrorNotification errorN = new ErrorNotification(ServerMessage.ServerMessageType.ERROR, "No piece at start position");
+                connections.broadcastSelf(username, errorN);
+                return;
+                //throw new ResponseException(400, "No piece at start position.");
             }
 
             //check correct player's turn
             if (playerColor != turnColor) {
                 System.out.println("not this color's turn");
-                throw new ResponseException(403, "It's not this color's turn.");
+                ErrorNotification errorN = new ErrorNotification(ServerMessage.ServerMessageType.ERROR, "It's not this color's turn.");
+                connections.broadcastSelf(username, errorN);
+                return;
+                //throw new ResponseException(403, "It's not this color's turn.");
             }
 
             //Check correct player for that color
             if ((playerColor == ChessGame.TeamColor.WHITE && !username.equals(gameD.whiteUsername())) ||
                     (playerColor == ChessGame.TeamColor.BLACK && !username.equals(gameD.blackUsername()))) {
                 System.out.println("not your turn");
-                throw new ResponseException(403, "It's not your turn.");
+                ErrorNotification errorN = new ErrorNotification(ServerMessage.ServerMessageType.ERROR, "It's not your turn.");
+                connections.broadcastSelf(username, errorN);
+                return;
             }
 
             //check if resigned
             if (gameD.isResigned()) {
-                throw new ResponseException(403, "Game is already over.");
+                ErrorNotification errorN = new ErrorNotification(ServerMessage.ServerMessageType.ERROR, "Game's already over.");
+                connections.broadcastSelf(username, errorN);
+                return;
+                //throw new ResponseException(403, "Game is already over.");
             }
 
             try{
@@ -142,7 +162,11 @@ public class WebSocketHandler {
                 return;
                 //throw new Error("Invalid move");
             } catch (Exception e){
-                throw new Exception(e.getMessage());
+                //System.out.println("got here");
+                ErrorNotification errorN = new ErrorNotification(ServerMessage.ServerMessageType.ERROR, e.getMessage());
+                connections.broadcastSelf(username, errorN);
+                return;
+                //throw new Exception(e.getMessage());
             }
 
             GameData updatedGameD = new GameData(
@@ -174,59 +198,78 @@ public class WebSocketHandler {
                         ServerMessage.ServerMessageType.NOTIFICATION, "Check!"));
             }
         } catch (Exception ex) {
-//            ErrorNotification errorN = new ErrorNotification(ServerMessage.ServerMessageType.ERROR, ex.toString());
-//            connections.broadcastAll(gameD.gameID, errorN);
-            throw new ResponseException(500, ex.getMessage());
+            System.out.println("got here");
+            ErrorNotification errorN = new ErrorNotification(ServerMessage.ServerMessageType.ERROR, ex.getMessage());
+            connections.broadcastSelf(username, errorN);
+            return;
         }
     }
 
     private void leaveGame(Session session, String username, LeaveCommand command) throws IOException, DataAccessException {
-        connections.remove(username);
+        try{
+            connections.remove(username);
 
-        GameData gameD = gService.getGame(command.getGameID());
-        String whiteUsername = gameD.whiteUsername();
-        String blackUsername = gameD.blackUsername();
+            GameData gameD = gService.getGame(command.getGameID());
+            String whiteUsername = gameD.whiteUsername();
+            String blackUsername = gameD.blackUsername();
 
-        GameData updatedGameD = gameD;
-        if (username.equals(whiteUsername)) {
-            updatedGameD = new GameData(gameD.gameID(), null, blackUsername, gameD.gameName(), gameD.game());
-        } else if (username.equals(blackUsername)) {
-            updatedGameD = new GameData(gameD.gameID(), whiteUsername, null, gameD.gameName(), gameD.game());
+            GameData updatedGameD = gameD;
+            if (username.equals(whiteUsername)) {
+                updatedGameD = new GameData(gameD.gameID(), null, blackUsername, gameD.gameName(), gameD.game());
+            } else if (username.equals(blackUsername)) {
+                updatedGameD = new GameData(gameD.gameID(), whiteUsername, null, gameD.gameName(), gameD.game());
+            }
+            gService.updateGame(updatedGameD);
+
+            var message = String.format("%s left the game", username);
+            var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            connections.broadcast(username, command.getGameID(), notification);
+        } catch(Error ex){
+            ErrorNotification errorN = new ErrorNotification(ServerMessage.ServerMessageType.ERROR, ex.getMessage());
+            connections.broadcastSelf(username, errorN);
+            return;
         }
-        gService.updateGame(updatedGameD);
-
-        var message = String.format("%s left the game", username);
-        var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-        connections.broadcast(username, command.getGameID(), notification);
     }
 
     private void resign(Session session, String username, ResignCommand command) throws IOException, DataAccessException {
-        //System.out.println("in wsH resign");
-        //System.out.println("Username: " + username);
+        try{
+            //System.out.println("in wsH resign");
+            //System.out.println("Username: " + username);
 
-        if(Objects.equals(username, "observer")){
-            throw new BadRequest("Error, observer can't resign");
+            if(Objects.equals(username, "observer")){
+                throw new BadRequest("Error, observer can't resign");
+            }
+
+            GameData gameD = gService.getGame(command.getGameID());
+            if(gameD.isResigned()){
+                throw new BadRequest("Error, already resigned");
+            }
+
+            gameD.setResigned(true);
+            gService.updateGame(gameD);
+
+            var message = String.format("%s resigned from the game", username);
+            var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            connections.broadcastAll(command.getGameID(), notification);
+            connections.remove(username);
+        } catch(Error ex){
+            ErrorNotification errorN = new ErrorNotification(ServerMessage.ServerMessageType.ERROR, ex.getMessage());
+            connections.broadcastSelf(username, errorN);
+            return;
         }
-
-        GameData gameD = gService.getGame(command.getGameID());
-        if(gameD.isResigned()){
-            throw new BadRequest("Error, already resigned");
-        }
-
-        gameD.setResigned(true);
-        gService.updateGame(gameD);
-
-        var message = String.format("%s resigned from the game", username);
-        var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-        connections.broadcastAll(command.getGameID(), notification);
-        connections.remove(username);
     }
 
     private void saveSession(int gameID, Session session, String username){
-        //checks if session is already in connectionManager
-        if(connections.find(username)==null){   //originally this checked for the gameID, so if doesnt work go back
-            //if not, adds it
-            connections.add(username, session, gameID); //key and value
+        try{
+            //checks if session is already in connectionManager
+            if(connections.find(username)==null){   //originally this checked for the gameID, so if doesnt work go back
+                //if not, adds it
+                connections.add(username, session, gameID); //key and value
+            }
+        } catch(Error ex){
+            ErrorNotification errorN = new ErrorNotification(ServerMessage.ServerMessageType.ERROR, ex.getMessage());
+            connections.broadcastSelf(username, errorN);
+            return;
         }
     }
 
