@@ -1,5 +1,7 @@
 package ui;
 
+import chess.ChessGame;
+import exceptions.DataAccessException;
 import exceptions.ResponseException;
 import ui.clients.Client;
 import ui.clients.GameplayClient;
@@ -17,12 +19,17 @@ public class Repl{
     private WebSocketFacade ws;
     private final String serverUrl;
 
-    public Repl(String serverUrl) throws ResponseException {
+    public Repl(String serverUrl){
         this.serverUrl = serverUrl;
         this.client = new PreloginClient(serverUrl);
         this.nh = new NotificationHandler(client);
-        this.ws = new WebSocketFacade(serverUrl, nh);
-        //this.nh = new NotificationHandler(client);
+        try{
+            this.ws = new WebSocketFacade(serverUrl, nh);
+        } catch (ResponseException e) {  // Catching specific ResponseException
+            System.out.println("Error connecting to WebSocket: " + e.getMessage());
+            e.printStackTrace();
+            this.ws = null;
+        }
     }
 
     public void run() {
@@ -48,7 +55,7 @@ public class Repl{
                 }
                 else if ("quit_to_postlogin".equals(result)) {
                     System.out.println("Returning to post-login screen...\n");
-                    transitionTo(new PostloginClient(client.getServerUrl(), client.getAuthToken(), nh, ws));
+                    transitionTo(new PostloginClient(client.getServerUrl(), client.getAuthToken(), nh));
                     result = "";
                     continue;
                 }
@@ -57,7 +64,7 @@ public class Repl{
 
                 System.out.print(result);
                 if (client instanceof PreloginClient && (result.startsWith("Logged in") || (result.startsWith("Registered")))) {
-                    transitionTo(new PostloginClient(client.getServerUrl(), client.getAuthToken(), nh, ws));
+                    transitionTo(new PostloginClient(client.getServerUrl(), client.getAuthToken(), nh));
                 } else if (client instanceof PostloginClient && result.startsWith("Joined game")) {
 
                     String color;
@@ -92,7 +99,14 @@ public class Repl{
 
     private void transitionToGame(GameplayClient newClient, String color){
         this.client = newClient;
-        client.renderBoard(color);
+        ChessGame currentGame;
+        try {
+            currentGame = newClient.getServer().getGame(client.getAuthToken(), newClient.getGameID());
+        } catch (DataAccessException e) {
+            System.out.println("Could not load current game state: " + e.getMessage());
+            currentGame = new ChessGame(); // Fallback to empty board if needed
+        }
+        client.renderBoard(color, currentGame);
         System.out.print(client.help());
     }
 

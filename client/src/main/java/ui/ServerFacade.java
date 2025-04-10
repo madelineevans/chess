@@ -1,4 +1,5 @@
 package ui;
+import chess.ChessGame;
 import com.google.gson.Gson;
 import exceptions.BadRequest;
 import exceptions.DataAccessException;
@@ -110,5 +111,10 @@ public class ServerFacade {
 
     private boolean isSuccessful(int status) {
         return status / 100 == 2;
+    }
+
+    public ChessGame getGame(String authToken, int gameID) throws DataAccessException {  //follow up on, could cause issues
+        String path = "/game/" + gameID;
+        return this.makeRequest("GET", path, null, ChessGame.class, authToken);
     }
 }

@@ -110,7 +110,7 @@ public class WebSocketHandler {
             System.out.println("in wsH makeMove");
             ChessMove move = command.getMove();
             ChessPosition start = move.getStartPosition();
-            System.out.println("username: " + username + " makes move: " + move.toString());
+            System.out.println("username: " + username + " trying to make move: " + move.toString());
 
             GameData gameD = gService.getGame(command.getGameID());
             ChessGame game = gameD.game();
@@ -118,6 +118,13 @@ public class WebSocketHandler {
             ChessPiece piece = game.getBoard().getPiece(start);
             ChessGame.TeamColor playerColor = piece.getTeamColor();
             ChessGame.TeamColor turnColor = game.getTeamTurn();
+
+            if (!username.equals(gameD.whiteUsername()) && !username.equals(gameD.blackUsername())) {
+                System.out.println("Observer tried to make a move!");
+                ErrorNotification errorN = new ErrorNotification(ServerMessage.ServerMessageType.ERROR, "Observers cannot make moves.");
+                connections.broadcastSelf(username, errorN);
+                return;
+            }
 
             if (piece == null) {
                 System.out.println("no piece to move");

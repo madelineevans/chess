@@ -1,11 +1,16 @@
 package ui.websocket;
 import chess.ChessMove;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import exceptions.ResponseException;
 import websocket.commands.ConnectCommand;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.ResignCommand;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorNotification;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 import javax.websocket.*;
 import java.io.IOException;
@@ -13,10 +18,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 public class WebSocketFacade extends Endpoint {
-
     Session session;
     NotificationHandler notificationHandler;
-
 
     public WebSocketFacade(String url, NotificationHandler notificationHandler) throws ResponseException {
         try {
@@ -31,7 +34,19 @@ public class WebSocketFacade extends Endpoint {
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
                 public void onMessage(String message) {
-                    ServerMessage notification = new Gson().fromJson(message, ServerMessage.class);
+                    JsonObject jsonObject = JsonParser.parseString(message).getAsJsonObject();
+                    String typeStr = jsonObject.get("serverMessageType").getAsString();
+                    ServerMessage.ServerMessageType type = ServerMessage.ServerMessageType.valueOf(typeStr);
+
+                    Gson gson = new Gson();
+                    ServerMessage notification;
+
+                    switch (type) {
+                        case NOTIFICATION -> notification = gson.fromJson(message, NotificationMessage.class);
+                        case ERROR -> notification = gson.fromJson(message, ErrorNotification.class);
+                        case LOAD_GAME -> notification = gson.fromJson(message, LoadGameMessage.class);
+                        default -> throw new IllegalArgumentException("Unknown serverMessageType: " + typeStr);
+                    }
                     notificationHandler.notify(notification);
                 }
             });

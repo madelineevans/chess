@@ -31,6 +31,14 @@ public class GameplayClient extends Client {
         this.ws = ws;
     }
 
+    public int getGameID() {
+        return gameID;
+    }
+
+    public ServerFacade getServer() {
+        return server;
+    }
+
     public void printBoard(ChessGame game){
         System.out.println("\n");
         //find the current game somehow and call it game
@@ -67,7 +75,7 @@ public class GameplayClient extends Client {
         }
         //get updated Game
         //redraw(updatedGame);
-        return String.format("Made move %s", params[0]);
+        return String.format("Trying to make move %s", params[0]);
     }
 
     public String resign() throws DataAccessException {
@@ -140,6 +148,7 @@ public class GameplayClient extends Client {
     @Override
     public String help() {
         return """
+                
                 help
                 redraw - redraws the chess board
                 leave - removes you from the game

@@ -122,6 +122,9 @@ public class PostloginClient extends Client {
         try{
             System.out.println("Player connecting to Game");
             JoinResult res = server.joinGame(req);
+            if (ws == null){
+                ws = new WebSocketFacade(serverUrl, notificationHandler);
+            }
             ws.connect(authToken, gameID);
         } catch (DataAccessException e) {
             if(e.getMessage().startsWith("Cannot invoke")) {
@@ -150,6 +153,9 @@ public class PostloginClient extends Client {
                     gameID = game.gameID();
                 }
                 i++;
+            }
+            if (ws == null){
+                ws = new WebSocketFacade(serverUrl, notificationHandler);
             }
             ws.connect(authToken, gameID);
         } catch (Exception e){
