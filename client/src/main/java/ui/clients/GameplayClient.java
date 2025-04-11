@@ -9,8 +9,6 @@ import ui.ServerFacade;
 import ui.websocket.GameState;
 import ui.websocket.NotificationHandler;
 import ui.websocket.WebSocketFacade;
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class GameplayClient extends Client {
@@ -99,8 +97,6 @@ public class GameplayClient extends Client {
         }catch(Exception e){
             throw new DataAccessException("Error: " + e.getMessage());
         }
-        //get updated Game
-        //redraw(game);
         return String.format("Making move %s", params[0]);
     }
 
@@ -120,8 +116,6 @@ public class GameplayClient extends Client {
     }
 
     public String resign() throws DataAccessException {
-        //ask the user if they really want to resign
-        //if yes, resign them
         Scanner scanner = new Scanner(System.in);
         System.out.print("Are you sure you want to resign? (yes/no): ");
         String input = scanner.nextLine().trim().toLowerCase();

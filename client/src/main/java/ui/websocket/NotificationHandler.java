@@ -38,12 +38,6 @@ public class NotificationHandler {
                     // If client is black, render black's perspective
                     client.renderBoard("black");
                 }
-//            ChessGame.TeamColor turnColor = updated.getTeamTurn();
-//            if(Objects.equals(color, "black") && turnColor== ChessGame.TeamColor.BLACK){
-//                client.renderBoard("black", updated);
-//            }
-//            else{
-//                client.renderBoard("white", updated);
             }
         }
         else if (type == ServerMessage.ServerMessageType.ERROR && notification instanceof ErrorNotification msg) {

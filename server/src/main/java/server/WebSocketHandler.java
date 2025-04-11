@@ -62,9 +62,6 @@ public class WebSocketHandler {
                 case LEAVE -> leaveGame(session, username, (LeaveCommand) command);
                 case RESIGN -> resign(session, username, (ResignCommand) command);
             }
-//        } catch (Unauthorized ex){
-//            //serialize and send error message
-//            sendMessage(session.getRemote(), new ErrorNotification(ServerMessage.ServerMessageType.ERROR, "Error: unauthorized"));
         } catch (Exception ex){
             System.out.println("The error is in onMessage");
             ex.printStackTrace();
@@ -244,9 +241,6 @@ public class WebSocketHandler {
 
     private void resign(Session session, String username, ResignCommand command) throws IOException, DataAccessException {
         try{
-            //System.out.println("in wsH resign");
-            //System.out.println("Username: " + username);
-
             if(Objects.equals(username, "observer")){
                 throw new BadRequest("Error, observer can't resign");
             }

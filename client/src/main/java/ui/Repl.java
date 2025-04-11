@@ -75,13 +75,9 @@ public class Repl {
                         color = "white";
                     }
 
-//                    int gameID = findGameID(result);
-//                    ChessGame gameBoard = client.getServer().getGame(client.getAuthToken(), gameID);
 
                     transitionToGame(new GameplayClient(client.getServerUrl(), client.getAuthToken(), color, findGameID(result), nh, ws, gameState), color);
                 } else if (client instanceof PostloginClient && result.startsWith("Observing")) {
-                    //int gameID = findGameID(result);
-                    //ChessGame gameBoard = client.getServer().getGame(client.getAuthToken(), gameID);
                     transitionToGame(new GameplayClient(client.getServerUrl(), client.getAuthToken(), "white", findGameID(result), nh, ws, gameState), "white");
                 }
 
@@ -109,34 +105,8 @@ public class Repl {
         newClient.setClientColor(color);
         this.client = newClient;
         this.nh.updateClientReference(newClient); // Update the reference
-//        ChessGame currentGame;
-//        try {
-//            currentGame = newClient.getServer().getGame(client.getAuthToken(), newClient.getGameID());
-//        } catch (DataAccessException e) {
-//            currentGame = new ChessGame();
-//        }
         System.out.print(client.help());
     }
-//    private void transitionTo(Client newClient){
-//        this.client = newClient;
-//        System.out.print(client.help());
-//    }
-//
-//    private void transitionToGame(GameplayClient newClient, String color){
-//        gameState.setClientColor(color);
-//        this.client = newClient;
-//
-//        //ChessGame currentGame = newClient.getGame();
-//        ChessGame currentGame;
-//        try {
-//            currentGame = newClient.getServer().getGame(client.getAuthToken(), newClient.getGameID());
-//        } catch (DataAccessException e) {
-//            //System.out.println("Could not load current game state: " + e.getMessage());
-//            currentGame = new ChessGame(); // Fallback to empty board if needed
-//        }
-//        //client.renderBoard(color, currentGame);
-//        System.out.print(client.help());
-//    }
 
     private int findGameID(String result){
         String[] parts = result.split(" ");
