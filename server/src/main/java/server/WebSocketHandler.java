@@ -117,6 +117,13 @@ public class WebSocketHandler {
             ChessGame game = gameD.game();
 
             ChessPiece piece = game.getBoard().getPiece(start);
+
+            if (game.isResigned()) { //check if resigned
+                ErrorNotification errorN = new ErrorNotification(ServerMessage.ServerMessageType.ERROR, "Game's already over.");
+                connections.broadcastSelf(username, errorN);
+                return;
+            }
+
             if (piece == null) {
                 ErrorNotification errorN = new ErrorNotification(ServerMessage.ServerMessageType.ERROR, "No piece at start position");
                 connections.broadcastSelf(username, errorN);
@@ -143,12 +150,6 @@ public class WebSocketHandler {
             if ((playerColor == ChessGame.TeamColor.WHITE && !username.equals(gameD.whiteUsername())) ||
                     (playerColor == ChessGame.TeamColor.BLACK && !username.equals(gameD.blackUsername()))) {
                 ErrorNotification errorN = new ErrorNotification(ServerMessage.ServerMessageType.ERROR, "It's not your turn.");
-                connections.broadcastSelf(username, errorN);
-                return;
-            }
-
-            if (game.isResigned()) { //check if resigned
-                ErrorNotification errorN = new ErrorNotification(ServerMessage.ServerMessageType.ERROR, "Game's already over.");
                 connections.broadcastSelf(username, errorN);
                 return;
             }
@@ -207,16 +208,7 @@ public class WebSocketHandler {
             connections.remove(username);
 
             GameData gameD = gService.getGame(command.getGameID());
-            String whiteUsername = gameD.whiteUsername();
-            String blackUsername = gameD.blackUsername();
-
-            GameData updatedGameD = gameD;
-            if (username.equals(whiteUsername)) {
-                updatedGameD = new GameData(gameD.gameID(), null, blackUsername, gameD.gameName(), gameD.game());
-            } else if (username.equals(blackUsername)) {
-                updatedGameD = new GameData(gameD.gameID(), whiteUsername, null, gameD.gameName(), gameD.game());
-            }
-            gService.updateGame(updatedGameD);
+            updateGame(gameD, username);
 
             var message = String.format("%s left the game", username);
             var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
@@ -226,6 +218,19 @@ public class WebSocketHandler {
             connections.broadcastSelf(username, errorN);
             return;
         }
+    }
+
+    private void updateGame(GameData gameD, String username) throws DataAccessException {
+        String whiteUsername = gameD.whiteUsername();
+        String blackUsername = gameD.blackUsername();
+
+        GameData updatedGameD = gameD;
+        if (username.equals(whiteUsername)) {
+            updatedGameD = new GameData(gameD.gameID(), null, blackUsername, gameD.gameName(), gameD.game());
+        } else if (username.equals(blackUsername)) {
+            updatedGameD = new GameData(gameD.gameID(), whiteUsername, null, gameD.gameName(), gameD.game());
+        }
+        gService.updateGame(updatedGameD);
     }
 
     private void resign(Session session, String username, ResignCommand command) throws IOException, DataAccessException {
@@ -241,7 +246,7 @@ public class WebSocketHandler {
             }
 
             game.setResigned(true);
-            gService.updateGame(gameD);
+            updateGame(gameD, username);
 
             var message = String.format("%s resigned from the game", username);
             var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
