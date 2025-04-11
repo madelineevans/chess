@@ -12,6 +12,8 @@ public class ChessGame {
     private TeamColor turn;
     private ChessBoard gameBoard;
     private boolean resigned;
+    private boolean checkmate;
+    private boolean stalemate;
 
     public ChessGame() {
         this.turn=TeamColor.WHITE;
@@ -19,6 +21,8 @@ public class ChessGame {
         b.resetBoard();
         this.gameBoard = b;
         this.resigned = false;
+        this.checkmate = false;
+        this.stalemate = false;
     }
 
     public ChessGame(ChessGame other){
@@ -32,6 +36,22 @@ public class ChessGame {
     }
 
     public void setResigned(boolean resigned) {
+        this.resigned = resigned;
+    }
+
+    public boolean isStalemate() {
+        return resigned;
+    }
+
+    public void setStalemate(boolean resigned) {
+        this.resigned = resigned;
+    }
+
+    public boolean isCheckmate() {
+        return resigned;
+    }
+
+    public void setCheckmate(boolean resigned) {
         this.resigned = resigned;
     }
 

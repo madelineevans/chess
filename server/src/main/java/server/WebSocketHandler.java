@@ -118,7 +118,7 @@ public class WebSocketHandler {
 
             ChessPiece piece = game.getBoard().getPiece(start);
 
-            if (game.isResigned()) { //check if resigned
+            if (game.isResigned() || game.isCheckmate() || game.isStalemate()) { //check if resigned
                 ErrorNotification errorN = new ErrorNotification(ServerMessage.ServerMessageType.ERROR, "Game's already over.");
                 connections.broadcastSelf(username, errorN);
                 return;
@@ -185,9 +185,11 @@ public class WebSocketHandler {
             //if check, stalemate or checkmate, send notification to ALL
             ChessGame.TeamColor currentTurn = game.getTeamTurn();
             if (game.isInCheckmate(currentTurn)) {
+                game.setCheckmate(true);
                 connections.broadcastAll(command.getGameID(), new NotificationMessage(
                         ServerMessage.ServerMessageType.NOTIFICATION, "Checkmate! Game over."));
             } else if (game.isInStalemate(currentTurn)) {
+                game.setStalemate(true);
                 connections.broadcastAll(command.getGameID(), new NotificationMessage(
                         ServerMessage.ServerMessageType.NOTIFICATION, "Stalemate! Game drawn."));
             } else if (game.isInCheck(currentTurn)) {
