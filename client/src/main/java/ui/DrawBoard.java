@@ -32,7 +32,6 @@ public class DrawBoard {
             }
             out.print(SET_TEXT_COLOR_DARK_GREY + SET_BG_COLOR_LIGHT_GREY + " " + row + " ");
             out.println(RESET_BG_COLOR);
-            //out.println();
         }
 
         drawBoard2(out);
@@ -56,12 +55,7 @@ public class DrawBoard {
         String color = SET_TEXT_COLOR_WHITE;
 
         if (piece != null) {
-            if(piece.getPieceType() == ChessPiece.PieceType.KNIGHT){
-                player = " N ";
-            }
-            else{
-                player = " " + piece.getPieceType().toString().charAt(0) + " ";
-            }
+            player = setPlayer(piece);
             color = piece.getTeamColor() == ChessGame.TeamColor.WHITE ? SET_TEXT_COLOR_MAGENTA : SET_TEXT_COLOR_BLUE;
         }
 
@@ -162,12 +156,7 @@ public class DrawBoard {
         boolean isLegalMove = legalMoves.stream().anyMatch(move -> move.getEndPosition().equals(pos));
 
         if (piece != null) {
-            if(piece.getPieceType() == ChessPiece.PieceType.KNIGHT){
-                player = " N ";
-            }
-            else{
-                player = " " + piece.getPieceType().toString().charAt(0) + " ";
-            }
+            player = setPlayer(piece);
             color = piece.getTeamColor() == ChessGame.TeamColor.WHITE ? SET_TEXT_COLOR_MAGENTA : SET_TEXT_COLOR_BLUE;
         }
 
@@ -178,6 +167,15 @@ public class DrawBoard {
             drawBlackSquare(out, player, color);
         } else {
             drawWhiteSquare(out, player, color);
+        }
+    }
+
+    private static String setPlayer(ChessPiece piece){
+        if(piece.getPieceType() == ChessPiece.PieceType.KNIGHT){
+            return " N ";
+        }
+        else{
+            return " " + piece.getPieceType().toString().charAt(0) + " ";
         }
     }
 
