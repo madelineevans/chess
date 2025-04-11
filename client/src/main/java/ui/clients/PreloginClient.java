@@ -6,13 +6,14 @@ import requests.RegisterRequest;
 import results.LoginResult;
 import results.RegisterResult;
 import ui.ServerFacade;
+import ui.websocket.GameState;
 
 public class PreloginClient extends Client {
     private final ServerFacade server;
     private boolean loggedin = false;
 
-    public PreloginClient(String serverUrl) {
-        super(serverUrl);
+    public PreloginClient(String serverUrl, GameState gameState) {
+        super(serverUrl, gameState);
         server = new ServerFacade(serverUrl);
     }
 

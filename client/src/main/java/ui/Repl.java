@@ -1,7 +1,5 @@
 package ui;
 
-import chess.ChessGame;
-import exceptions.DataAccessException;
 import exceptions.ResponseException;
 import ui.clients.Client;
 import ui.clients.GameplayClient;
@@ -10,7 +8,6 @@ import ui.clients.PreloginClient;
 import ui.websocket.GameState;
 import ui.websocket.NotificationHandler;
 import ui.websocket.WebSocketFacade;
-
 import java.util.Scanner;
 import static ui.EscapeSequences.*;
 
@@ -24,7 +21,7 @@ public class Repl {
     public Repl(String serverUrl) {
         this.serverUrl = serverUrl;
         this.gameState = new GameState();
-        this.client = new PreloginClient(serverUrl);
+        this.client = new PreloginClient(serverUrl, gameState);
         this.nh = new NotificationHandler(client, gameState);
         try{
             this.ws = new WebSocketFacade(serverUrl, nh);
@@ -52,13 +49,13 @@ public class Repl {
             try {
                 if ("quit_to_prelogin".equals(result)) {
                     System.out.println("Returning to pre-login screen...\n");
-                    transitionTo(new PreloginClient(client.getServerUrl()));
+                    transitionTo(new PreloginClient(client.getServerUrl(), gameState));
                     result = "";
                     continue;
                 }
                 else if ("quit_to_postlogin".equals(result)) {
                     System.out.println("Returning to post-login screen...\n");
-                    transitionTo(new PostloginClient(client.getServerUrl(), client.getAuthToken(), nh, ws));
+                    transitionTo(new PostloginClient(client.getServerUrl(), client.getAuthToken(), nh, ws, gameState));
                     result = "";
                     continue;
                 }
@@ -67,7 +64,7 @@ public class Repl {
 
                 System.out.print(result);
                 if (client instanceof PreloginClient && (result.startsWith("Logged in") || (result.startsWith("Registered")))) {
-                    transitionTo(new PostloginClient(client.getServerUrl(), client.getAuthToken(), nh, ws));
+                    transitionTo(new PostloginClient(client.getServerUrl(), client.getAuthToken(), nh, ws, gameState));
                 } else if (client instanceof PostloginClient && result.startsWith("Joined game")) {
 
                     String color;
@@ -81,11 +78,11 @@ public class Repl {
 //                    int gameID = findGameID(result);
 //                    ChessGame gameBoard = client.getServer().getGame(client.getAuthToken(), gameID);
 
-                    transitionToGame(new GameplayClient(client.getServerUrl(), client.getAuthToken(), color, findGameID(result), nh, ws), color);
+                    transitionToGame(new GameplayClient(client.getServerUrl(), client.getAuthToken(), color, findGameID(result), nh, ws, gameState), color);
                 } else if (client instanceof PostloginClient && result.startsWith("Observing")) {
                     //int gameID = findGameID(result);
                     //ChessGame gameBoard = client.getServer().getGame(client.getAuthToken(), gameID);
-                    transitionToGame(new GameplayClient(client.getServerUrl(), client.getAuthToken(), "white", findGameID(result), nh, ws), "white");
+                    transitionToGame(new GameplayClient(client.getServerUrl(), client.getAuthToken(), "white", findGameID(result), nh, ws, gameState), "white");
                 }
 
             } catch (Throwable e) {

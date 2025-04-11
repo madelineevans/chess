@@ -6,6 +6,7 @@ import model.GameData;
 import requests.*;
 import results.*;
 import ui.ServerFacade;
+import ui.websocket.GameState;
 import ui.websocket.NotificationHandler;
 import ui.websocket.WebSocketFacade;
 import java.util.Arrays;
@@ -16,12 +17,13 @@ public class PostloginClient extends Client {
     private final NotificationHandler notificationHandler;
     private WebSocketFacade ws;
 
-    public PostloginClient(String serverUrl, String authToken, NotificationHandler notificationHandler, WebSocketFacade ws) {
-        super(serverUrl);
+    public PostloginClient(String serverUrl, String authToken, NotificationHandler notificationHandler, WebSocketFacade ws, GameState gameState) {
+        super(serverUrl, gameState);
         server = new ServerFacade(serverUrl);
         this.authToken = authToken;
         this.notificationHandler = notificationHandler;
         this.ws = ws;
+        this.gameState = gameState;
     }
 
     public NotificationHandler getNotificationHandler() {

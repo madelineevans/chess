@@ -6,6 +6,7 @@ import requests.ListRequest;
 import results.ListResult;
 import ui.DrawBoard;
 import ui.ServerFacade;
+import ui.websocket.GameState;
 import ui.websocket.NotificationHandler;
 import ui.websocket.WebSocketFacade;
 import java.io.PrintStream;
@@ -18,18 +19,18 @@ public class GameplayClient extends Client {
     private final NotificationHandler notificationHandler;
     private WebSocketFacade ws;
     private int gameNum;
-    //private String color;
+    private String color;
     //private ChessGame game;
 
-    public GameplayClient(String serverUrl, String authToken, String color, int gameNum, NotificationHandler notificationHandler, WebSocketFacade ws) {
-        super(serverUrl);
-        //super(game);
+    public GameplayClient(String serverUrl, String authToken, String color, int gameNum, NotificationHandler notificationHandler, WebSocketFacade ws, GameState gameState) {
+        super(serverUrl, gameState);
         server = new ServerFacade(serverUrl);
         this.authToken = authToken;
-        //this.color = color;
+        this.color = color;
         this.gameNum = gameNum;
         this.notificationHandler = notificationHandler;
         this.ws = ws;
+        this.gameState = gameState;
     }
 
     @Override
