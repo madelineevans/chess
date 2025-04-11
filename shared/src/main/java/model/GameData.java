@@ -3,20 +3,12 @@ import chess.ChessGame;
 import java.util.Objects;
 
 public record GameData(int gameID, String whiteUsername, String blackUsername, String gameName, ChessGame game) implements Data{
-    public static boolean resigned = false;
+    //public boolean resigned = false;
     public GameData(int gameID, String gameName){
         this(gameID, null, null, gameName, new ChessGame());
     }
     public int returnID(){
         return this.gameID;
-    }
-
-    public boolean isResigned() {
-        return resigned;
-    }
-
-    public void setResigned(boolean resigned) {
-        this.resigned = resigned;
     }
 
     @Override
@@ -38,5 +30,15 @@ public record GameData(int gameID, String whiteUsername, String blackUsername, S
 
     public GameData setGameID(int gameID){
         return new GameData(gameID, this.whiteUsername, this.blackUsername, this.gameName, this.game);
+    }
+
+    public String getColor(String username){
+        if(Objects.equals(username, blackUsername)){
+            return "black";
+        }
+        if(Objects.equals(username, whiteUsername)){
+            return "white";
+        }
+        return null;
     }
 }

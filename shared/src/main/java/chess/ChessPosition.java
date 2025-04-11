@@ -50,9 +50,10 @@ public class ChessPosition {
 
     @Override
     public String toString() {
+        char colLet = (char) ('a' + col);
         return "{" +
-                "row=" + row +
-                ", col=" + col +
+                "col=" + colLet +
+                ", row=" +  row +
                 '}';
     }
 

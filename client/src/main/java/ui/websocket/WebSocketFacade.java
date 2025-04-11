@@ -76,7 +76,7 @@ public class WebSocketFacade extends Endpoint {
         try {
             System.out.println("got to WSFacade makeMove");
             var command = new MakeMoveCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, move);
-            System.out.println("Sending makeMove command for user with auth: " + authToken);
+            System.out.println("Sending makeMove command for user with auth : " + authToken + " for gameID: " + gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex) {
             throw new ResponseException(500, ex.getMessage());

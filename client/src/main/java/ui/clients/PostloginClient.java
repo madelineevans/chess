@@ -16,11 +16,12 @@ public class PostloginClient extends Client {
     private final NotificationHandler notificationHandler;
     private WebSocketFacade ws;
 
-    public PostloginClient(String serverUrl, String authToken, NotificationHandler notificationHandler) {
+    public PostloginClient(String serverUrl, String authToken, NotificationHandler notificationHandler, WebSocketFacade ws) {
         super(serverUrl);
         server = new ServerFacade(serverUrl);
         this.authToken = authToken;
         this.notificationHandler = notificationHandler;
+        this.ws = ws;
     }
 
     public String eval(String input) {
@@ -116,15 +117,13 @@ public class PostloginClient extends Client {
             }
             i++;
         }
+        System.out.println("GameID: " + gameID);
         JoinRequest req = new JoinRequest(authToken, color, gameID);
         //ws = new WebSocketFacade(serverUrl, notificationHandler);
 
         try{
             System.out.println("Player connecting to Game");
             JoinResult res = server.joinGame(req);
-            if (ws == null){
-                ws = new WebSocketFacade(serverUrl, notificationHandler);
-            }
             ws.connect(authToken, gameID);
         } catch (DataAccessException e) {
             if(e.getMessage().startsWith("Cannot invoke")) {
@@ -153,9 +152,6 @@ public class PostloginClient extends Client {
                     gameID = game.gameID();
                 }
                 i++;
-            }
-            if (ws == null){
-                ws = new WebSocketFacade(serverUrl, notificationHandler);
             }
             ws.connect(authToken, gameID);
         } catch (Exception e){

@@ -118,4 +118,32 @@ class GameServiceTest {
             JoinResult jR = gService.joinGame(jr);
         });
     }
+
+    @Test
+    void getGameByID() throws DataAccessException {
+        GameData game1 = new GameData(1234, "game1");
+        memoryGameDAO.createData(game1);
+
+        GameData fetchedGame = gService.getGame(1234);
+
+        assertNotNull(fetchedGame);
+        assertEquals(1234, fetchedGame.gameID());
+        assertEquals("game1", fetchedGame.gameName());
+    }
+
+    @Test
+    void getGameByIDNotFound() {
+        // Call the method with a non-existent game ID
+        assertThrows(DataAccessException.class, () -> {
+            gService.getGame(9999);
+        });
+    }
+
+    @Test
+    void getGameByIDNull() {
+        // Call the method with an invalid ID (e.g., 0)
+        assertThrows(DataAccessException.class, () -> {
+            gService.getGame(0);
+        });
+    }
 }

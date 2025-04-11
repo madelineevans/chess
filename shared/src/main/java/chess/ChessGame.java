@@ -11,17 +11,28 @@ import java.util.*;
 public class ChessGame {
     private TeamColor turn;
     private ChessBoard gameBoard;
+    private boolean resigned;
 
     public ChessGame() {
         this.turn=TeamColor.WHITE;
         ChessBoard b = new ChessBoard();
         b.resetBoard();
         this.gameBoard = b;
+        this.resigned = false;
     }
 
     public ChessGame(ChessGame other){
         this.turn = other.turn;
         this.gameBoard = new ChessBoard(other.gameBoard);
+        this.resigned = false;
+    }
+
+    public boolean isResigned() {
+        return resigned;
+    }
+
+    public void setResigned(boolean resigned) {
+        this.resigned = resigned;
     }
 
     public ChessGame makeCopy(){

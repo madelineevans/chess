@@ -66,8 +66,8 @@ public class WebSocketHandler {
 //            //serialize and send error message
 //            sendMessage(session.getRemote(), new ErrorNotification(ServerMessage.ServerMessageType.ERROR, "Error: unauthorized"));
         } catch (Exception ex){
+            System.out.println("The error is in onMessage");
             ex.printStackTrace();
-
             sendMessage(session.getRemote(), new ErrorNotification(ServerMessage.ServerMessageType.ERROR, "Error: " + ex.getMessage()));
         }
     }
@@ -76,7 +76,7 @@ public class WebSocketHandler {
         try{
             //System.out.println("got inside WSHandler.connect");
             int gameID = command.getGameID();
-            //System.out.println("GameID: " + gameID + " username: " + username);
+            System.out.println("GameID: " + gameID + " username: " + username);
 
             //verify gameID first
             GameData game;
@@ -94,8 +94,8 @@ public class WebSocketHandler {
             var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             connections.broadcast(username, gameID, notification);
 
-            //GameData game = gService.getGame(gameID);
-            var loadMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
+            String color = game.getColor(username);
+            var loadMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game, color);
             sendMessage(session.getRemote(), loadMessage);
         } catch (Error ex){
             //System.out.println("got here");
@@ -111,11 +111,25 @@ public class WebSocketHandler {
             ChessMove move = command.getMove();
             ChessPosition start = move.getStartPosition();
             System.out.println("username: " + username + " trying to make move: " + move.toString());
+            System.out.println("gameID: " + command.getGameID());
 
-            GameData gameD = gService.getGame(command.getGameID());
+            GameData gameD = null;
+            try{
+                gameD = gService.getGame(command.getGameID());
+            }catch(Error e){
+                throw new DataAccessException("Error accesssing the game");
+            }
+
             ChessGame game = gameD.game();
 
             ChessPiece piece = game.getBoard().getPiece(start);
+            if (piece == null) {
+                System.out.println("no piece to move");
+                ErrorNotification errorN = new ErrorNotification(ServerMessage.ServerMessageType.ERROR, "No piece at start position");
+                connections.broadcastSelf(username, errorN);
+                return;
+            }
+
             ChessGame.TeamColor playerColor = piece.getTeamColor();
             ChessGame.TeamColor turnColor = game.getTeamTurn();
 
@@ -126,21 +140,13 @@ public class WebSocketHandler {
                 return;
             }
 
-            if (piece == null) {
-                System.out.println("no piece to move");
-                ErrorNotification errorN = new ErrorNotification(ServerMessage.ServerMessageType.ERROR, "No piece at start position");
-                connections.broadcastSelf(username, errorN);
-                return;
-                //throw new ResponseException(400, "No piece at start position.");
-            }
-
             //check correct player's turn
+            System.out.println("turnColor = "+turnColor.toString());
             if (playerColor != turnColor) {
                 System.out.println("not this color's turn");
                 ErrorNotification errorN = new ErrorNotification(ServerMessage.ServerMessageType.ERROR, "It's not this color's turn.");
                 connections.broadcastSelf(username, errorN);
                 return;
-                //throw new ResponseException(403, "It's not this color's turn.");
             }
 
             //Check correct player for that color
@@ -153,11 +159,10 @@ public class WebSocketHandler {
             }
 
             //check if resigned
-            if (gameD.isResigned()) {
+            if (game.isResigned()) {
                 ErrorNotification errorN = new ErrorNotification(ServerMessage.ServerMessageType.ERROR, "Game's already over.");
                 connections.broadcastSelf(username, errorN);
                 return;
-                //throw new ResponseException(403, "Game is already over.");
             }
 
             try{
@@ -167,13 +172,11 @@ public class WebSocketHandler {
                 ErrorNotification errorN = new ErrorNotification(ServerMessage.ServerMessageType.ERROR, "invalid move");
                 connections.broadcastSelf(username, errorN);
                 return;
-                //throw new Error("Invalid move");
             } catch (Exception e){
-                //System.out.println("got here");
+                System.out.println("issue making the move");
                 ErrorNotification errorN = new ErrorNotification(ServerMessage.ServerMessageType.ERROR, e.getMessage());
                 connections.broadcastSelf(username, errorN);
                 return;
-                //throw new Exception(e.getMessage());
             }
 
             GameData updatedGameD = new GameData(
@@ -185,7 +188,7 @@ public class WebSocketHandler {
             );
 
             gService.updateGame(updatedGameD);
-            var loadNotification = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, updatedGameD);
+            var loadNotification = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, updatedGameD, updatedGameD.getColor(username));
             connections.broadcastAll(command.getGameID(), loadNotification);
 
             var message = String.format("%s made move %s", username, move.toString());
@@ -205,7 +208,7 @@ public class WebSocketHandler {
                         ServerMessage.ServerMessageType.NOTIFICATION, "Check!"));
             }
         } catch (Exception ex) {
-            System.out.println("got here");
+            System.out.println("Something threw an error");
             ErrorNotification errorN = new ErrorNotification(ServerMessage.ServerMessageType.ERROR, ex.getMessage());
             connections.broadcastSelf(username, errorN);
             return;
@@ -248,11 +251,12 @@ public class WebSocketHandler {
             }
 
             GameData gameD = gService.getGame(command.getGameID());
-            if(gameD.isResigned()){
+            ChessGame game = gameD.game();
+            if(game.isResigned()){
                 throw new BadRequest("Error, already resigned");
             }
 
-            gameD.setResigned(true);
+            game.setResigned(true);
             gService.updateGame(gameD);
 
             var message = String.format("%s resigned from the game", username);
