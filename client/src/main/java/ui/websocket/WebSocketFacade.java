@@ -4,10 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import exceptions.ResponseException;
-import websocket.commands.ConnectCommand;
-import websocket.commands.MakeMoveCommand;
-import websocket.commands.ResignCommand;
-import websocket.commands.UserGameCommand;
+import websocket.commands.*;
 import websocket.messages.ErrorNotification;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
@@ -77,6 +74,17 @@ public class WebSocketFacade extends Endpoint {
             System.out.println("got to WSFacade makeMove");
             var command = new MakeMoveCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID, move);
             System.out.println("Sending makeMove command for user with auth : " + authToken + " for gameID: " + gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+        } catch (IOException ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
+    }
+
+    public void leave(String authToken, int gameID) throws ResponseException {
+        try {
+            //System.out.println("got to WSFacade lave");
+            var command = new LeaveCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
+            //System.out.println("Sending leave command for user with auth: " + authToken);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex) {
             throw new ResponseException(500, ex.getMessage());

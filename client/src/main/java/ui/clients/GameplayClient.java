@@ -89,7 +89,7 @@ public class GameplayClient extends Client {
 
     public String makeMove(String... params) throws DataAccessException {
         if(params.length != 1){
-            return "Error: please enter move ____ ex: c1c4";
+            return "Error: please enter move ____ ex: c1c4 or a2a1Q";
         }
         ChessMove move = parseMove(params[0]);
         System.out.println("gameplay mM GameID: " + getGameID());
@@ -102,6 +102,21 @@ public class GameplayClient extends Client {
         //get updated Game
         //redraw(game);
         return String.format("Making move %s", params[0]);
+    }
+
+    public String leave() throws DataAccessException {
+        int gameID = getGameID();
+        System.out.println("Leaving game with ID: " + gameID);
+
+        try {
+            // Send a leave notification through the WebSocket
+            ws.leave(authToken, gameID);
+
+            // Return a message indicating successful transition
+            return "quit_to_postlogin";
+        } catch (Exception e) {
+            throw new DataAccessException("Error leaving game: " + e.getMessage());
+        }
     }
 
     public String resign() throws DataAccessException {
@@ -126,21 +141,21 @@ public class GameplayClient extends Client {
     }
 
     public String highlightMoves(String... params) {
-
         if(params.length != 1){
             return "Error: please enter move ____ ex: c1c4";
         }
-
         ChessPosition position = parsePosition(params[0]);
 
-        // Assume the player is trying to highlight moves for their pieces
         ChessGame game = getCurrGame();
-        ChessBoard board = game.getBoard();
         Collection<ChessMove> legalMoves = game.validMoves(position);
 
+        if(color== "white"){
+            DrawBoard.drawChessBoardWithHighlights(out, game, legalMoves);
+        }
+        else{
+            DrawBoard.drawBlackChessBoardWithHighlights(out, game, legalMoves);
+        }
 
-        // Call DrawBoard with legal moves
-        DrawBoard.drawChessBoardWithHighlights(out, game, legalMoves);
         return "Legal moves highlighted!";
     }
 
@@ -153,7 +168,7 @@ public class GameplayClient extends Client {
             return switch (cmd) {
                 case "help" -> help();
                 case "redraw" -> redraw();
-                case "leave" -> "quit_to_postlogin";
+                case "leave" -> leave();
                 case "move" -> makeMove(params);
                 case "resign" -> resign();
                 case "highlight" -> highlightMoves(params);
@@ -165,14 +180,26 @@ public class GameplayClient extends Client {
     }
 
     public ChessMove parseMove(String moveStr) {
-        if (moveStr.length() < 4) {
+        if (moveStr.length() < 4 || moveStr.length() > 5) {
             throw new IllegalArgumentException("Invalid move string: " + moveStr);
         }
 
         ChessPosition start = parsePosition(moveStr.substring(0, 2));
         ChessPosition end = parsePosition(moveStr.substring(2, 4));
 
-        return new ChessMove(start, end, null);  // Assuming no promotion
+        ChessPiece.PieceType promotion = null;
+        if (moveStr.length() == 5) {
+            char promoChar = Character.toLowerCase(moveStr.charAt(4));
+            switch (promoChar) {
+                case 'q' -> promotion = ChessPiece.PieceType.QUEEN;
+                case 'r' -> promotion = ChessPiece.PieceType.ROOK;
+                case 'b' -> promotion = ChessPiece.PieceType.BISHOP;
+                case 'n' -> promotion = ChessPiece.PieceType.KNIGHT;
+                default -> throw new IllegalArgumentException("Invalid promotion piece: " + promoChar);
+            }
+        }
+
+        return new ChessMove(start, end, promotion);
     }
 
     private ChessPosition parsePosition(String posStr) {
@@ -192,7 +219,7 @@ public class GameplayClient extends Client {
                 help
                 redraw - redraws the chess board
                 leave - removes you from the game
-                move ____ - moves piece in one space to another. ex. a2b3
+                move ____ - moves pieces ex. a2b3 or for promoting a pawn a2a1n
                 resign - forfeit the game
                 highlight __- highlights legal moves you can make. ex. a2
                 """;

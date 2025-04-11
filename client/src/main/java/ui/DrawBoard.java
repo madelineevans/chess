@@ -136,7 +136,7 @@ public class DrawBoard {
                 String player = EMPTY;
                 String color = SET_TEXT_COLOR_WHITE;
 
-                // Changed logic to check if pos is the end position of any move in legalMoves
+                //Collection<ChessMove> legalMoves
                 boolean isLegalMove = legalMoves.stream().anyMatch(move -> move.getEndPosition().equals(pos));
 
                 if (piece != null) {
@@ -171,6 +171,60 @@ public class DrawBoard {
         out.print(SET_TEXT_COLOR_GREEN);
     }
 
+    public static void drawBlackChessBoardWithHighlights(PrintStream out, ChessGame game, Collection<ChessMove> legalMoves) {
+        ChessBoard board = game.getBoard();
+
+        out.print("\n" +SET_BG_COLOR_LIGHT_GREY +"   ");
+        for (char c = 'h'; c >= 'a'; c--) {
+            out.print(SET_TEXT_COLOR_DARK_GREY + SET_BG_COLOR_LIGHT_GREY + " " + c + " ");
+        }
+        out.print(SET_BG_COLOR_LIGHT_GREY + "   ");
+        out.println(RESET_BG_COLOR);
+
+        for (int row = 1; row <= 8; row++) {
+            out.print(SET_TEXT_COLOR_DARK_GREY + SET_BG_COLOR_LIGHT_GREY + " " + row + " ");
+            for (int col = 8; col >= 1; col--) {
+                ChessPosition pos = new ChessPosition(row, col);
+                ChessPiece piece = board.getPiece(pos);
+
+                String player = EMPTY;
+                String color = SET_TEXT_COLOR_WHITE;
+
+                //Collection<ChessMove> legalMoves
+                boolean isLegalMove = legalMoves.stream().anyMatch(move -> move.getEndPosition().equals(pos));
+
+                if (piece != null) {
+                    if(piece.getPieceType() == ChessPiece.PieceType.KNIGHT){
+                        player = " N ";
+                    }
+                    else{
+                        player = " " + piece.getPieceType().toString().charAt(0) + " ";
+                    }
+                    color = piece.getTeamColor() == ChessGame.TeamColor.WHITE ? SET_TEXT_COLOR_MAGENTA : SET_TEXT_COLOR_BLUE;
+                }
+
+                // Highlight legal moves with a different background color
+                if (isLegalMove) {
+                    drawHighlightedSquare(out, player, color);
+                } else if ((row + col) % 2 == 0) {
+                    drawBlackSquare(out, player, color);
+                } else {
+                    drawWhiteSquare(out, player, color);
+                }
+            }
+            out.print(SET_TEXT_COLOR_DARK_GREY + SET_BG_COLOR_LIGHT_GREY + " " + row + " ");
+            out.println(RESET_BG_COLOR);
+        }
+
+        out.print(SET_BG_COLOR_LIGHT_GREY + "   ");
+        for (char c = 'h'; c >= 'a'; c--) {
+            out.print(SET_TEXT_COLOR_DARK_GREY + SET_BG_COLOR_LIGHT_GREY + " " + c + " ");
+        }
+        out.print(SET_BG_COLOR_LIGHT_GREY + "   ");
+        out.println(RESET_BG_COLOR);
+        out.print(SET_TEXT_COLOR_GREEN);
+    }
+
     private static void drawHighlightedSquare(PrintStream out, String player, String textColor) {
         out.print(SET_BG_COLOR_YELLOW); // Assuming yellow is for highlights
         out.print(textColor);
@@ -184,6 +238,7 @@ public class DrawBoard {
         out.print(player);
         out.print(RESET_BG_COLOR);
     }
+
     private static void drawBlackSquare(PrintStream out, String player, String textColor){
         out.print(SET_BG_COLOR_BLACK);
         out.print(textColor);

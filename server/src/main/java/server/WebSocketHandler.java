@@ -217,6 +217,7 @@ public class WebSocketHandler {
 
     private void leaveGame(Session session, String username, LeaveCommand command) throws IOException, DataAccessException {
         try{
+            //System.out.println("username %s is leaving game");
             connections.remove(username);
 
             GameData gameD = gService.getGame(command.getGameID());

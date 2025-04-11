@@ -1,11 +1,7 @@
 package ui.websocket;
 import chess.ChessGame;
-import org.junit.jupiter.api.Test;
 import ui.clients.Client;
-import ui.clients.GameplayClient;
 import websocket.messages.*;
-
-import java.util.Objects;
 
 public class NotificationHandler {
     private Client client;
