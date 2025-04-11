@@ -20,7 +20,8 @@ public class GameplayClient extends Client {
     private String color;
     //private ChessGame game;
 
-    public GameplayClient(String serverUrl, String authToken, String color, int gameNum, NotificationHandler notificationHandler, WebSocketFacade ws, GameState gameState) {
+    public GameplayClient(String serverUrl, String authToken, String color, int gameNum,
+                          NotificationHandler notificationHandler, WebSocketFacade ws, GameState gameState) {
         super(serverUrl, gameState);
         server = new ServerFacade(serverUrl);
         this.authToken = authToken;

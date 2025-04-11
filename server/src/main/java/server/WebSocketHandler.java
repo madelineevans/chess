@@ -104,11 +104,8 @@ public class WebSocketHandler {
 
     private void makeMove(Session session, String username, MakeMoveCommand command) throws ResponseException {
         try {
-            System.out.println("in wsH makeMove");
             ChessMove move = command.getMove();
             ChessPosition start = move.getStartPosition();
-            System.out.println("username: " + username + " trying to make move: " + move.toString());
-            System.out.println("gameID: " + command.getGameID());
 
             GameData gameD = null;
             try{
@@ -121,7 +118,6 @@ public class WebSocketHandler {
 
             ChessPiece piece = game.getBoard().getPiece(start);
             if (piece == null) {
-                System.out.println("no piece to move");
                 ErrorNotification errorN = new ErrorNotification(ServerMessage.ServerMessageType.ERROR, "No piece at start position");
                 connections.broadcastSelf(username, errorN);
                 return;
@@ -131,16 +127,13 @@ public class WebSocketHandler {
             ChessGame.TeamColor turnColor = game.getTeamTurn();
 
             if (!username.equals(gameD.whiteUsername()) && !username.equals(gameD.blackUsername())) {
-                System.out.println("Observer tried to make a move!");
                 ErrorNotification errorN = new ErrorNotification(ServerMessage.ServerMessageType.ERROR, "Observers cannot make moves.");
                 connections.broadcastSelf(username, errorN);
                 return;
             }
 
-            //check correct player's turn
             System.out.println("turnColor = "+turnColor.toString());
-            if (playerColor != turnColor) {
-                System.out.println("not this color's turn");
+            if (playerColor != turnColor) { //check correct player's turn
                 ErrorNotification errorN = new ErrorNotification(ServerMessage.ServerMessageType.ERROR, "It's not this color's turn.");
                 connections.broadcastSelf(username, errorN);
                 return;
@@ -149,14 +142,12 @@ public class WebSocketHandler {
             //Check correct player for that color
             if ((playerColor == ChessGame.TeamColor.WHITE && !username.equals(gameD.whiteUsername())) ||
                     (playerColor == ChessGame.TeamColor.BLACK && !username.equals(gameD.blackUsername()))) {
-                System.out.println("not your turn");
                 ErrorNotification errorN = new ErrorNotification(ServerMessage.ServerMessageType.ERROR, "It's not your turn.");
                 connections.broadcastSelf(username, errorN);
                 return;
             }
 
-            //check if resigned
-            if (game.isResigned()) {
+            if (game.isResigned()) { //check if resigned
                 ErrorNotification errorN = new ErrorNotification(ServerMessage.ServerMessageType.ERROR, "Game's already over.");
                 connections.broadcastSelf(username, errorN);
                 return;
@@ -165,12 +156,10 @@ public class WebSocketHandler {
             try{
                 game.makeMove(move);    //this should check if valid move
             } catch (InvalidMoveException e){
-                System.out.println("Invalid move!!!");
                 ErrorNotification errorN = new ErrorNotification(ServerMessage.ServerMessageType.ERROR, "invalid move");
                 connections.broadcastSelf(username, errorN);
                 return;
             } catch (Exception e){
-                System.out.println("issue making the move");
                 ErrorNotification errorN = new ErrorNotification(ServerMessage.ServerMessageType.ERROR, e.getMessage());
                 connections.broadcastSelf(username, errorN);
                 return;

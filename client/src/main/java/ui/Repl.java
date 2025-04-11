@@ -76,9 +76,11 @@ public class Repl {
                     }
 
 
-                    transitionToGame(new GameplayClient(client.getServerUrl(), client.getAuthToken(), color, findGameID(result), nh, ws, gameState), color);
+                    transitionToGame(new GameplayClient(client.getServerUrl(), client.getAuthToken(), color,
+                            findGameID(result), nh, ws, gameState), color);
                 } else if (client instanceof PostloginClient && result.startsWith("Observing")) {
-                    transitionToGame(new GameplayClient(client.getServerUrl(), client.getAuthToken(), "white", findGameID(result), nh, ws, gameState), "white");
+                    transitionToGame(new GameplayClient(client.getServerUrl(), client.getAuthToken(), "white",
+                            findGameID(result), nh, ws, gameState), "white");
                 }
 
             } catch (Throwable e) {

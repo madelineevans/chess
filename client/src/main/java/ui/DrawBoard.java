@@ -27,27 +27,7 @@ public class DrawBoard {
         for (int row = 8; row >= 1; row--) {
             out.print(SET_TEXT_COLOR_DARK_GREY + SET_BG_COLOR_LIGHT_GREY + " " + row + " ");
             for (int col = 1; col <= 8; col++) {
-                ChessPosition pos = new ChessPosition(row, col);
-                ChessPiece piece = board.getPiece(pos);
-
-                String player = EMPTY;
-                String color = SET_TEXT_COLOR_WHITE;
-
-                if (piece != null) {
-                    if(piece.getPieceType() == ChessPiece.PieceType.KNIGHT){
-                        player = " N ";
-                    }
-                    else{
-                        player = " " + piece.getPieceType().toString().charAt(0) + " ";
-                    }
-                    color = piece.getTeamColor() == ChessGame.TeamColor.WHITE ? SET_TEXT_COLOR_MAGENTA : SET_TEXT_COLOR_BLUE;
-                }
-
-                if ((row + col) % 2 == 0) {
-                    drawBlackSquare(out, player, color);
-                } else {
-                    drawWhiteSquare(out, player, color);
-                }
+                drawBoard1(out, board, row, col);
 
             }
             out.print(SET_TEXT_COLOR_DARK_GREY + SET_BG_COLOR_LIGHT_GREY + " " + row + " ");
@@ -55,6 +35,10 @@ public class DrawBoard {
             //out.println();
         }
 
+        drawBoard2(out);
+    }
+
+    private static void drawBoard2(PrintStream out) {
         out.print(SET_BG_COLOR_LIGHT_GREY + "   ");
         for (char c = 'a'; c <= 'h'; c++) {
             out.print(SET_TEXT_COLOR_DARK_GREY + SET_BG_COLOR_LIGHT_GREY + " " + c + " ");
@@ -62,6 +46,30 @@ public class DrawBoard {
         out.print(SET_BG_COLOR_LIGHT_GREY + "   ");
         out.println(RESET_BG_COLOR);
         out.print(SET_TEXT_COLOR_GREEN);
+    }
+
+    private static void drawBoard1(PrintStream out, ChessBoard board, int row, int col) {
+        ChessPosition pos = new ChessPosition(row, col);
+        ChessPiece piece = board.getPiece(pos);
+
+        String player = EMPTY;
+        String color = SET_TEXT_COLOR_WHITE;
+
+        if (piece != null) {
+            if(piece.getPieceType() == ChessPiece.PieceType.KNIGHT){
+                player = " N ";
+            }
+            else{
+                player = " " + piece.getPieceType().toString().charAt(0) + " ";
+            }
+            color = piece.getTeamColor() == ChessGame.TeamColor.WHITE ? SET_TEXT_COLOR_MAGENTA : SET_TEXT_COLOR_BLUE;
+        }
+
+        if ((row + col) % 2 == 0) {
+            drawBlackSquare(out, player, color);
+        } else {
+            drawWhiteSquare(out, player, color);
+        }
     }
 
     public static void drawChessBoardUpsidedown(PrintStream out, ChessGame game){
@@ -77,28 +85,7 @@ public class DrawBoard {
         for (int row = 1; row <= 8; row++) {
             out.print(SET_TEXT_COLOR_DARK_GREY + SET_BG_COLOR_LIGHT_GREY + " " + row + " ");
             for (int col = 8; col >= 1; col--) {
-                ChessPosition pos = new ChessPosition(row, col);
-                ChessPiece piece = board.getPiece(pos);
-
-                String player = EMPTY;
-                String color = SET_TEXT_COLOR_WHITE;
-
-                if (piece != null) {
-                    if(piece.getPieceType() == ChessPiece.PieceType.KNIGHT){
-                        player = " N ";
-                    }
-                    else{
-                        player = " " + piece.getPieceType().toString().charAt(0) + " ";
-                    }
-
-                    color = piece.getTeamColor() == ChessGame.TeamColor.WHITE ? SET_TEXT_COLOR_MAGENTA : SET_TEXT_COLOR_BLUE;
-                }
-
-                if ((row + col) % 2 == 0) {
-                    drawBlackSquare(out, player, color);
-                } else {
-                    drawWhiteSquare(out, player, color);
-                }
+                drawBoard1(out, board, row, col);
 
             }
             out.print(SET_TEXT_COLOR_DARK_GREY + SET_BG_COLOR_LIGHT_GREY + " " + row + " ");
@@ -133,13 +120,7 @@ public class DrawBoard {
             out.println(RESET_BG_COLOR);
         }
 
-        out.print(SET_BG_COLOR_LIGHT_GREY + "   ");
-        for (char c = 'a'; c <= 'h'; c++) {
-            out.print(SET_TEXT_COLOR_DARK_GREY + SET_BG_COLOR_LIGHT_GREY + " " + c + " ");
-        }
-        out.print(SET_BG_COLOR_LIGHT_GREY + "   ");
-        out.println(RESET_BG_COLOR);
-        out.print(SET_TEXT_COLOR_GREEN);
+        drawBoard2(out);
     }
 
     public static void drawBlackChessBoardWithHighlights(PrintStream out, ChessGame game, Collection<ChessMove> legalMoves) {
@@ -218,12 +199,6 @@ public class DrawBoard {
         out.print(SET_BG_COLOR_BLACK);
         out.print(textColor);
         out.print(player);
-        out.print(RESET_BG_COLOR);
-    }
-    private static void drawBorderSquare(PrintStream out, String num){
-        out.print(SET_BG_COLOR_LIGHT_GREY);
-        out.print(SET_TEXT_COLOR_DARK_GREY);
-        out.print(" " + num + " ");
         out.print(RESET_BG_COLOR);
     }
 }
