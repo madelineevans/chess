@@ -19,7 +19,7 @@ public class DrawBoard {
     public static void drawChessBoard(PrintStream out, ChessGame game) {
         ChessBoard board = game.getBoard();
 
-        out.print(SET_BG_COLOR_LIGHT_GREY + "   ");
+        out.print("\n" +SET_BG_COLOR_LIGHT_GREY + "   ");
         for (char c = 'a'; c <= 'h'; c++) {
             out.print(SET_TEXT_COLOR_DARK_GREY + SET_BG_COLOR_LIGHT_GREY + " " + c + " ");
         }
@@ -70,7 +70,7 @@ public class DrawBoard {
     public static void drawChessBoardUpsidedown(PrintStream out, ChessGame game){
         ChessBoard board = game.getBoard();
 
-        out.print(SET_BG_COLOR_LIGHT_GREY + "   ");
+        out.print("\n" +SET_BG_COLOR_LIGHT_GREY + "   ");
         for (char c = 'h'; c >= 'a'; c--) {
             out.print(SET_TEXT_COLOR_DARK_GREY + SET_BG_COLOR_LIGHT_GREY + " " + c + " ");
         }
@@ -120,7 +120,7 @@ public class DrawBoard {
     public static void drawChessBoardWithHighlights(PrintStream out, ChessGame game, Collection<ChessMove> legalMoves) {
         ChessBoard board = game.getBoard();
 
-        out.print(SET_BG_COLOR_LIGHT_GREY + "   ");
+        out.print("\n" +SET_BG_COLOR_LIGHT_GREY +"   ");
         for (char c = 'a'; c <= 'h'; c++) {
             out.print(SET_TEXT_COLOR_DARK_GREY + SET_BG_COLOR_LIGHT_GREY + " " + c + " ");
         }

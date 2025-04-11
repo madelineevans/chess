@@ -24,6 +24,10 @@ public class PostloginClient extends Client {
         this.ws = ws;
     }
 
+    public NotificationHandler getNotificationHandler() {
+        return this.notificationHandler;
+    }
+
     public String eval(String input) {
         try {
             var tokens = input.toLowerCase().split(" ");

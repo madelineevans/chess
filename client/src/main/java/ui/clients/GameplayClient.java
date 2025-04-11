@@ -18,29 +18,23 @@ public class GameplayClient extends Client {
     private final NotificationHandler notificationHandler;
     private WebSocketFacade ws;
     private int gameNum;
-    private String color;
-    private ChessGame game;
+    //private String color;
+    //private ChessGame game;
 
-    public GameplayClient(String serverUrl, String authToken, String color, int gameNum, NotificationHandler notificationHandler, WebSocketFacade ws, ChessGame game) {
+    public GameplayClient(String serverUrl, String authToken, String color, int gameNum, NotificationHandler notificationHandler, WebSocketFacade ws) {
         super(serverUrl);
-        //super(out);
+        //super(game);
         server = new ServerFacade(serverUrl);
         this.authToken = authToken;
-        this.color = color;
+        //this.color = color;
         this.gameNum = gameNum;
         this.notificationHandler = notificationHandler;
         this.ws = ws;
-        this.game = (game != null) ? game : new ChessGame(); // default if null
     }
 
     @Override
-    public void renderBoard(String color, ChessGame game) {
-        this.game = game;
-        if ("white".equals(color)) {
-            printBoard();
-        } else {
-            printBlackBoard();
-        }
+    public void updateGame(ChessGame newGame) {
+        super.updateGame(newGame);
     }
 
     public int getGameID() {
@@ -61,32 +55,33 @@ public class GameplayClient extends Client {
         return gameID;
     }
 
-//    public ChessGame getGame(){
-//        return game;
-//    }
-
     public ServerFacade getServer() {
         return server;
     }
 
+    public NotificationHandler getNotificationHandler() {
+        return this.notificationHandler;
+    }
+
     public void printBoard(){
         System.out.println("\n");
-        //find the current game somehow and call it game
-        DrawBoard.drawChessBoard(out, game);
+        //ChessGame game = getCurrGame();
+        DrawBoard.drawChessBoard(out, getCurrGame());
     }
 
     public void printBlackBoard(){
         System.out.println("\n");
-        //find the current game somehow and call it game
-        DrawBoard.drawChessBoardUpsidedown(out, game);
+        //ChessGame game = getCurrGame();
+        DrawBoard.drawChessBoardUpsidedown(out, getCurrGame());
     }
 
-    public String redraw(ChessGame game){
+    public String redraw(){
+        String color = getClientColor();
         if(Objects.equals(color, "black")){
-            printBlackBoard(game);
+            printBlackBoard();
         }
         else if (Objects.equals(color, "white")){
-            printBoard(game);
+            printBoard();
         }
         return "Current Board";
     }
@@ -104,7 +99,7 @@ public class GameplayClient extends Client {
             throw new DataAccessException("Error: " + e.getMessage());
         }
         //get updated Game
-        //redraw(updatedGame);
+        //redraw(game);
         return String.format("Making move %s", params[0]);
     }
 
@@ -138,6 +133,7 @@ public class GameplayClient extends Client {
         ChessPosition position = parsePosition(params[0]);
 
         // Assume the player is trying to highlight moves for their pieces
+        ChessGame game = getCurrGame();
         ChessBoard board = game.getBoard();
         Collection<ChessMove> legalMoves = game.validMoves(position);
 
@@ -155,7 +151,7 @@ public class GameplayClient extends Client {
         try{
             return switch (cmd) {
                 case "help" -> help();
-                //case "redraw" -> redraw();
+                case "redraw" -> redraw();
                 case "leave" -> "quit_to_postlogin";
                 case "move" -> makeMove(params);
                 case "resign" -> resign();

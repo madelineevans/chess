@@ -7,25 +7,25 @@ import ui.clients.Client;
 import ui.clients.GameplayClient;
 import ui.clients.PostloginClient;
 import ui.clients.PreloginClient;
+import ui.websocket.GameState;
 import ui.websocket.NotificationHandler;
 import ui.websocket.WebSocketFacade;
 
 import java.util.Scanner;
 import static ui.EscapeSequences.*;
 
-public class Repl{
+public class Repl {
     private Client client;
-    //private GameplayClient gClient;
     private NotificationHandler nh;
-    //private NotificationHandler gnh;
     private WebSocketFacade ws;
     private final String serverUrl;
+    private final GameState gameState;
 
-    public Repl(String serverUrl){
+    public Repl(String serverUrl) {
         this.serverUrl = serverUrl;
+        this.gameState = new GameState();
         this.client = new PreloginClient(serverUrl);
-        //this.nh = new NotificationHandler(client);
-        this.nh = new NotificationHandler(client);
+        this.nh = new NotificationHandler(client, gameState);
         try{
             this.ws = new WebSocketFacade(serverUrl, nh);
         } catch (ResponseException e) {  // Catching specific ResponseException
@@ -100,25 +100,46 @@ public class Repl{
         System.out.print("\n" + SET_TEXT_COLOR_BLACK + ">>> " + SET_TEXT_COLOR_GREEN);
     }
 
-    private void transitionTo(Client newClient){
+    private void transitionTo(Client newClient) {
         this.client = newClient;
-        System.out.print(client.help());
-    }
-
-    private void transitionToGame(GameplayClient newClient, String color){
-        this.client = newClient;
-
-        //ChessGame currentGame = newClient.getGame();
-        ChessGame currentGame;
-        try {
-            currentGame = newClient.getServer().getGame(client.getAuthToken(), newClient.getGameID());
-        } catch (DataAccessException e) {
-            //System.out.println("Could not load current game state: " + e.getMessage());
-            currentGame = new ChessGame(); // Fallback to empty board if needed
+        if(newClient instanceof PostloginClient){
+            this.nh.updateClientReference(newClient); // Update the reference
         }
-        //client.renderBoard(color, currentGame);
         System.out.print(client.help());
     }
+
+    private void transitionToGame(GameplayClient newClient, String color) {
+        newClient.setClientColor(color);
+        this.client = newClient;
+        this.nh.updateClientReference(newClient); // Update the reference
+//        ChessGame currentGame;
+//        try {
+//            currentGame = newClient.getServer().getGame(client.getAuthToken(), newClient.getGameID());
+//        } catch (DataAccessException e) {
+//            currentGame = new ChessGame();
+//        }
+        System.out.print(client.help());
+    }
+//    private void transitionTo(Client newClient){
+//        this.client = newClient;
+//        System.out.print(client.help());
+//    }
+//
+//    private void transitionToGame(GameplayClient newClient, String color){
+//        gameState.setClientColor(color);
+//        this.client = newClient;
+//
+//        //ChessGame currentGame = newClient.getGame();
+//        ChessGame currentGame;
+//        try {
+//            currentGame = newClient.getServer().getGame(client.getAuthToken(), newClient.getGameID());
+//        } catch (DataAccessException e) {
+//            //System.out.println("Could not load current game state: " + e.getMessage());
+//            currentGame = new ChessGame(); // Fallback to empty board if needed
+//        }
+//        //client.renderBoard(color, currentGame);
+//        System.out.print(client.help());
+//    }
 
     private int findGameID(String result){
         String[] parts = result.split(" ");

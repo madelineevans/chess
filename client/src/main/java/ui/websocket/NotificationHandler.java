@@ -5,16 +5,20 @@ import ui.clients.Client;
 import ui.clients.GameplayClient;
 import websocket.messages.*;
 
-public class NotificationHandler {
-    //private final GameplayClient client;
-    private final Client client;
+import java.util.Objects;
 
-    public NotificationHandler(Client client) {
+public class NotificationHandler {
+    private Client client;
+    private GameState gameState;
+
+    public NotificationHandler(Client client, GameState gameState) {
         this.client = client;
+        this.gameState = gameState;
     }
-//    public NotificationHandler(GameplayClient client) {
-//        this.client = client;
-//    }
+
+    public void updateClientReference(Client newClient) {
+        this.client = newClient;
+    }
 
     public void notify(ServerMessage notification) {
         //System.out.println("in notification handler");
@@ -23,7 +27,28 @@ public class NotificationHandler {
             //System.out.println("Loading Game");
             ChessGame updated = msg.getGame().game();
             String color = msg.getColor();
-            client.renderBoard(color, updated);
+            gameState.setCurrentGame(updated);
+            String clientColor = gameState.getClientColor();  // This method can return "white" or "black" based on the client's role
+
+            if (clientColor.equals(color)) {
+                // If the client is the one who made the move, render normally
+                client.renderBoard(clientColor);
+            } else {
+                // If the client is not the one who made the move, check if they are observing
+                if (clientColor.equals("white")) {
+                    // If client is white, render white's perspective
+                    client.renderBoard("white");
+                } else {
+                    // If client is black, render black's perspective
+                    client.renderBoard("black");
+                }
+//            ChessGame.TeamColor turnColor = updated.getTeamTurn();
+//            if(Objects.equals(color, "black") && turnColor== ChessGame.TeamColor.BLACK){
+//                client.renderBoard("black", updated);
+//            }
+//            else{
+//                client.renderBoard("white", updated);
+            }
         }
         else if (type == ServerMessage.ServerMessageType.ERROR && notification instanceof ErrorNotification msg) {
             System.out.println("Error from server: " + msg.getErrorMessage());
